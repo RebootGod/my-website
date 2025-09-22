@@ -1,0 +1,408 @@
+/* Mobile & Responsive Optimizations */
+
+/* Touch-friendly sizing */
+@media (max-width: 768px) {
+    /* Minimum touch target size 44px */
+    .btn-watch,
+    .btn-bookmark,
+    .modern-select,
+    .pagination-modern .page-link {
+        min-height: 44px;
+        min-width: 44px;
+    }
+
+    /* Enhanced mobile spacing */
+    .container {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+
+    /* Filter sidebar mobile optimization */
+    .filter-sidebar {
+        margin-bottom: 30px;
+        position: static;
+        padding: 20px;
+        border-radius: 16px;
+    }
+
+    .filter-title {
+        font-size: 1.3rem;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+
+    .filter-group {
+        margin-bottom: 16px;
+    }
+
+    .modern-select {
+        padding: 14px 16px;
+        font-size: 1rem;
+        border-radius: 12px;
+    }
+
+    .filter-actions {
+        gap: 10px;
+        margin-top: 20px;
+    }
+
+    .btn-modern,
+    .btn-outline-modern {
+        padding: 14px 20px;
+        font-size: 0.95rem;
+        border-radius: 12px;
+    }
+
+    /* Movie grid mobile optimization */
+    .movie-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 15px;
+        padding: 15px 0;
+    }
+
+    .movie-card-modern {
+        border-radius: 16px;
+    }
+
+    .movie-poster {
+        height: 200px;
+    }
+
+    .movie-info {
+        padding: 12px;
+    }
+
+    .movie-title {
+        font-size: 1rem;
+        margin-bottom: 6px;
+        line-height: 1.2;
+    }
+
+    .movie-meta {
+        font-size: 0.85rem;
+        margin-bottom: 10px;
+    }
+
+    .movie-description {
+        font-size: 0.8rem;
+        margin-bottom: 12px;
+        -webkit-line-clamp: 2;
+    }
+
+    .btn-watch {
+        padding: 10px 12px;
+        font-size: 0.8rem;
+    }
+
+    .btn-bookmark {
+        width: 34px;
+        height: 34px;
+        padding: 6px;
+    }
+
+    /* Section spacing */
+    .content-section {
+        margin-bottom: 30px;
+    }
+
+    .section-title {
+        font-size: 1.6rem;
+        margin-bottom: 20px;
+        padding-left: 15px;
+    }
+
+    .section-title::before {
+        width: 3px;
+        height: 25px;
+    }
+
+    /* Pagination mobile */
+    .pagination-modern {
+        gap: 6px;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .pagination-modern .page-link {
+        padding: 10px 12px;
+        min-width: 40px;
+        font-size: 0.9rem;
+    }
+
+    /* Enhanced touch interactions */
+    .movie-card-modern:active {
+        transform: translateY(-5px) scale(0.98);
+        transition-duration: 0.1s;
+    }
+
+    .btn-watch:active,
+    .btn-bookmark:active,
+    .btn-modern:active {
+        transform: scale(0.95);
+        transition-duration: 0.1s;
+    }
+}
+
+/* Small mobile devices */
+@media (max-width: 576px) {
+    .container {
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+
+    /* Ultra-compact movie grid for small screens */
+    .movie-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+        padding: 10px 0;
+    }
+
+    .movie-poster {
+        height: 180px;
+    }
+
+    .movie-info {
+        padding: 10px;
+    }
+
+    .movie-title {
+        font-size: 0.9rem;
+        margin-bottom: 4px;
+    }
+
+    .movie-meta {
+        font-size: 0.75rem;
+        margin-bottom: 8px;
+    }
+
+    .movie-description {
+        font-size: 0.75rem;
+        margin-bottom: 10px;
+        -webkit-line-clamp: 1;
+    }
+
+    .movie-actions {
+        gap: 8px;
+    }
+
+    .btn-watch {
+        padding: 8px 10px;
+        font-size: 0.75rem;
+    }
+
+    .btn-bookmark {
+        width: 30px;
+        height: 30px;
+        padding: 5px;
+    }
+
+    /* Compact filter sidebar */
+    .filter-sidebar {
+        padding: 15px;
+        border-radius: 12px;
+    }
+
+    .filter-title {
+        font-size: 1.2rem;
+        margin-bottom: 15px;
+    }
+
+    .filter-group {
+        margin-bottom: 12px;
+    }
+
+    .filter-label {
+        font-size: 0.9rem;
+        margin-bottom: 6px;
+    }
+
+    .modern-select {
+        padding: 12px 14px;
+        font-size: 0.9rem;
+    }
+
+    .btn-modern,
+    .btn-outline-modern {
+        padding: 12px 16px;
+        font-size: 0.85rem;
+    }
+
+    /* Smaller section titles */
+    .section-title {
+        font-size: 1.4rem;
+        margin-bottom: 15px;
+        padding-left: 12px;
+    }
+
+    /* Compact pagination */
+    .pagination-modern .page-link {
+        padding: 8px 10px;
+        min-width: 36px;
+        font-size: 0.85rem;
+    }
+}
+
+/* Landscape mobile optimization */
+@media (max-width: 768px) and (orientation: landscape) {
+    .movie-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 12px;
+    }
+
+    .movie-poster {
+        height: 160px;
+    }
+
+    .filter-sidebar {
+        padding: 15px;
+    }
+}
+
+/* Touch device optimizations */
+@media (hover: none) and (pointer: coarse) {
+    /* Remove hover effects on touch devices */
+    .movie-card-modern:hover {
+        transform: none;
+        box-shadow: var(--shadow-heavy);
+        border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .movie-card-modern:hover .movie-poster img {
+        transform: none;
+    }
+
+    .movie-card-modern:hover .movie-overlay {
+        opacity: 0;
+    }
+
+    /* Enhanced tap targets */
+    .movie-card-modern {
+        touch-action: manipulation;
+    }
+
+    /* Focus states for accessibility */
+    .movie-card-modern:focus-within {
+        outline: 2px solid rgba(102, 126, 234, 0.5);
+        outline-offset: 2px;
+    }
+
+    /* Touch feedback */
+    .movie-card-modern:active {
+        transform: scale(0.98);
+        opacity: 0.9;
+    }
+}
+
+/* High DPI displays */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    .movie-poster img {
+        image-rendering: -webkit-optimize-contrast;
+        image-rendering: crisp-edges;
+    }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    .movie-card-modern,
+    .movie-poster img,
+    .btn-watch,
+    .btn-bookmark,
+    .modern-select {
+        transition: none !important;
+        animation: none !important;
+    }
+
+    .movie-card-modern:hover {
+        transform: none !important;
+    }
+}
+
+/* Dark mode preferences */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --primary-bg: #000000;
+        --secondary-bg: #111111;
+        --card-bg: #1a1a1a;
+    }
+}
+
+/* Better spacing for larger phones */
+@media (min-width: 576px) and (max-width: 768px) {
+    .movie-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+    }
+
+    .movie-poster {
+        height: 220px;
+    }
+
+    .movie-info {
+        padding: 14px;
+    }
+
+    .filter-sidebar {
+        padding: 25px;
+    }
+}
+
+/* Tablet optimizations */
+@media (min-width: 768px) and (max-width: 1024px) {
+    .movie-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 18px;
+    }
+
+    .movie-poster {
+        height: 250px;
+    }
+}
+
+/* Ultra-wide mobile screens */
+@media (max-width: 480px) and (orientation: landscape) {
+    .movie-grid {
+        grid-template-columns: repeat(5, 1fr);
+        gap: 8px;
+    }
+
+    .movie-poster {
+        height: 140px;
+    }
+
+    .movie-info {
+        padding: 8px;
+    }
+
+    .movie-title {
+        font-size: 0.8rem;
+    }
+
+    .movie-description {
+        display: none;
+    }
+}
+
+/* Accessibility improvements */
+@media (prefers-reduced-motion: no-preference) {
+    .fade-in-up {
+        animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+}
+
+/* Print styles */
+@media print {
+    .filter-sidebar,
+    .pagination-modern {
+        display: none;
+    }
+
+    .movie-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+
+    .movie-card-modern {
+        break-inside: avoid;
+        border: 1px solid #ccc;
+    }
+}

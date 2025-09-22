@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chart Test</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+</head>
+<body style="background: #1f2937; color: white; padding: 20px;">
+    <h1>Chart Test</h1>
+    <div style="width: 600px; height: 400px;">
+        <canvas id="testChart"></canvas>
+    </div>
+
+    <script>
+        // Test data
+        const testData = {
+            labels: ['Sep 15', 'Sep 16', 'Sep 17', 'Sep 18', 'Sep 19', 'Sep 20', 'Sep 21'],
+            data: [10, 7, 9, 4, 5, 9, 18]
+        };
+
+        console.log('Chart.js loaded:', typeof Chart !== 'undefined');
+        console.log('Test data:', testData);
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const ctx = document.getElementById('testChart');
+            console.log('Canvas element:', ctx);
+
+            if (ctx && typeof Chart !== 'undefined') {
+                try {
+                    const chart = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: testData.labels,
+                            datasets: [{
+                                label: 'Test Activities',
+                                data: testData.data,
+                                borderColor: '#ffffff',
+                                backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                                pointBackgroundColor: '#ffffff',
+                                pointBorderColor: '#ffffff',
+                                pointRadius: 4,
+                                tension: 0.4
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    labels: { color: '#d1d5db' }
+                                }
+                            },
+                            scales: {
+                                x: {
+                                    ticks: { color: '#9ca3af' },
+                                    grid: { color: '#374151' }
+                                },
+                                y: {
+                                    beginAtZero: true,
+                                    ticks: { color: '#9ca3af' },
+                                    grid: { color: '#374151' }
+                                }
+                            }
+                        }
+                    });
+                    console.log('Chart created successfully:', chart);
+                } catch (error) {
+                    console.error('Error creating chart:', error);
+                }
+            } else {
+                console.error('Canvas not found or Chart.js not loaded');
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,245 @@
+<?php
+// app/Http/Controllers/HomeController.php
+
+namespace App\Http\Controllers;
+
+use App\Models\Movie;
+use App\Models\Series;
+use App\Models\Genre;
+use App\Models\SearchHistory;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
+
+class HomeController extends Controller
+{
+    public function index(Request $request)
+    {
+        // Build base query (only published movies)
+        $query = Movie::with(['genres', 'sources'])
+            ->published();
+
+        // SEARCH FUNCTIONALITY
+        if ($request->filled('search')) {
+            $searchTerm = $request->search;
+            
+            $query->where(function($q) use ($searchTerm) {
+                $q->where('title', 'LIKE', "%{$searchTerm}%")
+                  ->orWhere('original_title', 'LIKE', "%{$searchTerm}%")
+                  ->orWhere('overview', 'LIKE', "%{$searchTerm}%")
+                  ->orWhere('cast', 'LIKE', "%{$searchTerm}%")
+                  ->orWhere('director', 'LIKE', "%{$searchTerm}%");
+            });
+
+            // Log search if user is authenticated
+            if (Auth::check()) {
+                SearchHistory::create([
+                    'user_id' => Auth::id(),
+                    'search_term' => $searchTerm,
+                    'results_count' => $query->count(),
+                    'ip_address' => $request->ip()
+                ]);
+            }
+        }
+
+        // GENRE FILTER
+        if ($request->filled('genre')) {
+            $genreId = $request->genre;
+            $query->whereHas('genres', function($q) use ($genreId) {
+                $q->where('genres.id', $genreId);
+            });
+        }
+
+        // YEAR FILTER
+        if ($request->filled('year')) {
+            $year = $request->year;
+            $query->whereYear('release_date', $year);
+        }
+
+        // RATING FILTER
+        if ($request->filled('rating')) {
+            $query->where('rating', '>=', $request->rating);
+        }
+
+        // QUALITY FILTER
+        if ($request->filled('quality')) {
+            $quality = $request->quality;
+            $query->whereHas('sources', function($q) use ($quality) {
+                $q->where('quality', $quality);
+            });
+        }
+
+        // SORT OPTIONS
+        $sortBy = $request->get('sort', 'latest');
+        switch ($sortBy) {
+            case 'oldest':
+                $query->oldest();
+                break;
+            case 'rating_high':
+                $query->orderBy('rating', 'desc');
+                break;
+            case 'rating_low':
+                $query->orderBy('rating', 'asc');
+                break;
+            case 'alphabetical':
+                $query->orderBy('title', 'asc');
+                break;
+            case 'latest':
+            default:
+                $query->latest();
+                break;
+        }
+
+        // Paginate results
+            // Ambil semua movies dan series, gabungkan, urutkan berdasarkan created_at
+            $movies = $query->get();
+            $series = Series::with(['genres', 'seasons'])
+                ->published();
+
+            // Apply filter yang sama ke series
+            if ($request->filled('search')) {
+                $searchTerm = $request->search;
+                $series->where(function($q) use ($searchTerm) {
+                    $q->where('title', 'LIKE', "%{$searchTerm}%")
+                      ->orWhere('description', 'LIKE', "%{$searchTerm}%");
+                });
+            }
+            if ($request->filled('genre')) {
+                $genreId = $request->genre;
+                $series->whereHas('genres', function($q) use ($genreId) {
+                    $q->where('genres.id', $genreId);
+                });
+            }
+            if ($request->filled('year')) {
+                $year = $request->year;
+                $series->where('year', $year);
+            }
+            if ($request->filled('rating')) {
+                $series->where('rating', '>=', $request->rating);
+            }
+            $series = $series->get();
+
+            // Gabungkan dan urutkan
+            $merged = $movies->concat($series)->sortByDesc('created_at')->values();
+
+            // Paginate manual (karena ini Collection, bukan Eloquent)
+            $perPage = 20;
+            $page = $request->input('page', 1);
+            $total = $merged->count();
+            $contents = new \Illuminate\Pagination\LengthAwarePaginator(
+                $merged->slice(($page - 1) * $perPage, $perPage),
+                $total,
+                $perPage,
+                $page,
+                ['path' => $request->url(), 'query' => $request->query()]
+            );
+
+        // Get all genres for filter sidebar (cached for 1 hour)
+        $genres = Cache::remember('home:genres', 3600, function() {
+            return Genre::orderBy('name')->get();
+        });
+
+        // Get popular searches (cached for 30 minutes)
+        $popularSearches = Cache::remember('home:popular_searches', 1800, function() {
+            return SearchHistory::select('search_term as query')
+                ->groupBy('search_term')
+                ->orderByRaw('COUNT(*) DESC')
+                ->limit(10)
+                ->pluck('query');
+        });
+
+        // Get featured movies for carousel (cached for 1 hour)
+        $featuredMovies = Cache::remember('home:featured_movies', 3600, function() {
+            return Movie::where('is_featured', true)
+                ->where('is_active', true)
+                ->with('genres')
+                ->limit(10)
+                ->get();
+        });
+
+        // Get trending movies (cached for 30 minutes)
+        $trendingMovies = Cache::remember('home:trending_movies', 1800, function() {
+            return Movie::withCount(['views' => function($q) {
+                $q->where('created_at', '>=', now()->subDays(7));
+            }])
+            ->where('is_active', true)
+            ->orderBy('views_count', 'desc')
+            ->limit(10)
+            ->get();
+        });
+
+        // Get newly added movies (cached for 15 minutes)
+        $newMovies = Cache::remember('home:new_movies', 900, function() {
+            return Movie::where('is_active', true)
+                ->whereDate('created_at', '>=', now()->subDays(7))
+                ->latest()
+                ->limit(10)
+                ->get();
+        });
+
+        // Calculate active filters count
+        $activeFiltersCount = 0;
+        if ($request->filled('search')) $activeFiltersCount++;
+        if ($request->filled('genre')) $activeFiltersCount++;
+        if ($request->filled('year')) $activeFiltersCount++;
+        if ($request->filled('rating')) $activeFiltersCount++;
+
+        return view('home', compact(
+            'contents',
+            'genres',
+            'popularSearches',
+            'featuredMovies',
+            'trendingMovies',
+            'newMovies',
+            'activeFiltersCount'
+        ));
+    }
+
+    /**
+     * Get search suggestions via AJAX with caching
+     */
+    public function searchSuggestions(Request $request)
+    {
+        $query = $request->get('q');
+
+        if (strlen($query) < 2) {
+            return response()->json([]);
+        }
+
+        // Cache search suggestions for 10 minutes
+        $cacheKey = 'search:suggestions:' . md5(strtolower($query));
+
+        $movies = Cache::remember($cacheKey, 600, function() use ($query) {
+            return Movie::select('id', 'title', 'slug', 'poster_path', 'release_date', 'rating')
+                ->where('is_active', true)
+                ->where(function($q) use ($query) {
+                    $q->where('title', 'LIKE', "%{$query}%")
+                      ->orWhere('original_title', 'LIKE', "%{$query}%");
+                })
+                ->limit(8)
+                ->get()
+                ->map(function($movie) {
+                    return [
+                        'id' => $movie->id,
+                        'title' => $movie->title,
+                        'slug' => $movie->slug,
+                        'poster' => $movie->poster_url,
+                        'year' => $movie->year,
+                        'rating' => $movie->rating,
+                        'url' => route('movies.show', $movie->slug)
+                    ];
+                });
+        });
+
+        return response()->json($movies);
+    }
+
+    /**
+     * Clear all filters
+     */
+    public function clearFilters()
+    {
+        return redirect()->route('home');
+    }
+}
