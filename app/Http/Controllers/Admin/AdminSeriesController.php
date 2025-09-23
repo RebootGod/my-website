@@ -118,8 +118,10 @@ class AdminSeriesController extends Controller
 
     public function show(Series $series)
     {
+        $this->authorize('view', $series);
+
         $series->load(['genres', 'seasons.episodes']);
-        
+
         return view('admin.series.show', compact('series'));
     }
 
@@ -218,6 +220,8 @@ class AdminSeriesController extends Controller
 
     public function toggleStatus(Series $series)
     {
+        $this->authorize('update', $series);
+
         try {
             $newStatus = $series->status === 'published' ? 'draft' : 'published';
             
@@ -247,6 +251,8 @@ class AdminSeriesController extends Controller
 
     public function tmdbSearch(Request $request)
     {
+        $this->authorize('create', Series::class);
+
         $request->validate([
             'query' => 'required|string|min:2',
             'page' => 'nullable|integer|min:1'
@@ -271,6 +277,8 @@ class AdminSeriesController extends Controller
 
     public function tmdbDetails(Request $request)
     {
+        $this->authorize('create', Series::class);
+
         $request->validate([
             'tmdb_id' => 'required|integer'
         ]);
@@ -281,6 +289,8 @@ class AdminSeriesController extends Controller
 
     public function tmdbImport(TMDBImportRequest $request)
     {
+        $this->authorize('create', Series::class);
+
         try {
             $result = $this->tmdbService->importSeries($request->tmdb_id);
 
@@ -304,11 +314,15 @@ class AdminSeriesController extends Controller
 
     public function showTmdbImport()
     {
+        $this->authorize('create', Series::class);
+
         return view('admin.series.import_tmdb');
     }
 
     public function tmdbBulkImport(Request $request)
     {
+        $this->authorize('create', Series::class);
+
         $request->validate([
             'tmdb_ids' => 'required|array',
             'tmdb_ids.*' => 'integer'
@@ -366,6 +380,8 @@ class AdminSeriesController extends Controller
 
     public function storeSeason(Request $request, Series $series)
     {
+        $this->authorize('update', $series);
+
         $request->validate([
             'season_number' => 'required|integer|min:1|unique:series_seasons,season_number,NULL,id,series_id,' . $series->id,
             'name' => 'nullable|string|max:255',
@@ -409,6 +425,8 @@ class AdminSeriesController extends Controller
 
     public function destroySeason(Series $series, SeriesSeason $season)
     {
+        $this->authorize('update', $series);
+
         try {
             // Check if season belongs to the series
             if ($season->series_id !== $series->id) {
@@ -457,6 +475,8 @@ class AdminSeriesController extends Controller
 
     public function storeEpisode(Request $request, Series $series)
     {
+        $this->authorize('update', $series);
+
         $request->validate([
             'season_id' => 'required|exists:series_seasons,id',
             'episode_number' => 'required|integer|min:1',
@@ -526,6 +546,8 @@ class AdminSeriesController extends Controller
      */
     public function destroyEpisode(Series $series, SeriesEpisode $episode)
     {
+        $this->authorize('update', $series);
+
         try {
             // Verify the episode belongs to this series
             if ($episode->series_id !== $series->id) {

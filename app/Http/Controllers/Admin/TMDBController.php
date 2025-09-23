@@ -30,6 +30,8 @@ class TMDBController extends Controller
      */
     public function index()
     {
+        $this->authorize('create', Movie::class);
+
         return view('admin.tmdb.index');
     }
 
@@ -38,6 +40,8 @@ class TMDBController extends Controller
      */
     public function search(Request $request)
     {
+        $this->authorize('create', Movie::class);
+
         $request->validate([
             'query' => 'required|string|min:2|max:255',
             'page' => 'nullable|integer|min:1|max:1000',
@@ -85,6 +89,8 @@ class TMDBController extends Controller
      */
     public function getDetails($tmdbId)
     {
+        $this->authorize('create', Movie::class);
+
         try {
             $movieDetails = $this->tmdbService->getMovieDetails($tmdbId);
             
@@ -115,6 +121,8 @@ class TMDBController extends Controller
      */
     public function import(Request $request)
     {
+        $this->authorize('create', Movie::class);
+
         $request->validate([
             'tmdb_id' => 'required|integer',
             'embed_url' => 'required|url',
@@ -212,6 +220,8 @@ class TMDBController extends Controller
      */
     public function bulkImport(Request $request)
     {
+        $this->authorize('create', Movie::class);
+
         $request->validate([
             'movies' => 'required|array|min:1|max:50',
             'movies.*.tmdb_id' => 'required|integer',
@@ -330,6 +340,8 @@ class TMDBController extends Controller
      */
     public function popular(Request $request)
     {
+        $this->authorize('create', Movie::class);
+
         try {
             $page = $request->get('page', 1);
             $results = $this->tmdbService->getPopularMovies($page);
@@ -365,6 +377,8 @@ class TMDBController extends Controller
      */
     public function trending(Request $request)
     {
+        $this->authorize('create', Movie::class);
+
         try {
             $timeWindow = $request->get('time_window', 'week'); // day or week
             $results = $this->tmdbService->getTrendingMovies($timeWindow);
@@ -400,6 +414,8 @@ class TMDBController extends Controller
      */
     public function syncMovie(Movie $movie)
     {
+        $this->authorize('update', $movie);
+
         if (!$movie->tmdb_id) {
             return response()->json([
                 'error' => 'Movie does not have TMDB ID!'

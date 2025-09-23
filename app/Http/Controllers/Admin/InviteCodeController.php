@@ -21,6 +21,8 @@ class InviteCodeController extends Controller
      */
     public function index(Request $request)
     {
+        $this->authorize('viewAny', InviteCode::class);
+
         $filters = $request->only(['search', 'status', 'expiry_filter']);
         $sortBy = $request->get('sort', 'created_at');
         $sortOrder = $request->get('order', 'desc');
@@ -35,6 +37,8 @@ class InviteCodeController extends Controller
      */
     public function create()
     {
+        $this->authorize('create', InviteCode::class);
+
         return view('admin.invite-codes.create');
     }
 
@@ -43,6 +47,8 @@ class InviteCodeController extends Controller
      */
     public function store(Request $request)
     {
+        $this->authorize('create', InviteCode::class);
+
         $request->validate([
             'description' => 'required|string|max:255',
             'max_uses' => 'nullable|integer|min:1|max:1000',
@@ -70,6 +76,8 @@ class InviteCodeController extends Controller
      */
     public function show(InviteCode $inviteCode)
     {
+        $this->authorize('view', $inviteCode);
+
         $inviteCode->load(['creator', 'registrations']);
         
         // Get usage statistics
@@ -92,6 +100,8 @@ class InviteCodeController extends Controller
      */
     public function edit(InviteCode $inviteCode)
     {
+        $this->authorize('update', $inviteCode);
+
         return view('admin.invite-codes.edit', compact('inviteCode'));
     }
 
@@ -100,6 +110,8 @@ class InviteCodeController extends Controller
      */
     public function update(Request $request, InviteCode $inviteCode)
     {
+        $this->authorize('update', $inviteCode);
+
         $minUses = $inviteCode->used_count > 0 ? $inviteCode->used_count : 1;
         
         $request->validate([
@@ -120,6 +132,8 @@ class InviteCodeController extends Controller
      */
     public function destroy(InviteCode $code)
     {
+        $this->authorize('delete', $code);
+
         // Allow deletion of used invite codes
         // Note: This will permanently remove the invite code from database
         // Users who registered with this code will remain unaffected
@@ -135,6 +149,8 @@ class InviteCodeController extends Controller
      */
     public function toggleStatus(InviteCode $code)
     {
+        $this->authorize('update', $code);
+
         $oldStatus = $code->status;
         $newStatus = InviteCodeService::toggleStatus($code);
         if ($newStatus === ($oldStatus === 'active' ? 'inactive' : 'active')) {
@@ -149,6 +165,8 @@ class InviteCodeController extends Controller
      */
     public function bulkAction(Request $request)
     {
+        $this->authorize('create', InviteCode::class);
+
         $request->validate([
             'action' => 'required|in:activate,deactivate,delete,extend_expiry',
             'invite_code_ids' => 'required|array',
@@ -178,6 +196,8 @@ class InviteCodeController extends Controller
      */
     public function analytics()
     {
+        $this->authorize('viewAny', InviteCode::class);
+
         $data = InviteCodeService::getAnalytics();
         return view('admin.invite-codes.analytics', $data);
     }
@@ -187,6 +207,8 @@ class InviteCodeController extends Controller
      */
     public function generate(Request $request)
     {
+        $this->authorize('create', InviteCode::class);
+
         try {
             $data = [
                 'description' => 'Quick Generated Code',
@@ -219,6 +241,8 @@ class InviteCodeController extends Controller
      */
     public function bulkGenerate(Request $request)
     {
+        $this->authorize('create', InviteCode::class);
+
         $request->validate([
             'count' => 'required|integer|min:1|max:100',
             'description' => 'nullable|string|max:255',
@@ -260,6 +284,8 @@ class InviteCodeController extends Controller
      */
     public function export(Request $request)
     {
+        $this->authorize('viewAny', InviteCode::class);
+
     // TODO: Implement CSV/Excel export functionality
     return back()->with('info', 'Export functionality will be implemented soon!');
     }

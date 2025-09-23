@@ -19,6 +19,8 @@ class DashboardController extends Controller
      */
     public function index()
     {
+        $this->authorize('viewAny', \App\Models\Movie::class);
+
         $stats = $this->statsService->getDashboardStats();
         $contentGrowth = $this->statsService->getContentGrowthStats(30);
         $userActivity = $this->statsService->getUserActivityStats();
@@ -39,6 +41,8 @@ class DashboardController extends Controller
      */
     public function refreshStats()
     {
+        $this->authorize('viewAny', \App\Models\Movie::class);
+
         $stats = $this->statsService->refreshStats();
 
         return response()->json([

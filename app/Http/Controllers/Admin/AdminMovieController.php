@@ -282,6 +282,8 @@ class AdminMovieController extends Controller
 
     public function tmdbSearch(Request $request)
     {
+        $this->authorize('create', Movie::class);
+
         $request->validate([
             'query' => 'required|string|min:2',
             'page' => 'nullable|integer|min:1'
@@ -306,6 +308,8 @@ class AdminMovieController extends Controller
 
     public function tmdbDetails(Request $request)
     {
+        $this->authorize('create', Movie::class);
+
         $request->validate([
             'tmdb_id' => 'required|integer'
         ]);
@@ -316,6 +320,8 @@ class AdminMovieController extends Controller
 
     public function tmdbImport(TMDBImportRequest $request)
     {
+        $this->authorize('create', Movie::class);
+
         try {
             $result = $this->tmdbService->importMovie($request->tmdb_id);
             
@@ -350,6 +356,8 @@ class AdminMovieController extends Controller
 
     public function tmdbBulkImport(TMDBBulkImportRequest $request)
     {
+        $this->authorize('create', Movie::class);
+
         try {
             $result = $this->tmdbService->bulkImportMovies($request->tmdb_ids);
             
@@ -375,6 +383,8 @@ class AdminMovieController extends Controller
 
     public function sources(Movie $movie)
     {
+        $this->authorize('update', $movie);
+
         $sources = $this->sourceService->getMovieSources($movie);
         $qualityOptions = $this->sourceService->getQualityOptions();
         
@@ -383,6 +393,8 @@ class AdminMovieController extends Controller
 
     public function storeSource(StoreMovieSourceRequest $request, Movie $movie)
     {
+        $this->authorize('update', $movie);
+
         try {
             $this->sourceService->createSource($movie, $request->validated());
             return back()->with('success', 'Source added successfully!');
@@ -395,6 +407,8 @@ class AdminMovieController extends Controller
 
     public function updateSource(UpdateMovieSourceRequest $request, Movie $movie, MovieSource $source)
     {
+        $this->authorize('update', $movie);
+
         try {
             $this->sourceService->updateSource($source, $request->validated());
             return back()->with('success', 'Source updated successfully!');
@@ -407,6 +421,8 @@ class AdminMovieController extends Controller
 
     public function toggleSource(Movie $movie, MovieSource $source)
     {
+        $this->authorize('update', $movie);
+
         try {
             $this->sourceService->toggleSourceStatus($source);
             return back()->with('success', 'Source status updated!');
@@ -417,6 +433,8 @@ class AdminMovieController extends Controller
 
     public function destroySource(Movie $movie, MovieSource $source)
     {
+        $this->authorize('update', $movie);
+
         try {
             $this->sourceService->deleteSource($source);
             return back()->with('success', 'Source deleted!');
@@ -437,6 +455,9 @@ class AdminMovieController extends Controller
 
     public function updateReport(Request $request, BrokenLinkReport $report)
     {
+        // Only admin can manage reports
+        $this->authorize('create', Movie::class);
+
         $request->validate([
             'status' => 'required|in:pending,reviewing,fixed,dismissed',
             'admin_note' => 'nullable|string|max:500'
@@ -457,7 +478,9 @@ class AdminMovieController extends Controller
 
     public function resetReports(Movie $movie, MovieSource $source)
     {
-        try {
+        $this->authorize('update', $movie);
+
+        try{
             $result = $this->reportService->resetSourceReports($source);
             
             return back()->with(
@@ -471,6 +494,8 @@ class AdminMovieController extends Controller
 
     public function migrateSource(Movie $movie)
     {
+        $this->authorize('update', $movie);
+
         try {
             $result = $this->sourceService->migrateMainEmbedToSource($movie);
             

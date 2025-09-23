@@ -6,10 +6,12 @@ use App\Models\User;
 use App\Models\Movie;
 use App\Models\Series;
 use App\Models\Watchlist;
+use App\Models\InviteCode;
 use App\Policies\UserPolicy;
 use App\Policies\MoviePolicy;
 use App\Policies\SeriesPolicy;
 use App\Policies\WatchlistPolicy;
+use App\Policies\InviteCodePolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
 
@@ -25,6 +27,7 @@ class AuthServiceProvider extends ServiceProvider
         Movie::class => MoviePolicy::class,
         Series::class => SeriesPolicy::class,
         Watchlist::class => WatchlistPolicy::class,
+        InviteCode::class => InviteCodePolicy::class,
     ];
 
     /**
