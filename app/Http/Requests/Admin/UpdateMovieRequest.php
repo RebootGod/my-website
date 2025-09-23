@@ -12,7 +12,7 @@ class UpdateMovieRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return auth()->check() && auth()->user()->can('update movies');
+        return auth()->check() && auth()->user()->isAdmin();
     }
 
     /**

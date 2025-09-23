@@ -12,7 +12,7 @@ class StoreMovieRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return auth()->check() && auth()->user()->can('create movies');
+        return auth()->check() && auth()->user()->isAdmin();
     }
 
     /**

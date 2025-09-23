@@ -11,7 +11,7 @@ class UpdateMovieSourceRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return auth()->check() && auth()->user()->can('manage movie sources');
+        return auth()->check() && auth()->user()->isAdmin();
     }
 
     /**
