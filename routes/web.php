@@ -238,7 +238,7 @@ Route::middleware(['auth', 'admin', CheckPermission::class . ':access_admin_pane
             Route::get('/create', [\App\Http\Controllers\Admin\AdminSeriesController::class, 'create'])->name('create');
             Route::post('/', [\App\Http\Controllers\Admin\AdminSeriesController::class, 'store'])->name('store');
             Route::get('/tmdb-import', [\App\Http\Controllers\Admin\AdminSeriesController::class, 'showTmdbImport'])->name('tmdb-import');
-            Route::post('/tmdb-import', [\App\Http\Controllers\Admin\AdminSeriesController::class, 'tmdbImport'])->name('tmdb-import');
+            Route::post('/tmdb-import', [\App\Http\Controllers\Admin\AdminSeriesController::class, 'tmdbImport'])->name('tmdb-import.store');
             Route::post('/tmdb-bulk-import', [\App\Http\Controllers\Admin\AdminSeriesController::class, 'tmdbBulkImport'])->name('tmdb-bulk-import');
             Route::get('/tmdb-search', [\App\Http\Controllers\Admin\AdminSeriesController::class, 'tmdbSearch'])->name('tmdb-search');
             Route::get('/{series}', [\App\Http\Controllers\Admin\AdminSeriesController::class, 'show'])->name('show');
