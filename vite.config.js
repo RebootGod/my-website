@@ -47,6 +47,7 @@ export default defineConfig({
     
     // Optional: Optimize build for production
     build: {
+        sourcemap: process.env.NODE_ENV !== 'production', // Disable source maps in production
         rollupOptions: {
             output: {
                 // Organize compiled assets by type
@@ -64,7 +65,6 @@ export default defineConfig({
                 entryFileNames: 'js/[name]-[hash].js',
             },
         },
-        
         // Split vendor libraries for better caching
         chunkSizeWarningLimit: 1000,
     },
