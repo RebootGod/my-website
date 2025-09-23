@@ -109,9 +109,10 @@ Route::middleware(['auth', 'check.user.status', 'password.rehash'])->group(funct
     Route::get('/series/{series}/episode/{episode}/info', [SeriesPlayerController::class, 'getEpisodeInfo'])
         ->name('series.episode.info');
     
-    // Report broken link
+    // Report broken link - rate limited to prevent spam
     Route::post('/movie/{movie}/report', [ReportsController::class, 'store'])
-        ->name('movies.report');
+        ->name('movies.report')
+        ->middleware('throttle:5,60'); // 5 reports per hour
     
     // User Profile
     Route::prefix('profile')->name('profile.')->group(function () {
@@ -124,10 +125,16 @@ Route::middleware(['auth', 'check.user.status', 'password.rehash'])->group(funct
         // Profile-specific routes
         Route::get('/watchlist', [ProfileController::class, 'watchlist'])->name('watchlist');
         
-        // Profile update routes
-        Route::patch('/username', [ProfileController::class, 'updateUsername'])->name('update.username');
-        Route::patch('/email', [ProfileController::class, 'updateEmail'])->name('update.email');
-        Route::patch('/password', [ProfileController::class, 'updatePassword'])->name('update.password');
+        // Profile update routes - rate limited for security
+        Route::patch('/username', [ProfileController::class, 'updateUsername'])
+            ->name('update.username')
+            ->middleware('throttle:5,1'); // 5 username changes per minute
+        Route::patch('/email', [ProfileController::class, 'updateEmail'])
+            ->name('update.email')
+            ->middleware('throttle:3,1'); // 3 email changes per minute
+        Route::patch('/password', [ProfileController::class, 'updatePassword'])
+            ->name('update.password')
+            ->middleware('throttle:3,1'); // 3 password changes per minute
 
         // Account deletion route - rate limited for security
         Route::delete('/delete', [ProfileController::class, 'deleteAccount'])
@@ -138,8 +145,12 @@ Route::middleware(['auth', 'check.user.status', 'password.rehash'])->group(funct
     // Watchlist (moved inside auth middleware group)
     Route::prefix('watchlist')->name('watchlist.')->group(function () {
         Route::get('/', [WatchlistController::class, 'index'])->name('index');
-        Route::post('/add/{movie}', [WatchlistController::class, 'add'])->name('add');
-        Route::delete('/remove/{movieId}', [WatchlistController::class, 'remove'])->name('remove');
+        Route::post('/add/{movie}', [WatchlistController::class, 'add'])
+            ->name('add')
+            ->middleware('throttle:30,1'); // 30 watchlist additions per minute
+        Route::delete('/remove/{movieId}', [WatchlistController::class, 'remove'])
+            ->name('remove')
+            ->middleware('throttle:30,1'); // 30 watchlist removals per minute
         Route::get('/check/{movie}', [WatchlistController::class, 'check'])->name('check');
     });
 });
@@ -150,7 +161,7 @@ Route::middleware(['auth', 'check.user.status', 'password.rehash'])->group(funct
 |--------------------------------------------------------------------------
 */
 
-Route::middleware(['auth', 'admin', CheckPermission::class . ':access_admin_panel', 'throttle:60,1', 'password.rehash'])->prefix('admin')->name('admin.')->group(function () {
+Route::middleware(['auth', 'admin', CheckPermission::class . ':access_admin_panel', 'throttle:60,1', 'password.rehash', 'audit'])->prefix('admin')->name('admin.')->group(function () {
     
     // Dashboard & Analytics
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
@@ -309,11 +320,19 @@ Route::middleware(['auth', 'admin', CheckPermission::class . ':access_admin_pane
         Route::get('/statistics', [ReportsController::class, 'statistics'])->name('statistics');
     });
     
-    // Admin Activity Logs
+    // Admin Activity Logs & Audit Logs
     Route::prefix('logs')->name('logs.')->group(function () {
         Route::get('/', [App\Http\Controllers\Admin\AdminLogController::class, 'index'])->name('index');
         Route::get('/export', [App\Http\Controllers\Admin\AdminLogController::class, 'export'])->name('export');
         Route::get('/{log}', [App\Http\Controllers\Admin\AdminLogController::class, 'show'])->name('show');
+    });
+
+    // Audit Logs (Security & Actions)
+    Route::prefix('audit')->name('audit.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Admin\AuditLogController::class, 'index'])->name('index');
+        Route::get('/security', [App\Http\Controllers\Admin\AuditLogController::class, 'security'])->name('security');
+        Route::get('/export', [App\Http\Controllers\Admin\AuditLogController::class, 'export'])->name('export');
+        Route::get('/{auditLog}', [App\Http\Controllers\Admin\AuditLogController::class, 'show'])->name('show');
     });
 });
 

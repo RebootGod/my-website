@@ -27,6 +27,7 @@ class WatchlistController extends Controller
      */
     public function add(Movie $movie)
     {
+        $this->authorize('create', Watchlist::class);
         try {
             $exists = Watchlist::where('user_id', Auth::id())
                 ->where('movie_id', $movie->id)
@@ -61,16 +62,20 @@ class WatchlistController extends Controller
      */
     public function remove($movieId)
     {
+        // Find the watchlist item first to authorize against it
+        $watchlistItem = Watchlist::where('user_id', Auth::id())
+            ->where('movie_id', $movieId)
+            ->first();
+
+        if ($watchlistItem) {
+            $this->authorize('delete', $watchlistItem);
+        }
         try {
             $movie = Movie::find($movieId);
-            
+
             if (!$movie) {
                 return back()->with('error', 'Film tidak ditemukan.');
             }
-            
-            $watchlistItem = Watchlist::where('user_id', Auth::id())
-                ->where('movie_id', $movie->id)
-                ->first();
 
             if (!$watchlistItem) {
                 return back()->with('error', 'Film tidak ada di watchlist Anda.');

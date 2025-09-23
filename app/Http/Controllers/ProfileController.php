@@ -15,6 +15,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
+use App\Services\AuditLogger;
 
 class ProfileController extends Controller
 {
@@ -42,6 +43,8 @@ class ProfileController extends Controller
     public function edit()
     {
         $user = Auth::user();
+        $this->authorize('update', $user);
+
         return view('profile.edit', compact('user'));
     }
 
@@ -51,6 +54,7 @@ class ProfileController extends Controller
     public function updateUsername(Request $request)
     {
         $user = Auth::user();
+        $this->authorize('update', $user);
         
         $validated = $request->validate([
             'username' => [
@@ -66,8 +70,15 @@ class ProfileController extends Controller
             'username.unique' => 'This username is already taken.'
         ]);
         
+        $oldUsername = $user->username;
         $user->update(['username' => $validated['username']]);
-        
+
+        // Log the username change
+        AuditLogger::logUserAction('updated', $user,
+            ['username' => $oldUsername],
+            ['username' => $validated['username']]
+        );
+
         return back()->with('success', 'Username updated successfully!');
     }
 
@@ -77,6 +88,7 @@ class ProfileController extends Controller
     public function updateEmail(Request $request)
     {
         $user = Auth::user();
+        $this->authorize('update', $user);
         
         $validated = $request->validate([
             'email' => [
@@ -92,8 +104,15 @@ class ProfileController extends Controller
             return back()->withErrors(['current_password' => 'Current password is incorrect.']);
         }
         
+        $oldEmail = $user->email;
         $user->update(['email' => $validated['email']]);
-        
+
+        // Log the email change
+        AuditLogger::logUserAction('updated', $user,
+            ['email' => $oldEmail],
+            ['email' => $validated['email']]
+        );
+
         return back()->with('success', 'Email updated successfully!');
     }
 
@@ -103,6 +122,7 @@ class ProfileController extends Controller
     public function updatePassword(Request $request)
     {
         $user = Auth::user();
+        $this->authorize('update', $user);
         
         $validated = $request->validate([
             'current_password' => 'required',
@@ -117,7 +137,10 @@ class ProfileController extends Controller
         }
         
         $user->update(['password' => Hash::make($validated['password'])]);
-        
+
+        // Log the password change
+        AuditLogger::logAuthAction('password_changed', $user);
+
         return back()->with('success', 'Password changed successfully!');
     }
 
@@ -186,6 +209,7 @@ class ProfileController extends Controller
     public function deleteAccount(Request $request)
     {
         $user = Auth::user();
+        $this->authorize('delete', $user);
 
         // Validate current password for security
         $request->validate([
@@ -213,6 +237,9 @@ class ProfileController extends Controller
                 'email' => $user->email,
                 'deleted_at' => now()
             ]);
+
+            // Log account deletion before deleting
+            AuditLogger::logAuthAction('account_deleted', $user);
 
             // Delete the user account
             $user->delete();

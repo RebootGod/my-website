@@ -17,6 +17,14 @@ return Application::configure(basePath: dirname(__DIR__))
             'check.user.status' => \App\Http\Middleware\CheckUserStatus::class,
             'check.permission' => \App\Http\Middleware\CheckPermission::class,
             'password.rehash' => \App\Http\Middleware\PasswordRehashMiddleware::class,
+            'audit' => \App\Http\Middleware\AuditMiddleware::class,
+            'security.headers' => \App\Http\Middleware\SecurityHeadersMiddleware::class,
+            'sanitize.input' => \App\Http\Middleware\SanitizeInputMiddleware::class,
+        ]);
+
+        // Register global middleware
+        $middleware->append([
+            \App\Http\Middleware\SecurityHeadersMiddleware::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

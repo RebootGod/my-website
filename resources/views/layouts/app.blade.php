@@ -170,12 +170,15 @@
     {{-- Footer --}}
     <footer class="bg-dark mt-5 py-4">
         <div class="container text-center text-light">
-            <p>&copy; 2024
+            <p class="mb-2">&copy; 2025
                 <img src="https://github.com/RebootGod/Assets/blob/main/Removal.png?raw=true"
                      alt="Noobz Cinema"
                      height="20"
                      class="d-inline-block align-baseline">
                 All rights reserved.</p>
+            <p class="mb-0 small text-white">
+                Noobz Cinema does not host any content on this website. All content is taken from third party sources.
+            </p>
         </div>
     </footer>
 
