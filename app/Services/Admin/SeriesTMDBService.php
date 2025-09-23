@@ -165,20 +165,32 @@ class SeriesTMDBService
         return [
             'tmdb_id' => $tmdbData['id'],
             'title' => $tmdbData['name'] ?? $tmdbData['title'],
+            'slug' => Str::slug($tmdbData['name'] ?? $tmdbData['title']),
+            'original_title' => $tmdbData['original_name'] ?? ($tmdbData['name'] ?? $tmdbData['title']),
             'description' => $tmdbData['overview'] ?? '',
-            'poster_path' => $tmdbData['poster_path'] ?? null,
-            'backdrop_path' => $tmdbData['backdrop_path'] ?? null,
-            'year' => $tmdbData['first_air_date'] ?
-                Carbon::parse($tmdbData['first_air_date'])->year : null,
-            'rating' => $tmdbData['vote_average'] ?? 0,
-            'status' => 'published',
+            'overview' => $tmdbData['overview'] ?? '',
+            'poster_path' => $tmdbData['poster_path'] ?
+                'https://image.tmdb.org/t/p/w500' . $tmdbData['poster_path'] : null,
+            'backdrop_path' => $tmdbData['backdrop_path'] ?
+                'https://image.tmdb.org/t/p/original' . $tmdbData['backdrop_path'] : null,
             'poster_url' => $tmdbData['poster_path'] ?
                 'https://image.tmdb.org/t/p/w500' . $tmdbData['poster_path'] : null,
             'backdrop_url' => $tmdbData['backdrop_path'] ?
-                'https://image.tmdb.org/t/p/w1280' . $tmdbData['backdrop_path'] : null,
+                'https://image.tmdb.org/t/p/original' . $tmdbData['backdrop_path'] : null,
+            'first_air_date' => $tmdbData['first_air_date'] ?? null,
+            'last_air_date' => $tmdbData['last_air_date'] ?? null,
+            'year' => $tmdbData['first_air_date'] ?
+                Carbon::parse($tmdbData['first_air_date'])->year : null,
+            'rating' => $tmdbData['vote_average'] ?? 0,
+            'vote_count' => $tmdbData['vote_count'] ?? 0,
+            'popularity' => $tmdbData['popularity'] ?? 0,
+            'number_of_seasons' => $tmdbData['number_of_seasons'] ?? 0,
+            'number_of_episodes' => $tmdbData['number_of_episodes'] ?? 0,
+            'status' => 'published',
             'created_by' => auth()->id(),
             'updated_by' => auth()->id(),
             'is_active' => true,
+            'is_featured' => false,
         ];
     }
 

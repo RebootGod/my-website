@@ -15,18 +15,27 @@ class Series extends Model
         'tmdb_id',
         'title',
         'slug',
+        'original_title',
         'description',
+        'overview',
         'poster_path',
         'backdrop_path',
+        'poster_url',
+        'backdrop_url',
         'year',
         'rating',
         'status',
-        'poster_url',
-        'backdrop_url',
+        'vote_count',
+        'popularity',
+        'first_air_date',
+        'last_air_date',
+        'number_of_seasons',
+        'number_of_episodes',
+        'is_featured',
+        'is_active',
         'created_by',
         'updated_by',
-        'view_count',
-        'is_active'
+        'view_count'
     ];
 
     protected $casts = [
@@ -232,10 +241,22 @@ class Series extends Model
      */
     public function getPosterUrlAttribute(): string
     {
+        // If poster_path is already a full URL, return it directly
+        if ($this->poster_path && str_starts_with($this->poster_path, 'http')) {
+            return $this->poster_path;
+        }
+
+        // If poster_path is a relative path, add base URL
         if ($this->poster_path) {
             return 'https://image.tmdb.org/t/p/w500' . $this->poster_path;
         }
-        return $this->poster_url ?: 'https://placehold.co/500x750?text=No+Poster';
+
+        // Check poster_url column as fallback
+        if (isset($this->attributes['poster_url']) && $this->attributes['poster_url']) {
+            return $this->attributes['poster_url'];
+        }
+
+        return 'https://placehold.co/500x750?text=No+Poster';
     }
 
     /**
@@ -243,7 +264,22 @@ class Series extends Model
      */
     public function getBackdropUrlAttribute(): string
     {
-        return $this->backdrop_path ?: 'https://placehold.co/1920x1080?text=No+Backdrop';
+        // If backdrop_path is already a full URL, return it directly
+        if ($this->backdrop_path && str_starts_with($this->backdrop_path, 'http')) {
+            return $this->backdrop_path;
+        }
+
+        // If backdrop_path is a relative path, add base URL
+        if ($this->backdrop_path) {
+            return 'https://image.tmdb.org/t/p/original' . $this->backdrop_path;
+        }
+
+        // Check backdrop_url column as fallback
+        if (isset($this->attributes['backdrop_url']) && $this->attributes['backdrop_url']) {
+            return $this->attributes['backdrop_url'];
+        }
+
+        return 'https://placehold.co/1920x1080?text=No+Backdrop';
     }
 
     /**

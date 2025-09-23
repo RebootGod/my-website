@@ -63,12 +63,16 @@ class AdminSeriesController extends Controller
 
     public function create()
     {
+        $this->authorize('create', Series::class);
+
         $genres = Genre::orderBy('name')->get();
         return view('admin.series.create', compact('genres'));
     }
 
     public function store(StoreSeriesRequest $request)
     {
+        $this->authorize('create', Series::class);
+
         try {
             $data = $request->validated();
             
@@ -121,14 +125,18 @@ class AdminSeriesController extends Controller
 
     public function edit(Series $series)
     {
+        $this->authorize('update', $series);
+
         $series->load('genres');
         $genres = Genre::orderBy('name')->get();
-        
+
         return view('admin.series.edit', compact('series', 'genres'));
     }
 
     public function update(UpdateSeriesRequest $request, Series $series)
     {
+        $this->authorize('update', $series);
+
         try {
             $data = $request->validated();
             
@@ -177,6 +185,8 @@ class AdminSeriesController extends Controller
 
     public function destroy(Series $series)
     {
+        $this->authorize('delete', $series);
+
         try {
             $seriesTitle = $series->title;
             

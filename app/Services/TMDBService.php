@@ -193,6 +193,7 @@ class TMDBService
                         'rating' => $movie['vote_average'] ?? 0,
                         'vote_count' => $movie['vote_count'] ?? 0,
                         'popularity' => $movie['popularity'] ?? 0,
+                        'original_language' => $movie['original_language'] ?? 'en',
                         'genres' => collect($movie['genres'] ?? [])->pluck('name')->toArray(),
                         'genre_ids' => collect($movie['genres'] ?? [])->pluck('id')->toArray(),
                         'tagline' => $movie['tagline'] ?? null,

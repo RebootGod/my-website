@@ -6,6 +6,7 @@ use App\Models\Movie;
 use App\Models\Genre;
 use App\Services\TMDBService;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 
 class MovieTMDBService
@@ -210,23 +211,25 @@ class MovieTMDBService
     protected function prepareTMDBMovieData(array $tmdbData): array
     {
         return [
-            'tmdb_id' => $tmdbData['id'],
+            'tmdb_id' => $tmdbData['tmdb_id'],
             'title' => $tmdbData['title'],
-            'overview' => $tmdbData['overview'] ?? '',
-            'release_date' => $tmdbData['release_date'] ? 
+            'slug' => Str::slug($tmdbData['title']),
+            'overview' => $tmdbData['description'] ?? '',
+            'description' => $tmdbData['description'] ?? '',
+            'release_date' => $tmdbData['release_date'] ?
                 \Carbon\Carbon::parse($tmdbData['release_date']) : null,
-            'runtime' => $tmdbData['runtime'] ?? null,
+            'year' => $tmdbData['year'] ?? null,
+            'runtime' => $tmdbData['duration'] ?? null,
             'poster_path' => $tmdbData['poster_path'] ?? null,
             'backdrop_path' => $tmdbData['backdrop_path'] ?? null,
-            'vote_average' => $tmdbData['vote_average'] ?? 0,
+            'rating' => $tmdbData['rating'] ?? 0,
             'vote_count' => $tmdbData['vote_count'] ?? 0,
             'popularity' => $tmdbData['popularity'] ?? 0,
-            'original_language' => $tmdbData['original_language'] ?? 'en',
+            'language' => $tmdbData['original_language'] ?? 'en',
             'original_title' => $tmdbData['original_title'] ?? $tmdbData['title'],
             'status' => 'published',
             'is_featured' => false,
-            'created_by' => auth()->id(),
-            'updated_by' => auth()->id(),
+            'added_by' => auth()->id(),
         ];
     }
 

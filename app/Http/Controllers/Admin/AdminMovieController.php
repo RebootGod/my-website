@@ -97,12 +97,16 @@ class AdminMovieController extends Controller
 
     public function create()
     {
+        $this->authorize('create', Movie::class);
+
         $genres = Genre::orderBy('name')->get();
         return view('admin.movies.create', compact('genres'));
     }
 
     public function store(StoreMovieRequest $request)
     {
+        $this->authorize('create', Movie::class);
+
         try {
             $data = $request->validated();
             
@@ -115,8 +119,7 @@ class AdminMovieController extends Controller
                 }
             }
 
-            $data['created_by'] = auth()->id();
-            $data['updated_by'] = auth()->id();
+            $data['added_by'] = auth()->id();
 
             $movie = Movie::create($data);
 
@@ -156,14 +159,18 @@ class AdminMovieController extends Controller
 
     public function edit(Movie $movie)
     {
+        $this->authorize('update', $movie);
+
         $movie->load('genres');
         $genres = Genre::orderBy('name')->get();
-        
+
         return view('admin.movies.edit', compact('movie', 'genres'));
     }
 
     public function update(UpdateMovieRequest $request, Movie $movie)
     {
+        $this->authorize('update', $movie);
+
         try {
             $data = $request->validated();
             
@@ -180,7 +187,6 @@ class AdminMovieController extends Controller
                 }
             }
 
-            $data['updated_by'] = auth()->id();
             $movie->update($data);
 
             if (isset($data['genre_ids'])) {
@@ -212,6 +218,8 @@ class AdminMovieController extends Controller
 
     public function destroy(Movie $movie)
     {
+        $this->authorize('delete', $movie);
+
         try {
             $movieTitle = $movie->title;
             
@@ -244,12 +252,13 @@ class AdminMovieController extends Controller
 
     public function toggleStatus(Movie $movie)
     {
+        $this->authorize('update', $movie);
+
         try {
             $newStatus = $movie->status === 'published' ? 'draft' : 'published';
             
             $movie->update([
-                'status' => $newStatus,
-                'updated_by' => auth()->id()
+                'status' => $newStatus
             ]);
 
             Log::info('Movie status toggled', [
