@@ -88,9 +88,9 @@ return new class extends Migration
         if (Schema::hasTable('invite_codes')) {
             Schema::table('invite_codes', function (Blueprint $table) {
                 $table->index(['status', 'created_at'], 'idx_invite_codes_status_created');
-                $table->index('used_at', 'idx_invite_codes_used_at');
             });
         }
+                    // Removed index creation for 'used_at' as it does not exist
 
         // Broken link reports table indexes
         if (Schema::hasTable('broken_link_reports')) {
@@ -143,9 +143,9 @@ return new class extends Migration
         if (Schema::hasTable('invite_codes')) {
             Schema::table('invite_codes', function (Blueprint $table) {
                 $table->dropIndex('idx_invite_codes_status_created');
-                $table->dropIndex('idx_invite_codes_used_at');
             });
         }
+                    // Removed index drop for 'used_at' as it does not exist
 
         // Broken link reports table indexes
         if (Schema::hasTable('broken_link_reports')) {
