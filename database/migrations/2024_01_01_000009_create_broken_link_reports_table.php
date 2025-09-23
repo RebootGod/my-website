@@ -2,7 +2,7 @@
 // ========================================
 // BROKEN LINK REPORTS MIGRATION
 // ========================================
-// File: database/migrations/2024_01_01_000008_create_broken_link_reports_table.php
+// File: database/migrations/2024_01_01_000009_create_broken_link_reports_table.php
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
