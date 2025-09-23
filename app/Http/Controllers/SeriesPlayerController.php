@@ -14,6 +14,9 @@ class SeriesPlayerController extends Controller
      */
     public function playEpisode(Series $series, SeriesEpisode $episode, Request $request)
     {
+        // TODO: Re-enable authorization once policy issue is resolved
+        // $this->authorize('play', $series);
+
         // Check if series is published and active
         if (!$series->isPublished()) {
             abort(404, 'Series not found');
@@ -104,6 +107,9 @@ class SeriesPlayerController extends Controller
      */
     public function getEpisodeInfo(Series $series, SeriesEpisode $episode)
     {
+        // TODO: Re-enable authorization once policy issue is resolved
+        // $this->authorize('play', $series);
+
         // Check if series is published and episode belongs to series
         if (!$series->isPublished() || $episode->series_id !== $series->id) {
             return response()->json(['error' => 'Episode not found'], 404);
