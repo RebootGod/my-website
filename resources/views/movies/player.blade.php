@@ -557,8 +557,15 @@ body {
                             @foreach($relatedMovies as $related)
                                 <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6">
                                     <a href="{{ route('movies.show', $related->slug) }}" class="card bg-dark border-secondary h-100 text-decoration-none hover-card">
-                                        @if($related->poster_url)
-                                            <img src="{{ $related->poster_url }}" alt="{{ $related->title }}" class="card-img-top" style="height: 280px; object-fit: cover;">
+                                        @if($related->poster_url && filter_var($related->poster_url, FILTER_VALIDATE_URL))
+                                            <img src="{{ $related->poster_url }}"
+                                                 alt="{{ $related->title }}"
+                                                 class="card-img-top"
+                                                 style="height: 280px; object-fit: cover;"
+                                                 onerror="this.onerror=null; this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                            <div class="card-img-top d-flex align-items-center justify-content-center bg-secondary" style="height: 280px; display: none;">
+                                                <span style="color: #9ca3af; font-size: 2rem;">🎬</span>
+                                            </div>
                                         @else
                                             <div class="card-img-top d-flex align-items-center justify-content-center bg-secondary" style="height: 280px;">
                                                 <span style="color: #9ca3af; font-size: 2rem;">🎬</span>
