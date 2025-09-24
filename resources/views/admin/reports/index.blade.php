@@ -18,6 +18,14 @@
         </a>
     </div>
 
+    {{-- Error Display --}}
+    @if(isset($error))
+        <div class="bg-red-800 border border-red-600 rounded-lg p-4 mb-6">
+            <h3 class="text-red-200 font-bold mb-2">Error Loading Reports</h3>
+            <p class="text-red-300 text-sm">{{ $error }}</p>
+        </div>
+    @endif
+
     {{-- Reports Table --}}
     <div class="bg-gray-800 rounded-lg overflow-hidden">
         <table class="w-full">
