@@ -52,8 +52,8 @@ class MoviePlayerController extends Controller
         // Sort by priority (highest first)
         $allSources = $allSources->sortByDesc('priority');
 
-        // Get current source based on route parameter, request parameter, or first available
-        $sourceId = $source ?? $request->get('source');
+        // Get current source based on query parameter, route parameter, or first available
+        $sourceId = $request->get('source') ?? $source;
         $currentSource = null;
         
         if ($sourceId) {
