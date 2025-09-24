@@ -322,4 +322,12 @@ class Movie extends Model
     {
         return $this->rating ? number_format($this->rating, 1) . '/10' : 'N/A';
     }
+
+    /**
+     * Get the route key for the model.
+     */
+    public function getRouteKeyName(): string
+    {
+        return 'slug';
+    }
 }
