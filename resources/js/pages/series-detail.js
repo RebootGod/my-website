@@ -328,11 +328,12 @@ function handleEpisodeClick(card, index) {
         card.style.transform = '';
     }, 150);
 
-    // Get series ID from URL or data attribute
-    const seriesId = getSeriesIdFromUrl();
+    // Get series slug from URL or data attribute
+    const seriesSlug = getSeriesSlugFromUrl();
     const episodeId = card.dataset.episodeId || episodeNumber;
 
     console.log(`Playing Episode ${episodeNumber}: ${episodeTitle}`);
+    console.log(`Series Slug: ${seriesSlug}, Episode ID: ${episodeId}`);
 
     // Show notification
     if (window.showNotification) {
@@ -341,10 +342,10 @@ function handleEpisodeClick(card, index) {
 
     // Navigate to episode player after animation
     setTimeout(() => {
-        if (seriesId && episodeId) {
-            window.location.href = `/series/${seriesId}/episode/${episodeId}/watch`;
+        if (seriesSlug && episodeId) {
+            window.location.href = `/series/${seriesSlug}/episode/${episodeId}/watch`;
         } else {
-            console.error('Series ID or Episode ID not found');
+            console.error('Series slug or Episode ID not found', { seriesSlug, episodeId });
             if (window.showNotification) {
                 window.showNotification('Error: Unable to play episode', 'error');
             }
@@ -352,10 +353,10 @@ function handleEpisodeClick(card, index) {
     }, 300);
 }
 
-// Helper function to get series ID from current URL
-function getSeriesIdFromUrl() {
+// Helper function to get series slug from current URL
+function getSeriesSlugFromUrl() {
     const urlPath = window.location.pathname;
-    const match = urlPath.match(/\/series\/(\d+)/);
+    const match = urlPath.match(/\/series\/([^\/]+)/);
     return match ? match[1] : null;
 }
 
