@@ -25,7 +25,7 @@ class SecurityHeadersMiddleware
             "img-src 'self' data: https://github.com https://raw.githubusercontent.com https://image.tmdb.org; " .
             "font-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; " .
             "connect-src 'self' https://cdn.jsdelivr.net https://static.cloudflareinsights.com; " .
-            "frame-src 'self' https://short.icu https://listeamed.net https://*.short.icu https://*.listeamed.net; " .
+            "frame-src 'self' https://short.icu https://listeamed.net https://abysscdn.com https://*.short.icu https://*.listeamed.net https://*.abysscdn.com; " .
             "object-src 'none'; " .
             "base-uri 'self';"
         );
