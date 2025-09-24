@@ -106,7 +106,12 @@ class ReportsController extends Controller
                 'error' => $e->getMessage() . ' at ' . $e->getFile() . ':' . $e->getLine()
             ], 500);
         }
-        
+
+        // Get proper reports with pagination
+        $reports = BrokenLinkReport::with(['movie', 'series', 'episode', 'user'])
+            ->orderBy('created_at', 'desc')
+            ->paginate(15);
+
         // Get statistics
         $stats = [
             'total' => BrokenLinkReport::count(),
