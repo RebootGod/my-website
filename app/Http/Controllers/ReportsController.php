@@ -63,9 +63,17 @@ class ReportsController extends Controller
                 }
             }
 
-            // Return debug info
+            // Return debug info with proper paginated empty result
+            $emptyPaginator = new \Illuminate\Pagination\LengthAwarePaginator(
+                collect(), // items
+                0, // total
+                15, // perPage
+                1, // currentPage
+                ['path' => request()->url()]
+            );
+
             return response()->view('admin.reports.index', [
-                'reports' => collect(),
+                'reports' => $emptyPaginator,
                 'stats' => [
                     'total' => 0,
                     'pending' => 0,
@@ -78,9 +86,17 @@ class ReportsController extends Controller
             // Log error and return empty collection for debugging
             \Log::error('Reports index error: ' . $e->getMessage() . ' | File: ' . $e->getFile() . ' | Line: ' . $e->getLine());
 
-            // Return simple view with error info
+            // Return simple view with error info and proper paginated empty result
+            $emptyPaginator = new \Illuminate\Pagination\LengthAwarePaginator(
+                collect(), // items
+                0, // total
+                15, // perPage
+                1, // currentPage
+                ['path' => request()->url()]
+            );
+
             return response()->view('admin.reports.index', [
-                'reports' => collect(),
+                'reports' => $emptyPaginator,
                 'stats' => [
                     'total' => 0,
                     'pending' => 0,
