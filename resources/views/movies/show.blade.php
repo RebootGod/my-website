@@ -193,8 +193,8 @@
                                 <i class="fas fa-check me-2"></i>In Watchlist
                             </button>
                         @else
-                            <button onclick="addToWatchlist({{ $movie->id }})"
-                                    id="watchlist-btn-{{ $movie->id }}"
+                            <button onclick="addToWatchlist('{{ $movie->slug }}')"
+                                    id="watchlist-btn-{{ $movie->slug }}"
                                     class="action-btn outline">
                                 <i class="fas fa-plus me-2"></i>Add to Watchlist
                             </button>
@@ -273,8 +273,8 @@
                                         <i class="fas fa-check"></i>
                                     </div>
                                 @else
-                                    <button onclick="event.preventDefault(); event.stopPropagation(); addToWatchlist({{ $related->id }})"
-                                            id="watchlist-btn-{{ $related->id }}"
+                                    <button onclick="event.preventDefault(); event.stopPropagation(); addToWatchlist('{{ $related->slug }}')"
+                                            id="watchlist-btn-{{ $related->slug }}"
                                             class="watchlist-btn">
                                         <i class="fas fa-plus"></i>
                                     </button>

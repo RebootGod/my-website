@@ -701,8 +701,8 @@ body {
     // Direct function definitions
     function addToWatchlist() {
         console.log('🚀 addToWatchlist called');
-        if (!movieId) {
-            alert('Error: Movie ID not available');
+        if (!movieSlug) {
+            alert('Error: Movie slug not available');
             return;
         }
         

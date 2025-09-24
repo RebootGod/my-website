@@ -129,7 +129,7 @@
                                     <a href="{{ route('movies.show', $movie->slug) }}" class="btn-watch">
                                         <i class="fas fa-play me-2"></i>Watch Now
                                     </a>
-                                    <button class="btn-bookmark" onclick="toggleWatchlist({{ $movie->id }})">
+                                    <button class="btn-bookmark" onclick="toggleWatchlist('{{ $movie->slug }}')">
                                         <i class="fas fa-bookmark"></i>
                                     </button>
                                 </div>
@@ -189,14 +189,14 @@
                                             <a href="{{ route('series.show', $item) }}" class="btn-watch">
                                                 <i class="fas fa-play me-2"></i>Watch Now
                                             </a>
-                                            <button class="btn-bookmark" onclick="toggleWatchlist({{ $item->id }})">
+                                            <button class="btn-bookmark" onclick="toggleWatchlist('{{ $item->slug }}')">
                                                 <i class="fas fa-bookmark"></i>
                                             </button>
                                         @else
                                             <a href="{{ route('movies.show', $item->slug) }}" class="btn-watch">
                                                 <i class="fas fa-play me-2"></i>Watch Now
                                             </a>
-                                            <button class="btn-bookmark" onclick="toggleWatchlist({{ $item->id }})">
+                                            <button class="btn-bookmark" onclick="toggleWatchlist('{{ $item->slug }}')">
                                                 <i class="fas fa-bookmark"></i>
                                             </button>
                                         @endif

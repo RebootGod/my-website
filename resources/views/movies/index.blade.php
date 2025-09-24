@@ -247,7 +247,7 @@
                                 @if($inWatchlist)
                                     <span class="bg-green-500 text-white p-1.5 rounded-full text-xs">✓</span>
                                 @else
-                                    <button onclick="event.preventDefault(); event.stopPropagation(); addToWatchlist({{ $movie->id }})" 
+                                    <button onclick="event.preventDefault(); event.stopPropagation(); addToWatchlist('{{ $movie->slug }}')" 
                                             class="bg-black/50 hover:bg-green-500 text-white p-1.5 rounded-full text-xs transition opacity-0 group-hover:opacity-100">
                                         +
                                     </button>
@@ -433,8 +433,8 @@ function setViewMode(mode) {
 }
 
 // Add to watchlist function
-function addToWatchlist(movieId) {
-    fetch(`/watchlist/add/${movieId}`, {
+function addToWatchlist(movieSlug) {
+    fetch(`/watchlist/add/${movieSlug}`, {
         method: 'POST',
         headers: {
             'X-CSRF-TOKEN': '{{ csrf_token() }}',

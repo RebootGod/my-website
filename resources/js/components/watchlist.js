@@ -12,9 +12,9 @@ class WatchlistComponent {
 
     bindGlobalFunctions() {
         // Make functions globally available
-        window.toggleWatchlist = (movieId) => this.toggleWatchlist(movieId);
-        window.addToWatchlist = (movieId) => this.addToWatchlist(movieId);
-        window.removeFromWatchlist = (movieId) => this.removeFromWatchlist(movieId);
+        window.toggleWatchlist = (movieSlug) => this.toggleWatchlist(movieSlug);
+        window.addToWatchlist = (movieSlug) => this.addToWatchlist(movieSlug);
+        window.removeFromWatchlist = (movieSlug) => this.removeFromWatchlist(movieSlug);
     }
 
     initializeWatchlistButtons() {
@@ -31,10 +31,10 @@ class WatchlistComponent {
         });
     }
 
-    async toggleWatchlist(movieId) {
+    async toggleWatchlist(movieSlug) {
         if (this.isProcessing) return;
 
-        const button = this.findWatchlistButton(movieId);
+        const button = this.findWatchlistButton(movieSlug);
         if (!button) return;
 
         this.isProcessing = true;
@@ -43,7 +43,7 @@ class WatchlistComponent {
             // Add loading state with animation
             this.setLoadingState(button, true);
 
-            const response = await fetch(`/watchlist/toggle/${movieId}`, {
+            const response = await fetch(`/watchlist/toggle/${movieSlug}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -71,10 +71,10 @@ class WatchlistComponent {
         }
     }
 
-    async addToWatchlist(movieId) {
+    async addToWatchlist(movieSlug) {
         if (this.isProcessing) return;
 
-        const button = this.findWatchlistButton(movieId);
+        const button = this.findWatchlistButton(movieSlug);
         if (!button) return;
 
         this.isProcessing = true;
@@ -82,7 +82,7 @@ class WatchlistComponent {
         try {
             this.setLoadingState(button, true);
 
-            const response = await fetch(`/watchlist/add/${movieId}`, {
+            const response = await fetch(`/watchlist/add/${movieSlug}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -122,14 +122,14 @@ class WatchlistComponent {
         }
     }
 
-    async removeFromWatchlist(movieId) {
+    async removeFromWatchlist(movieSlug) {
         // Similar implementation to addToWatchlist but for removal
         // Implementation would be similar with different endpoint
     }
 
-    findWatchlistButton(movieId) {
-        return document.querySelector(`[onclick*="${movieId}"]`) ||
-               document.getElementById(`watchlist-btn-${movieId}`);
+    findWatchlistButton(movieSlug) {
+        return document.querySelector(`[onclick*="${movieSlug}"]`) ||
+               document.getElementById(`watchlist-btn-${movieSlug}`);
     }
 
     setLoadingState(button, isLoading) {
