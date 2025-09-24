@@ -12,10 +12,18 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('broken_link_reports', function (Blueprint $table) {
-            // Add series support
-            $table->foreignId('series_id')->nullable()->constrained()->onDelete('cascade')->after('movie_id');
-            $table->foreignId('episode_id')->nullable()->constrained('series_episodes')->onDelete('cascade')->after('series_id');
+            // Check if columns already exist before adding them
+            if (!Schema::hasColumn('broken_link_reports', 'series_id')) {
+                $table->foreignId('series_id')->nullable()->constrained()->onDelete('cascade')->after('movie_id');
+            }
 
+            if (!Schema::hasColumn('broken_link_reports', 'episode_id')) {
+                $table->foreignId('episode_id')->nullable()->constrained('series_episodes')->onDelete('cascade')->after('series_id');
+            }
+        });
+
+        // Run these changes in a separate schema call to avoid conflicts
+        Schema::table('broken_link_reports', function (Blueprint $table) {
             // Make movie_id nullable since we now support series reports
             $table->foreignId('movie_id')->nullable()->change();
 
@@ -39,10 +47,20 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('broken_link_reports', function (Blueprint $table) {
-            $table->dropForeign(['series_id']);
-            $table->dropForeign(['episode_id']);
-            $table->dropColumn(['series_id', 'episode_id']);
+            // Only drop if columns exist
+            if (Schema::hasColumn('broken_link_reports', 'series_id')) {
+                $table->dropForeign(['series_id']);
+                $table->dropColumn('series_id');
+            }
 
+            if (Schema::hasColumn('broken_link_reports', 'episode_id')) {
+                $table->dropForeign(['episode_id']);
+                $table->dropColumn('episode_id');
+            }
+        });
+
+        // Run these changes in a separate schema call to avoid conflicts
+        Schema::table('broken_link_reports', function (Blueprint $table) {
             // Restore movie_id as required
             $table->foreignId('movie_id')->nullable(false)->change();
 
