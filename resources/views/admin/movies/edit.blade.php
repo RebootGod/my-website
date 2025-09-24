@@ -61,7 +61,13 @@
                 <input 
                     type="url" 
                     name="embed_url" 
-                    value="{{ old('embed_url', $movie->embed_url ? decrypt($movie->embed_url) : ($primarySource ? $primarySource->embed_url : '')) }}"
+                    value="{{ old('embed_url', $movie->embed_url ? (function() use ($movie, $primarySource) {
+                        try {
+                            return decrypt($movie->embed_url);
+                        } catch (\Exception $e) {
+                            return $movie->embed_url; // Return as-is if decryption fails
+                        }
+                    })() : ($primarySource ? $primarySource->embed_url : '')) }}"
                     placeholder="https://short.icu/example"
                     class="w-full px-4 py-2 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400"
                     required
