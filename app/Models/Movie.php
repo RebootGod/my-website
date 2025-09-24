@@ -325,9 +325,15 @@ class Movie extends Model
 
     /**
      * Get the route key for the model.
+     * Use 'slug' for public routes, 'id' for admin routes.
      */
     public function getRouteKeyName(): string
     {
+        // Check if current route is admin route
+        if (request()->is('admin/*')) {
+            return 'id';
+        }
+
         return 'slug';
     }
 }
