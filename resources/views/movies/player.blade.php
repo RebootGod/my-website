@@ -359,14 +359,31 @@ body {
             <div class="col-lg-8">
                 <div class="video-container">
                     @if(isset($currentSource) && $currentSource && $currentSource->embed_url)
-                        <iframe 
-                            id="moviePlayer"
-                            src="{{ $currentSource->embed_url }}"
-                            allowfullscreen
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                            referrerpolicy="no-referrer"
-                            sandbox="allow-scripts allow-same-origin allow-presentation">
-                        </iframe>
+                        @php
+                            $sourceEmbedUrl = null;
+                            try {
+                                $sourceEmbedUrl = decrypt($currentSource->embed_url);
+                            } catch (Exception $e) {
+                                $sourceEmbedUrl = $currentSource->embed_url;
+                            }
+                        @endphp
+                        @if($sourceEmbedUrl)
+                            <iframe
+                                id="moviePlayer"
+                                src="{{ $sourceEmbedUrl }}"
+                                allowfullscreen
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                referrerpolicy="no-referrer"
+                                sandbox="allow-scripts allow-same-origin allow-presentation">
+                            </iframe>
+                        @else
+                            <div class="video-placeholder">
+                                <div class="placeholder-icon">🚫</div>
+                                <h3>Invalid Source URL</h3>
+                                <p>The source URL appears to be corrupted. Please try another source or report this issue.</p>
+                                <button onclick="reportIssue()" class="btn btn-danger">📢 Report Issue</button>
+                            </div>
+                        @endif
                     @elseif(isset($movie->embed_url) && $movie->embed_url)
                         @php
                             $embedUrl = null;
