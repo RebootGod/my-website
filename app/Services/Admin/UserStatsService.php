@@ -165,8 +165,13 @@ class UserStatsService
             $inviteCodesCreated = InviteCode::where('created_by', $user->id)->count();
             $totalReports = BrokenLinkReport::where('user_id', $user->id)->count();
 
-            // Calculate series watched (unique series viewed)
-            $seriesWatched = DB::table('series_views')->where('user_id', $user->id)->distinct('series_id')->count('series_id');
+            // Calculate series watched (unique series viewed through episodes)
+            $seriesWatched = DB::table('series_episode_views')
+                ->join('series_episodes', 'series_episode_views.episode_id', '=', 'series_episodes.id')
+                ->where('series_episode_views.user_id', $user->id)
+                ->whereNotNull('series_episode_views.user_id')
+                ->distinct('series_episodes.series_id')
+                ->count('series_episodes.series_id');
 
             return [
                 // Flat structure for view compatibility
