@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\BrokenLinkReport;
 use App\Models\Movie;
 use App\Models\Series;
-use App\Models\Episode;
+use App\Models\SeriesEpisode;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -103,11 +103,11 @@ class ReportsController extends Controller
     /**
      * Store a new episode report (from series player)
      */
-    public function storeEpisodeReport(Request $request, Series $series, Episode $episode)
+    public function storeEpisodeReport(Request $request, Series $series, SeriesEpisode $episode)
     {
         $request->validate([
             'series_id' => 'required|exists:series,id',
-            'episode_id' => 'required|exists:episodes,id',
+            'episode_id' => 'required|exists:series_episodes,id',
             'issue_type' => 'required|in:not_loading,wrong_episode,poor_quality,no_audio,no_subtitle,buffering,other',
             'description' => 'nullable|string|max:500',
         ]);

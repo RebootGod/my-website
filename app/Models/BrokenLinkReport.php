@@ -66,7 +66,7 @@ class BrokenLinkReport extends Model
 
     public function episode()
     {
-        return $this->belongsTo(Episode::class);
+        return $this->belongsTo(SeriesEpisode::class);
     }
 
     public function movieSource()

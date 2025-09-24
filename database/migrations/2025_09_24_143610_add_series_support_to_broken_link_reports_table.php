@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::table('broken_link_reports', function (Blueprint $table) {
             // Add series support
             $table->foreignId('series_id')->nullable()->constrained()->onDelete('cascade')->after('movie_id');
-            $table->foreignId('episode_id')->nullable()->constrained()->onDelete('cascade')->after('series_id');
+            $table->foreignId('episode_id')->nullable()->constrained('series_episodes')->onDelete('cascade')->after('series_id');
 
             // Make movie_id nullable since we now support series reports
             $table->foreignId('movie_id')->nullable()->change();
