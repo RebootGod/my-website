@@ -373,8 +373,7 @@ body {
                                 src="{{ $sourceEmbedUrl }}"
                                 allowfullscreen
                                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                                referrerpolicy="no-referrer"
-                                sandbox="allow-scripts allow-same-origin allow-presentation">
+                                referrerpolicy="no-referrer">
                             </iframe>
                         @else
                             <div class="video-placeholder">
@@ -394,7 +393,7 @@ body {
                             }
                         @endphp
                         @if($embedUrl)
-                            <iframe 
+                            <iframe
                                 id="moviePlayer"
                                 src="{{ $embedUrl }}"
                                 allowfullscreen
