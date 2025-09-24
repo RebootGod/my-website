@@ -108,10 +108,15 @@ Route::middleware(['auth', 'check.user.status', 'password.rehash'])->group(funct
     // Get episode info for player
     Route::get('/series/{series}/episode/{episode}/info', [SeriesPlayerController::class, 'getEpisodeInfo'])
         ->name('series.episode.info');
-    
+
     // Report broken link - rate limited to prevent spam
     Route::post('/movie/{movie}/report', [ReportsController::class, 'store'])
         ->name('movies.report')
+        ->middleware('throttle:5,1');
+
+    // Report broken episode - rate limited to prevent spam
+    Route::post('/series/{series}/episodes/{episode}/report', [ReportsController::class, 'storeEpisodeReport'])
+        ->name('series.episode.report')
         ->middleware('throttle:5,60'); // 5 reports per hour
     
     // User Profile

@@ -15,6 +15,8 @@ class BrokenLinkReport extends Model
 
     protected $fillable = [
         'movie_id',
+        'series_id',
+        'episode_id',
         'movie_source_id',
         'user_id',
         'issue_type',
@@ -35,6 +37,7 @@ class BrokenLinkReport extends Model
     const ISSUE_TYPES = [
         'not_loading' => 'Video Not Loading',
         'wrong_movie' => 'Wrong Movie',
+        'wrong_episode' => 'Wrong Episode',
         'poor_quality' => 'Poor Quality',
         'no_audio' => 'No Audio',
         'no_subtitle' => 'No Subtitle',
@@ -54,6 +57,16 @@ class BrokenLinkReport extends Model
     public function movie()
     {
         return $this->belongsTo(Movie::class);
+    }
+
+    public function series()
+    {
+        return $this->belongsTo(Series::class);
+    }
+
+    public function episode()
+    {
+        return $this->belongsTo(Episode::class);
     }
 
     public function movieSource()

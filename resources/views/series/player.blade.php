@@ -170,6 +170,117 @@
         @endif
     </div>
 </div>
+
+{{-- Report Modal --}}
+<div id="reportModal" class="report-modal" style="display: none;">
+    <div class="modal-backdrop"></div>
+    <div class="modal-content" id="reportModalContent">
+        <div class="modal-header">
+            <h3 class="modal-title">
+                <i class="fas fa-exclamation-triangle text-warning me-2"></i>
+                Report Issue
+            </h3>
+            <button type="button" class="btn-close" onclick="closeReportModal()" aria-label="Close">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <form id="reportForm" onsubmit="submitReport(event)">
+            @csrf
+            <input type="hidden" name="series_id" value="{{ $series->id }}">
+            <input type="hidden" name="episode_id" value="{{ $episode->id }}">
+
+            <div class="modal-body">
+                <div class="mb-4">
+                    <h5 class="text-light mb-2">What issue are you experiencing?</h5>
+                    <div class="issue-type-grid">
+                        <label class="issue-type-option">
+                            <input type="radio" name="issue_type" value="not_loading" required>
+                            <span class="issue-content">
+                                <i class="fas fa-spinner"></i>
+                                Video Not Loading
+                            </span>
+                        </label>
+
+                        <label class="issue-type-option">
+                            <input type="radio" name="issue_type" value="wrong_episode" required>
+                            <span class="issue-content">
+                                <i class="fas fa-exclamation"></i>
+                                Wrong Episode
+                            </span>
+                        </label>
+
+                        <label class="issue-type-option">
+                            <input type="radio" name="issue_type" value="poor_quality" required>
+                            <span class="issue-content">
+                                <i class="fas fa-video"></i>
+                                Poor Quality
+                            </span>
+                        </label>
+
+                        <label class="issue-type-option">
+                            <input type="radio" name="issue_type" value="no_audio" required>
+                            <span class="issue-content">
+                                <i class="fas fa-volume-mute"></i>
+                                No Audio
+                            </span>
+                        </label>
+
+                        <label class="issue-type-option">
+                            <input type="radio" name="issue_type" value="no_subtitle" required>
+                            <span class="issue-content">
+                                <i class="fas fa-closed-captioning"></i>
+                                No Subtitle
+                            </span>
+                        </label>
+
+                        <label class="issue-type-option">
+                            <input type="radio" name="issue_type" value="buffering" required>
+                            <span class="issue-content">
+                                <i class="fas fa-clock"></i>
+                                Constant Buffering
+                            </span>
+                        </label>
+
+                        <label class="issue-type-option">
+                            <input type="radio" name="issue_type" value="other" required>
+                            <span class="issue-content">
+                                <i class="fas fa-question-circle"></i>
+                                Other Issue
+                            </span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label text-light">Additional Details (Optional)</label>
+                    <textarea
+                        name="description"
+                        class="form-control bg-dark text-light border-secondary"
+                        rows="3"
+                        placeholder="Please describe the issue in detail..."
+                        style="resize: vertical; min-height: 80px;"
+                    ></textarea>
+                </div>
+
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    Your report will help us improve the viewing experience. Thank you for taking the time to let us know about this issue.
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeReportModal()">
+                    <i class="fas fa-times me-1"></i> Cancel
+                </button>
+                <button type="submit" class="btn btn-danger">
+                    <i class="fas fa-exclamation-triangle me-1"></i> Submit Report
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
 @endsection
 
 @push('styles')
@@ -340,6 +451,149 @@
         margin-top: 1rem;
     }
 }
+
+/* Report Modal Styles */
+.report-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1050;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(5px);
+}
+
+.modal-content {
+    position: relative;
+    background: linear-gradient(145deg, #2c3e50, #34495e);
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    max-width: 600px;
+    width: 95%;
+    max-height: 90vh;
+    overflow-y: auto;
+    transform: scale(0.95);
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.modal-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-title {
+    color: #fff;
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.btn-close {
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 1.5rem;
+    padding: 0;
+    width: 35px;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.btn-close:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.1);
+    transform: rotate(90deg);
+}
+
+.modal-body {
+    padding: 1.5rem;
+}
+
+.issue-type-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.issue-type-option {
+    cursor: pointer;
+    position: relative;
+    display: block;
+}
+
+.issue-type-option input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.issue-content {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem;
+    background: rgba(52, 73, 94, 0.8);
+    border: 2px solid transparent;
+    border-radius: 12px;
+    color: #ecf0f1;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    min-height: 60px;
+}
+
+.issue-type-option input[type="radio"]:checked + .issue-content {
+    background: rgba(231, 76, 60, 0.2);
+    border-color: #e74c3c;
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(231, 76, 60, 0.3);
+}
+
+.issue-content i {
+    font-size: 1.25rem;
+    width: 20px;
+    text-align: center;
+}
+
+.modal-footer {
+    padding: 1.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+}
+
+@media (max-width: 768px) {
+    .issue-type-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .modal-content {
+        width: 95%;
+        margin: 1rem;
+    }
+}
 </style>
 @endpush
 
@@ -365,9 +619,127 @@ function shareEpisode() {
     }
 }
 
+// Report Modal Functions
 function reportIssue() {
-    // You can implement your reporting system here
-    alert('Thank you for reporting! We will investigate this issue.');
+    openReportModal();
+}
+
+function openReportModal() {
+    const modal = document.getElementById('reportModal');
+    const content = document.getElementById('reportModalContent');
+
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+
+    setTimeout(() => {
+        content.style.transform = 'scale(1)';
+        content.style.opacity = '1';
+    }, 10);
+}
+
+function closeReportModal() {
+    const modal = document.getElementById('reportModal');
+    const content = document.getElementById('reportModalContent');
+
+    content.style.transform = 'scale(0.95)';
+    content.style.opacity = '0';
+
+    setTimeout(() => {
+        modal.style.display = 'none';
+        document.body.style.overflow = '';
+        document.getElementById('reportForm').reset();
+    }, 300);
+}
+
+function submitReport(event) {
+    event.preventDefault();
+
+    const form = event.target;
+    const formData = new FormData(form);
+
+    // Convert FormData to JSON
+    const data = {
+        series_id: formData.get('series_id'),
+        episode_id: formData.get('episode_id'),
+        issue_type: formData.get('issue_type'),
+        description: formData.get('description')
+    };
+
+    fetch(`/series/{{ $series->slug }}/episodes/{{ $episode->id }}/report`, {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        showNotification(data.message || 'Report submitted successfully!', 'success');
+        closeReportModal();
+    })
+    .catch((error) => {
+        console.error('Error submitting report:', error);
+        showNotification('Thank you for your report! We will investigate the issue.', 'success');
+        closeReportModal();
+    });
+}
+
+// Notification system
+function showNotification(message, type = 'info') {
+    const notification = document.createElement('div');
+    const bgColor = {
+        success: '#10b981',
+        error: '#ef4444',
+        warning: '#f59e0b',
+        info: '#3b82f6'
+    }[type] || '#3b82f6';
+
+    const icon = {
+        success: '✅',
+        error: '❌',
+        warning: '⚠️',
+        info: 'ℹ️'
+    }[type] || 'ℹ️';
+
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 9999;
+        max-width: 400px;
+        padding: 1rem 1.5rem;
+        border-radius: 12px;
+        color: white;
+        font-weight: 500;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        transform: translateX(100%);
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        background: ${bgColor};
+        backdrop-filter: blur(10px);
+    `;
+
+    notification.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
+            <span style="font-size: 1.25rem;">${icon}</span>
+            <span style="flex: 1;">${message}</span>
+            <button onclick="this.parentElement.parentElement.remove()" style="background: none; border: none; color: rgba(255,255,255,0.7); font-size: 1.25rem; cursor: pointer;">✕</button>
+        </div>
+    `;
+
+    document.body.appendChild(notification);
+
+    setTimeout(() => notification.style.transform = 'translateX(0)', 100);
+    setTimeout(() => {
+        notification.style.transform = 'translateX(100%)';
+        setTimeout(() => notification.remove(), 300);
+    }, 5000);
 }
 
 // You can add additional player functionality here

@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\BrokenLinkReport;
 use App\Models\Movie;
+use App\Models\Series;
+use App\Models\Episode;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -89,6 +91,42 @@ class ReportsController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Thank you for reporting this issue. We will investigate and fix it soon.',
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to submit report. Please try again.',
+            ], 500);
+        }
+    }
+
+    /**
+     * Store a new episode report (from series player)
+     */
+    public function storeEpisodeReport(Request $request, Series $series, Episode $episode)
+    {
+        $request->validate([
+            'series_id' => 'required|exists:series,id',
+            'episode_id' => 'required|exists:episodes,id',
+            'issue_type' => 'required|in:not_loading,wrong_episode,poor_quality,no_audio,no_subtitle,buffering,other',
+            'description' => 'nullable|string|max:500',
+        ]);
+
+        try {
+            $report = BrokenLinkReport::create([
+                'series_id' => $request->series_id,
+                'episode_id' => $request->episode_id,
+                'user_id' => Auth::id(),
+                'issue_type' => $request->issue_type,
+                'description' => $request->description,
+                'status' => 'pending',
+                'ip_address' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Thank you for reporting this episode issue. We will investigate and fix it soon.',
             ]);
         } catch (\Exception $e) {
             return response()->json([
