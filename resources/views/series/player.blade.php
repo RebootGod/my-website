@@ -22,8 +22,7 @@
                             src="{{ $episode->embed_url }}"
                             allowfullscreen
                             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                            referrerpolicy="no-referrer"
-                            sandbox="allow-scripts allow-same-origin allow-presentation">
+                            referrerpolicy="no-referrer">
                         </iframe>
                     @else
                         <div class="video-placeholder">
