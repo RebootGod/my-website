@@ -98,10 +98,12 @@
                                 </button>
                             </form>
                             @endif
-                            <a href="{{ route('admin.movies.sources.index', $report->movie) }}" 
+                            @if($report->movie)
+                            <a href="{{ route('admin.movies.sources.index', $report->movie) }}"
                                class="text-yellow-400 hover:text-yellow-300" title="Manage Sources">
                                 🎬
                             </a>
+                            @endif
                         </div>
                     </td>
                 </tr>
