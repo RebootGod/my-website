@@ -160,7 +160,20 @@ class UserStatsService
             $movieViews = MovieView::where('user_id', $user->id);
             $registration = UserRegistration::where('user_id', $user->id)->first();
 
+            // Calculate stats
+            $totalViews = $movieViews->count();
+            $uniqueMovies = $movieViews->distinct('movie_id')->count('movie_id');
+            $inviteCodesCreated = InviteCode::where('created_by', $user->id)->count();
+            $totalReports = BrokenLinkReport::where('user_id', $user->id)->count();
+
             return [
+                // Flat structure for view compatibility
+                'total_views' => $totalViews,
+                'unique_movies' => $uniqueMovies,
+                'total_watch_time' => 0, // TODO: Calculate from movie durations
+                'invite_codes_created' => $inviteCodesCreated,
+
+                // Detailed nested structure for future use
                 'profile' => [
                     'registration_date' => $user->created_at,
                     'last_login' => $user->last_login_at,
@@ -170,8 +183,8 @@ class UserStatsService
                     'invite_code_used' => $registration?->inviteCode?->code,
                 ],
                 'activity' => [
-                    'total_movie_views' => $movieViews->count(),
-                    'unique_movies_watched' => $movieViews->distinct('movie_id')->count('movie_id'),
+                    'total_movie_views' => $totalViews,
+                    'unique_movies_watched' => $uniqueMovies,
                     'total_watch_time' => 0, // TODO: Calculate from movie durations
                     'avg_daily_views' => self::calculateAvgDailyViews($user),
                     'last_movie_watched' => $movieViews->latest()->first()?->movie?->title,
@@ -181,10 +194,10 @@ class UserStatsService
                     'favorite_genres' => self::getUserFavoriteGenres($user),
                     'most_watched_movie' => self::getMostWatchedMovie($user),
                     'watch_streak' => self::getWatchStreak($user),
-                    'total_reports_submitted' => BrokenLinkReport::where('user_id', $user->id)->count(),
+                    'total_reports_submitted' => $totalReports,
                 ],
                 'social' => [
-                    'invite_codes_created' => InviteCode::where('created_by', $user->id)->count(),
+                    'invite_codes_created' => $inviteCodesCreated,
                     'users_invited' => self::getUsersInvitedCount($user),
                     'watchlist_items' => 0, // TODO: Implement watchlist count
                 ],
