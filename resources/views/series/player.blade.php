@@ -172,17 +172,11 @@
 </div>
 
 {{-- Report Modal --}}
-<div id="reportModal" class="report-modal" style="display: none;">
-    <div class="modal-backdrop"></div>
-    <div class="modal-content" id="reportModalContent">
-        <div class="modal-header">
-            <h3 class="modal-title">
-                <i class="fas fa-exclamation-triangle text-warning me-2"></i>
-                Report Issue
-            </h3>
-            <button type="button" class="btn-close" onclick="closeReportModal()" aria-label="Close">
-                <i class="fas fa-times"></i>
-            </button>
+<div id="reportModal" style="position: fixed; inset: 0; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(5px); z-index: 50; display: none; align-items: center; justify-content: center; padding: 1rem;">
+    <div class="info-card" style="max-width: 500px; width: 100%; transform: scale(0.95); opacity: 0; transition: all 0.3s ease;" id="reportModalContent">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 class="card-title mb-0">🚨 Report Episode Issue</h3>
+            <button onclick="closeReportModal()" style="background: none; border: none; color: #9ca3af; font-size: 1.5rem; cursor: pointer; padding: 0.5rem;">×</button>
         </div>
 
         <form id="reportForm" onsubmit="submitReport(event)">
@@ -190,91 +184,36 @@
             <input type="hidden" name="series_id" value="{{ $series->id }}">
             <input type="hidden" name="episode_id" value="{{ $episode->id }}">
 
-            <div class="modal-body">
-                <div class="mb-4">
-                    <h5 class="text-light mb-2">What issue are you experiencing?</h5>
-                    <div class="issue-type-grid">
-                        <label class="issue-type-option">
-                            <input type="radio" name="issue_type" value="not_loading" required>
-                            <span class="issue-content">
-                                <i class="fas fa-spinner"></i>
-                                Video Not Loading
-                            </span>
-                        </label>
-
-                        <label class="issue-type-option">
-                            <input type="radio" name="issue_type" value="wrong_episode" required>
-                            <span class="issue-content">
-                                <i class="fas fa-exclamation"></i>
-                                Wrong Episode
-                            </span>
-                        </label>
-
-                        <label class="issue-type-option">
-                            <input type="radio" name="issue_type" value="poor_quality" required>
-                            <span class="issue-content">
-                                <i class="fas fa-video"></i>
-                                Poor Quality
-                            </span>
-                        </label>
-
-                        <label class="issue-type-option">
-                            <input type="radio" name="issue_type" value="no_audio" required>
-                            <span class="issue-content">
-                                <i class="fas fa-volume-mute"></i>
-                                No Audio
-                            </span>
-                        </label>
-
-                        <label class="issue-type-option">
-                            <input type="radio" name="issue_type" value="no_subtitle" required>
-                            <span class="issue-content">
-                                <i class="fas fa-closed-captioning"></i>
-                                No Subtitle
-                            </span>
-                        </label>
-
-                        <label class="issue-type-option">
-                            <input type="radio" name="issue_type" value="buffering" required>
-                            <span class="issue-content">
-                                <i class="fas fa-clock"></i>
-                                Constant Buffering
-                            </span>
-                        </label>
-
-                        <label class="issue-type-option">
-                            <input type="radio" name="issue_type" value="other" required>
-                            <span class="issue-content">
-                                <i class="fas fa-question-circle"></i>
-                                Other Issue
-                            </span>
-                        </label>
-                    </div>
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label text-light">Additional Details (Optional)</label>
-                    <textarea
-                        name="description"
-                        class="form-control bg-dark text-light border-secondary"
-                        rows="3"
-                        placeholder="Please describe the issue in detail..."
-                        style="resize: vertical; min-height: 80px;"
-                    ></textarea>
-                </div>
-
-                <div class="alert alert-info">
-                    <i class="fas fa-info-circle me-2"></i>
-                    Your report will help us improve the viewing experience. Thank you for taking the time to let us know about this issue.
-                </div>
+            <div class="mb-3">
+                <label class="form-label">Issue Type:</label>
+                <select name="issue_type" class="form-control" required>
+                    <option value="">Select Issue Type</option>
+                    <option value="not_loading">Video Not Loading</option>
+                    <option value="wrong_episode">Wrong Episode</option>
+                    <option value="poor_quality">Poor Video Quality</option>
+                    <option value="no_audio">No Audio</option>
+                    <option value="no_subtitle">No Subtitles</option>
+                    <option value="buffering">Constant Buffering</option>
+                    <option value="other">Other Issue</option>
+                </select>
             </div>
 
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" onclick="closeReportModal()">
-                    <i class="fas fa-times me-1"></i> Cancel
+            <div class="mb-3">
+                <label class="form-label">Description (Optional):</label>
+                <textarea
+                    name="description"
+                    class="form-control"
+                    rows="3"
+                    placeholder="Please describe the issue in detail..."
+                ></textarea>
+            </div>
+
+            <div class="d-flex justify-content-end gap-3">
+                <button type="button" onclick="closeReportModal()" class="btn btn-secondary">
+                    Cancel
                 </button>
-                <button type="submit" class="btn btn-danger">
-                    <i class="fas fa-exclamation-triangle me-1"></i> Submit Report
+                <button type="submit" class="btn btn-primary">
+                    Submit Report
                 </button>
             </div>
         </form>
@@ -452,147 +391,35 @@
     }
 }
 
-/* Report Modal Styles */
-.report-modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 1050;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+/* Report Modal Styling */
+#reportModal {
+    background: rgba(0, 0, 0, 0.9);
+    backdrop-filter: blur(10px);
 }
 
-.modal-backdrop {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.8);
-    backdrop-filter: blur(5px);
+#reportModal .info-card {
+    background: var(--card-bg);
+    border: 1px solid var(--accent-color);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
 }
 
-.modal-content {
-    position: relative;
-    background: linear-gradient(145deg, #2c3e50, #34495e);
-    border-radius: 20px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-    max-width: 600px;
-    width: 95%;
-    max-height: 90vh;
-    overflow-y: auto;
-    transform: scale(0.95);
-    opacity: 0;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+#reportModal input,
+#reportModal select,
+#reportModal textarea {
+    background: var(--accent-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 0.75rem;
+    color: var(--text-primary);
+    font-size: 0.9rem;
 }
 
-.modal-header {
-    padding: 1.5rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.modal-title {
-    color: #fff;
-    margin: 0;
-    font-size: 1.25rem;
-    font-weight: 600;
-}
-
-.btn-close {
-    background: transparent;
-    border: none;
-    color: rgba(255, 255, 255, 0.7);
-    font-size: 1.5rem;
-    padding: 0;
-    width: 35px;
-    height: 35px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    transition: all 0.3s ease;
-}
-
-.btn-close:hover {
-    color: #fff;
-    background: rgba(255, 255, 255, 0.1);
-    transform: rotate(90deg);
-}
-
-.modal-body {
-    padding: 1.5rem;
-}
-
-.issue-type-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1rem;
-}
-
-.issue-type-option {
-    cursor: pointer;
-    position: relative;
-    display: block;
-}
-
-.issue-type-option input[type="radio"] {
-    position: absolute;
-    opacity: 0;
-    width: 0;
-    height: 0;
-}
-
-.issue-content {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 1rem;
-    background: rgba(52, 73, 94, 0.8);
-    border: 2px solid transparent;
-    border-radius: 12px;
-    color: #ecf0f1;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    min-height: 60px;
-}
-
-.issue-type-option input[type="radio"]:checked + .issue-content {
-    background: rgba(231, 76, 60, 0.2);
-    border-color: #e74c3c;
-    color: #fff;
-    transform: translateY(-2px);
-    box-shadow: 0 5px 20px rgba(231, 76, 60, 0.3);
-}
-
-.issue-content i {
-    font-size: 1.25rem;
-    width: 20px;
-    text-align: center;
-}
-
-.modal-footer {
-    padding: 1.5rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-    display: flex;
-    justify-content: flex-end;
-    gap: 1rem;
-}
-
-@media (max-width: 768px) {
-    .issue-type-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .modal-content {
-        width: 95%;
-        margin: 1rem;
-    }
+#reportModal input:focus,
+#reportModal select:focus,
+#reportModal textarea:focus {
+    border-color: var(--accent-color);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0, 255, 136, 0.1);
 }
 </style>
 @endpush
@@ -619,8 +446,8 @@ function shareEpisode() {
     }
 }
 
-// Report Modal Functions
 function reportIssue() {
+    console.log('🚀 reportIssue called');
     openReportModal();
 }
 
@@ -681,65 +508,14 @@ function submitReport(event) {
         return response.json();
     })
     .then(data => {
-        showNotification(data.message || 'Report submitted successfully!', 'success');
+        alert(data.message || 'Report submitted successfully! Thank you for your feedback.');
         closeReportModal();
     })
     .catch((error) => {
         console.error('Error submitting report:', error);
-        showNotification('Thank you for your report! We will investigate the issue.', 'success');
+        alert('Thank you for your report! We will investigate the issue.');
         closeReportModal();
     });
-}
-
-// Notification system
-function showNotification(message, type = 'info') {
-    const notification = document.createElement('div');
-    const bgColor = {
-        success: '#10b981',
-        error: '#ef4444',
-        warning: '#f59e0b',
-        info: '#3b82f6'
-    }[type] || '#3b82f6';
-
-    const icon = {
-        success: '✅',
-        error: '❌',
-        warning: '⚠️',
-        info: 'ℹ️'
-    }[type] || 'ℹ️';
-
-    notification.style.cssText = `
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        z-index: 9999;
-        max-width: 400px;
-        padding: 1rem 1.5rem;
-        border-radius: 12px;
-        color: white;
-        font-weight: 500;
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-        transform: translateX(100%);
-        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        background: ${bgColor};
-        backdrop-filter: blur(10px);
-    `;
-
-    notification.innerHTML = `
-        <div style="display: flex; align-items: center; gap: 0.75rem;">
-            <span style="font-size: 1.25rem;">${icon}</span>
-            <span style="flex: 1;">${message}</span>
-            <button onclick="this.parentElement.parentElement.remove()" style="background: none; border: none; color: rgba(255,255,255,0.7); font-size: 1.25rem; cursor: pointer;">✕</button>
-        </div>
-    `;
-
-    document.body.appendChild(notification);
-
-    setTimeout(() => notification.style.transform = 'translateX(0)', 100);
-    setTimeout(() => {
-        notification.style.transform = 'translateX(100%)';
-        setTimeout(() => notification.remove(), 300);
-    }, 5000);
 }
 
 // You can add additional player functionality here
