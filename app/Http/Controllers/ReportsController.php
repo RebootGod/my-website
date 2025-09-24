@@ -19,30 +19,19 @@ class ReportsController extends Controller
     public function index(Request $request)
     {
         try {
-            $query = BrokenLinkReport::with(['movie', 'series', 'episode', 'user'])
-                ->orderBy('created_at', 'desc');
+            // Start with simple query first
+            $query = BrokenLinkReport::orderBy('created_at', 'desc');
 
             // Filter by status
             if ($request->has('status') && $request->status !== 'all') {
                 $query->where('status', $request->status);
             }
 
-            // Search functionality
-            if ($request->has('search') && !empty($request->search)) {
-                $search = $request->search;
-                $query->where(function ($q) use ($search) {
-                    // Search in movie titles
-                    $q->whereHas('movie', function ($movieQuery) use ($search) {
-                        $movieQuery->where('title', 'LIKE', "%{$search}%");
-                    })
-                    // OR search in series titles
-                    ->orWhereHas('series', function ($seriesQuery) use ($search) {
-                        $seriesQuery->where('title', 'LIKE', "%{$search}%");
-                    });
-                });
-            }
-
+            // No search for now to isolate the issue
             $reports = $query->paginate(20);
+
+            // Try to eager load relationships manually to see which one fails
+            $reports->load(['movie', 'series', 'episode', 'user']);
         } catch (\Exception $e) {
             // Log error and return empty collection for debugging
             \Log::error('Reports index error: ' . $e->getMessage());
