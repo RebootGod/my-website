@@ -19,22 +19,64 @@ class ReportsController extends Controller
     public function index(Request $request)
     {
         try {
-            // Start with simple query first
-            $query = BrokenLinkReport::orderBy('created_at', 'desc');
+            // Very basic test first - just count records
+            $totalReports = BrokenLinkReport::count();
 
-            // Filter by status
-            if ($request->has('status') && $request->status !== 'all') {
-                $query->where('status', $request->status);
+            // Test basic query without relationships
+            $basicReports = BrokenLinkReport::orderBy('created_at', 'desc')->limit(5)->get();
+
+            // Now test each relationship individually
+            $movieTest = null;
+            $seriesTest = null;
+            $userTest = null;
+            $episodeTest = null;
+
+            if ($basicReports->isNotEmpty()) {
+                $testReport = $basicReports->first();
+
+                // Test movie relationship
+                try {
+                    $movieTest = $testReport->movie;
+                } catch (\Exception $e) {
+                    $movieTest = "Error: " . $e->getMessage();
+                }
+
+                // Test series relationship
+                try {
+                    $seriesTest = $testReport->series;
+                } catch (\Exception $e) {
+                    $seriesTest = "Error: " . $e->getMessage();
+                }
+
+                // Test user relationship
+                try {
+                    $userTest = $testReport->user;
+                } catch (\Exception $e) {
+                    $userTest = "Error: " . $e->getMessage();
+                }
+
+                // Test episode relationship
+                try {
+                    $episodeTest = $testReport->episode;
+                } catch (\Exception $e) {
+                    $episodeTest = "Error: " . $e->getMessage();
+                }
             }
 
-            // No search for now to isolate the issue
-            $reports = $query->paginate(20);
-
-            // Try to eager load relationships manually to see which one fails
-            $reports->load(['movie', 'series', 'episode', 'user']);
+            // Return debug info
+            return response()->view('admin.reports.index', [
+                'reports' => collect(),
+                'stats' => [
+                    'total' => 0,
+                    'pending' => 0,
+                    'resolved' => 0,
+                    'dismissed' => 0,
+                ],
+                'error' => "Debug Info - Total Reports: {$totalReports}, Movie Test: " . (is_object($movieTest) ? get_class($movieTest) : (string)$movieTest) . ", Series Test: " . (is_object($seriesTest) ? get_class($seriesTest) : (string)$seriesTest) . ", User Test: " . (is_object($userTest) ? get_class($userTest) : (string)$userTest) . ", Episode Test: " . (is_object($episodeTest) ? get_class($episodeTest) : (string)$episodeTest)
+            ], 200);
         } catch (\Exception $e) {
             // Log error and return empty collection for debugging
-            \Log::error('Reports index error: ' . $e->getMessage());
+            \Log::error('Reports index error: ' . $e->getMessage() . ' | File: ' . $e->getFile() . ' | Line: ' . $e->getLine());
 
             // Return simple view with error info
             return response()->view('admin.reports.index', [
@@ -45,7 +87,7 @@ class ReportsController extends Controller
                     'resolved' => 0,
                     'dismissed' => 0,
                 ],
-                'error' => $e->getMessage()
+                'error' => $e->getMessage() . ' at ' . $e->getFile() . ':' . $e->getLine()
             ], 500);
         }
         
