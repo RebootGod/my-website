@@ -17,14 +17,14 @@ class SecurityHeadersMiddleware
     {
         $response = $next($request);
 
-        // Content Security Policy - Prevent XSS
+        // Content Security Policy - Prevent XSS (Compatible with Cloudflare CDN)
         $response->headers->set('Content-Security-Policy',
             "default-src 'self'; " .
-            "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://code.jquery.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; " .
-            "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; " .
-            "img-src 'self' data: https: http:; " .
-            "font-src 'self' https://cdnjs.cloudflare.com; " .
-            "connect-src 'self'; " .
+            "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://code.jquery.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://static.cloudflareinsights.com https://cdn.tailwindcss.com; " .
+            "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://cdn.tailwindcss.com; " .
+            "img-src 'self' data: https://github.com https://raw.githubusercontent.com https://image.tmdb.org; " .
+            "font-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; " .
+            "connect-src 'self' https://cdn.jsdelivr.net https://static.cloudflareinsights.com; " .
             "frame-src 'self' https://short.icu https://listeamed.net https://*.short.icu https://*.listeamed.net; " .
             "object-src 'none'; " .
             "base-uri 'self';"
