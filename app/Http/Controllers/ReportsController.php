@@ -18,7 +18,7 @@ class ReportsController extends Controller
      */
     public function index(Request $request)
     {
-        $query = BrokenLinkReport::with(['movie', 'user'])
+        $query = BrokenLinkReport::with(['movie', 'series', 'episode', 'user'])
             ->orderBy('created_at', 'desc');
 
         // Filter by status
@@ -29,8 +29,15 @@ class ReportsController extends Controller
         // Search functionality
         if ($request->has('search') && !empty($request->search)) {
             $search = $request->search;
-            $query->whereHas('movie', function ($q) use ($search) {
-                $q->where('title', 'LIKE', "%{$search}%");
+            $query->where(function ($q) use ($search) {
+                // Search in movie titles
+                $q->whereHas('movie', function ($movieQuery) use ($search) {
+                    $movieQuery->where('title', 'LIKE', "%{$search}%");
+                })
+                // OR search in series titles
+                ->orWhereHas('series', function ($seriesQuery) use ($search) {
+                    $seriesQuery->where('title', 'LIKE', "%{$search}%");
+                });
             });
         }
 

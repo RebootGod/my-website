@@ -23,7 +23,7 @@
         <table class="w-full">
             <thead class="bg-gray-700">
                 <tr>
-                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase">Movie</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase">Content</th>
                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase">Issue</th>
                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase">User</th>
                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase">Date</th>
@@ -35,10 +35,21 @@
                 @forelse($reports as $report)
                 <tr class="hover:bg-gray-700 transition">
                     <td class="px-4 py-3">
-                        <a href="{{ route('admin.movies.show', $report->movie) }}" 
-                           class="text-blue-400 hover:text-blue-300">
-                            {{ $report->movie->title }}
-                        </a>
+                        @if($report->movie)
+                            <a href="{{ route('admin.movies.show', $report->movie) }}"
+                               class="text-blue-400 hover:text-blue-300">
+                                🎬 {{ $report->movie->title }}
+                            </a>
+                        @elseif($report->series)
+                            <div class="text-purple-400">
+                                📺 {{ $report->series->title }}
+                                @if($report->episode)
+                                    <br><small class="text-gray-400">Episode {{ $report->episode->episode_number }}: {{ $report->episode->name }}</small>
+                                @endif
+                            </div>
+                        @else
+                            <span class="text-gray-500">Unknown Content</span>
+                        @endif
                     </td>
                     <td class="px-4 py-3">
                         <div>
