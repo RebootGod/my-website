@@ -157,20 +157,22 @@ class UserStatsService
     public static function getUserStats(User $user): array
     {
         return Cache::remember("user_stats_{$user->id}", 300, function () use ($user) {
-            $movieViews = MovieView::where('user_id', $user->id);
             $registration = UserRegistration::where('user_id', $user->id)->first();
 
-            // Calculate stats
-            $totalViews = $movieViews->count();
-            $uniqueMovies = $movieViews->distinct('movie_id')->count('movie_id');
+            // Calculate stats - use separate queries for accuracy
+            $totalViews = MovieView::where('user_id', $user->id)->count();
+            $uniqueMovies = MovieView::where('user_id', $user->id)->distinct('movie_id')->count('movie_id');
             $inviteCodesCreated = InviteCode::where('created_by', $user->id)->count();
             $totalReports = BrokenLinkReport::where('user_id', $user->id)->count();
+
+            // Calculate series watched (unique series viewed)
+            $seriesWatched = DB::table('series_views')->where('user_id', $user->id)->distinct('series_id')->count('series_id');
 
             return [
                 // Flat structure for view compatibility
                 'total_views' => $totalViews,
                 'unique_movies' => $uniqueMovies,
-                'total_watch_time' => 0, // TODO: Calculate from movie durations
+                'series_watched' => $seriesWatched,
                 'invite_codes_created' => $inviteCodesCreated,
 
                 // Detailed nested structure for future use
@@ -185,10 +187,10 @@ class UserStatsService
                 'activity' => [
                     'total_movie_views' => $totalViews,
                     'unique_movies_watched' => $uniqueMovies,
-                    'total_watch_time' => 0, // TODO: Calculate from movie durations
+                    'series_watched' => $seriesWatched,
                     'avg_daily_views' => self::calculateAvgDailyViews($user),
-                    'last_movie_watched' => $movieViews->latest()->first()?->movie?->title,
-                    'last_activity_date' => $movieViews->latest()->first()?->created_at,
+                    'last_movie_watched' => MovieView::where('user_id', $user->id)->latest()->first()?->movie?->title,
+                    'last_activity_date' => MovieView::where('user_id', $user->id)->latest()->first()?->created_at,
                 ],
                 'content' => [
                     'favorite_genres' => self::getUserFavoriteGenres($user),

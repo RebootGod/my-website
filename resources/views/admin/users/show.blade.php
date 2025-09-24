@@ -168,8 +168,8 @@
                         <p class="text-gray-400 text-sm">Movies Watched</p>
                     </div>
                     <div class="bg-gray-700 rounded-lg p-4 text-center">
-                        <p class="text-2xl font-bold text-yellow-400">{{ number_format($stats['total_watch_time'] / 60, 0) }}h</p>
-                        <p class="text-gray-400 text-sm">Watch Time</p>
+                        <p class="text-2xl font-bold text-yellow-400">{{ $stats['series_watched'] }}</p>
+                        <p class="text-gray-400 text-sm">Series Watched</p>
                     </div>
                     <div class="bg-gray-700 rounded-lg p-4 text-center">
                         <p class="text-2xl font-bold text-purple-400">{{ $stats['invite_codes_created'] }}</p>
