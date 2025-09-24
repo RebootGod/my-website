@@ -711,7 +711,7 @@ body {
             return;
         }
         
-        fetch(`/watchlist/add/${movieId}`, {
+        fetch(`/watchlist/add/${movieSlug}`, {
             method: 'POST',
             headers: {
                 'X-CSRF-TOKEN': csrfToken,
