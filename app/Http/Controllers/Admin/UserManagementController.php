@@ -75,14 +75,21 @@ class UserManagementController extends Controller
     {
         // Load relationships
         $user->load(['registration.inviteCode']);
-        
+
         // Get comprehensive user statistics
         $stats = UserStatsService::getUserStats($user);
-        
+
         // Get permission summary for UI
         $permissions = UserPermissionService::getPermissionSummary($user);
 
-        return view('admin.users.show', compact('user', 'stats', 'permissions'));
+        // Get recent movie views for the user
+        $recentViews = $user->movieViews()
+            ->with(['movie'])
+            ->orderBy('created_at', 'desc')
+            ->limit(10)
+            ->get();
+
+        return view('admin.users.show', compact('user', 'stats', 'permissions', 'recentViews'));
     }
 
     /**
