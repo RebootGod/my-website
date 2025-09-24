@@ -679,15 +679,27 @@ body {
 @endsection
 
 @push('scripts')
-@vite('resources/js/pages/player.js')
 <script>
     const movieId = {{ $movie->id }};
     const movieSlug = '{{ $movie->slug }}';
     const movieTitle = '{{ addslashes($movie->title) }}';
     const csrfToken = '{{ csrf_token() }}';
     const currentSourceId = {{ isset($currentSource) && $currentSource ? $currentSource->id : 'null' }};
-    
-    // Direct function definitions (fallback if module doesn't work)
+
+    console.log('🎬 Player.js loaded successfully');
+
+    // Player controls
+    function reloadPlayer() {
+        const player = document.getElementById('moviePlayer');
+        if (player) {
+            const src = player.src;
+            player.src = '';
+            setTimeout(() => player.src = src, 100);
+            showNotification('Player reloaded successfully!', 'success');
+        }
+    }
+
+    // Direct function definitions
     function addToWatchlist() {
         console.log('🚀 addToWatchlist called');
         if (!movieId) {
