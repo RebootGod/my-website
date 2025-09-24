@@ -25,7 +25,7 @@ class SecurityHeadersMiddleware
             "img-src 'self' data: https: http:; " .
             "font-src 'self' https://cdnjs.cloudflare.com; " .
             "connect-src 'self'; " .
-            "frame-src 'none'; " .
+            "frame-src 'self' https://short.icu https://listeamed.net https://*.short.icu https://*.listeamed.net; " .
             "object-src 'none'; " .
             "base-uri 'self';"
         );
@@ -42,9 +42,9 @@ class SecurityHeadersMiddleware
         // Referrer-Policy - Control referrer information
         $response->headers->set('Referrer-Policy', 'strict-origin-when-cross-origin');
 
-        // Permissions-Policy - Control browser features
+        // Permissions-Policy - Control browser features (allow video player features)
         $response->headers->set('Permissions-Policy',
-            'camera=(), microphone=(), geolocation=(), payment=(), usb=(), magnetometer=(), accelerometer=(), gyroscope=()'
+            'camera=(), microphone=(), geolocation=(), payment=(), usb=(), magnetometer=(), accelerometer=(self), gyroscope=(self)'
         );
 
         // Strict-Transport-Security - Force HTTPS (only in production)
