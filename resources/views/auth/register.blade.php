@@ -190,15 +190,18 @@
                                 <label class="form-label text-light fw-bold">
                                     <i class="fas fa-user me-2"></i>Username
                                 </label>
-                                <input 
-                                    type="text" 
-                                    name="username" 
+                                <input
+                                    type="text"
+                                    name="username"
                                     placeholder="Username unik Anda"
                                     value="{{ old('username') }}"
                                     class="form-control form-control-auth @error('username') is-invalid @enderror"
                                     required
+                                    minlength="3"
+                                    maxlength="20"
                                     pattern="[a-zA-Z0-9_]{3,20}"
                                     title="Username hanya boleh huruf, angka, underscore (3-20 karakter)"
+                                    autocomplete="username"
                                 >
                                 @error('username')
                                     <div class="invalid-feedback d-block">
@@ -211,13 +214,15 @@
                                 <label class="form-label text-light fw-bold">
                                     <i class="fas fa-envelope me-2"></i>Email
                                 </label>
-                                <input 
-                                    type="email" 
-                                    name="email" 
+                                <input
+                                    type="email"
+                                    name="email"
                                     placeholder="email@example.com"
                                     value="{{ old('email') }}"
                                     class="form-control form-control-auth @error('email') is-invalid @enderror"
                                     required
+                                    maxlength="255"
+                                    autocomplete="email"
                                 >
                                 @error('email')
                                     <div class="invalid-feedback d-block">
@@ -232,14 +237,16 @@
                                 <label class="form-label text-light fw-bold">
                                     <i class="fas fa-lock me-2"></i>Password
                                 </label>
-                                <input 
-                                    type="password" 
-                                    name="password" 
+                                <input
+                                    type="password"
+                                    name="password"
                                     id="register_password"
                                     placeholder="Minimal 8 karakter (huruf besar, kecil, angka, karakter khusus)"
                                     class="form-control form-control-auth @error('password') is-invalid @enderror"
                                     required
                                     minlength="8"
+                                    maxlength="128"
+                                    autocomplete="new-password"
                                 >
                                 @error('password')
                                     <div class="invalid-feedback d-block">
@@ -261,13 +268,15 @@
                                 <label class="form-label text-light fw-bold">
                                     <i class="fas fa-lock me-2"></i>Konfirmasi Password
                                 </label>
-                                <input 
-                                    type="password" 
-                                    name="password_confirmation" 
+                                <input
+                                    type="password"
+                                    name="password_confirmation"
                                     placeholder="Ulangi password"
                                     class="form-control form-control-auth"
                                     required
                                     minlength="8"
+                                    maxlength="128"
+                                    autocomplete="new-password"
                                 >
                             </div>
                         </div>
@@ -276,13 +285,15 @@
                             <label class="form-label text-light fw-bold">
                                 <i class="fas fa-ticket-alt me-2"></i>Invite Code
                             </label>
-                            <input 
-                                type="text" 
-                                name="invite_code" 
+                            <input
+                                type="text"
+                                name="invite_code"
                                 placeholder="Masukkan kode undangan"
                                 value="{{ old('invite_code') }}"
                                 class="form-control form-control-auth @error('invite_code') is-invalid @enderror"
                                 required
+                                maxlength="50"
+                                autocomplete="off"
                             >
                             @error('invite_code')
                                 <div class="invalid-feedback d-block">
@@ -323,20 +334,48 @@
 
 @push('scripts')
 <script>
+// Security Functions
+function sanitizeInput(input) {
+    // Remove HTML tags and trim whitespace
+    return input.replace(/<[^>]*>/g, '').trim();
+}
+
+function validateInputSecurity(input) {
+    // Check for potentially dangerous patterns
+    const dangerousPatterns = [
+        /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,
+        /javascript:/gi,
+        /on\w+\s*=/gi,
+        /data:text\/html/gi,
+        /<iframe\b/gi,
+        /<object\b/gi
+    ];
+
+    return !dangerousPatterns.some(pattern => pattern.test(input));
+}
+
 // Live invite code validation
 const inviteCodeInput = document.querySelector('input[name="invite_code"]');
 const inviteCodeFeedback = document.getElementById('inviteCodeFeedback');
 let inviteValidationTimeout;
 
 function validateInviteCode() {
-    const code = inviteCodeInput.value;
-    
+    let code = inviteCodeInput.value;
+
     if (code.length > 0) {
+        // Sanitize and validate input
+        code = sanitizeInput(code);
+
+        if (!validateInputSecurity(code)) {
+            inviteCodeFeedback.innerHTML = '<i class="fas fa-exclamation-triangle me-2"></i>Input mengandung karakter berbahaya';
+            inviteCodeFeedback.className = 'invite-feedback invalid';
+            return;
+        }
         // Show loading state
         inviteCodeFeedback.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Memvalidasi kode...';
         inviteCodeFeedback.className = 'invite-feedback';
         
-        fetch(`/check-invite-code?code=${code}`)
+        fetch(`/check-invite-code?code=${encodeURIComponent(code)}`)
             .then(response => response.json())
             .then(data => {
                 if (data.valid) {

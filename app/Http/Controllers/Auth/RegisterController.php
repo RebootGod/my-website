@@ -12,6 +12,8 @@ use App\Models\User;
 use App\Models\InviteCode;
 use App\Models\UserRegistration;
 use App\Rules\StrongPasswordRule;
+use App\Rules\NoXssRule;
+use App\Rules\NoSqlInjectionRule;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -31,20 +33,35 @@ class RegisterController extends Controller
     public function register(Request $request)
     {
         $request->validate([
-            'username' => 'required|string|min:3|max:20|unique:users|regex:/^[a-zA-Z0-9_]+$/',
-            'email' => 'required|string|email|max:255|unique:users',
+            'username' => ['required', 'string', 'min:3', 'max:20', 'unique:users', 'regex:/^[a-zA-Z0-9_]+$/', new NoXssRule(), new NoSqlInjectionRule()],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users', new NoXssRule(), new NoSqlInjectionRule()],
             'password' => ['required', 'string', 'confirmed', new StrongPasswordRule()],
-            'invite_code' => 'required|string',
+            'invite_code' => ['required', 'string', 'max:50', new NoXssRule(), new NoSqlInjectionRule()],
         ], [
             'username.regex' => 'Username hanya boleh mengandung huruf, angka, dan underscore.',
             'username.unique' => 'Username sudah digunakan.',
             'email.unique' => 'Email sudah terdaftar.',
             'password.confirmed' => 'Konfirmasi password tidak cocok.',
             'invite_code.required' => 'Invite code wajib diisi.',
+            'invite_code.max' => 'Invite code terlalu panjang.',
         ]);
 
-        // Check invite code validity (case sensitive)
-        $inviteCode = InviteCode::whereRaw('BINARY code = ?', [$request->invite_code])->first();
+        // Sanitize input data to prevent any remaining security issues
+        $sanitizedData = [
+            'username' => strip_tags(trim($request->username)),
+            'email' => filter_var(trim($request->email), FILTER_SANITIZE_EMAIL),
+            'invite_code' => strip_tags(trim($request->invite_code)),
+        ];
+
+        // Double-check sanitized data
+        if (!filter_var($sanitizedData['email'], FILTER_VALIDATE_EMAIL)) {
+            return back()->withErrors([
+                'email' => 'Format email tidak valid.',
+            ])->withInput($request->except('password', 'password_confirmation'));
+        }
+
+        // Check invite code validity (case sensitive) using sanitized data
+        $inviteCode = InviteCode::whereRaw('BINARY code = ?', [$sanitizedData['invite_code']])->first();
 
         if (!$inviteCode || !$inviteCode->isValid()) {
             return back()->withErrors([
@@ -55,10 +72,10 @@ class RegisterController extends Controller
         DB::beginTransaction();
 
         try {
-            // Create user
+            // Create user using sanitized data
             $user = User::create([
-                'username' => $request->username,
-                'email' => $request->email,
+                'username' => $sanitizedData['username'],
+                'email' => $sanitizedData['email'],
                 'password' => Hash::make($request->password),
                 'role' => config('app.default_user_role', 'member'),
                 'status' => 'active',
@@ -99,7 +116,12 @@ class RegisterController extends Controller
 
     public function checkInviteCode(Request $request)
     {
-        $code = $request->get('code');
+        // Validate and sanitize the invite code input
+        $request->validate([
+            'code' => ['required', 'string', 'max:50', new NoXssRule(), new NoSqlInjectionRule()],
+        ]);
+
+        $code = strip_tags(trim($request->get('code')));
         $inviteCode = InviteCode::whereRaw('BINARY code = ?', [$code])->first();
 
         if (!$inviteCode) {
