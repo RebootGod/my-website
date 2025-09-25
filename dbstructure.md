@@ -104,11 +104,11 @@ SELECT COUNT(*) FROM invite_codes WHERE created_by = ?
 
 ## Key Relationships
 
-- **Users** ’ **MovieViews**: One-to-many (user viewing history)
-- **Movies** ’ **MovieViews**: One-to-many (movie popularity tracking)
-- **Users** ’ **UserActivities**: One-to-many (comprehensive activity log)
-- **Users** ’ **InviteCodes**: One-to-many (invitation management)
-- **SeriesEpisodes** ’ **SeriesEpisodeViews**: One-to-many (episode tracking)
+- **Users** ï¿½ **MovieViews**: One-to-many (user viewing history)
+- **Movies** ï¿½ **MovieViews**: One-to-many (movie popularity tracking)
+- **Users** ï¿½ **UserActivities**: One-to-many (comprehensive activity log)
+- **Users** ï¿½ **InviteCodes**: One-to-many (invitation management)
+- **SeriesEpisodes** ï¿½ **SeriesEpisodeViews**: One-to-many (episode tracking)
 
 ## Performance Optimizations
 
@@ -142,10 +142,62 @@ This ensures accurate user statistics calculation for:
 
 ## Data Flow
 
-1. **User watches movie** ’ `MovieController::show()` logs to `user_activities`
-2. **User plays movie** ’ `MovieController::play()` logs to `movie_views` + increments view count
-3. **AJAX tracking** ’ `MovieController::trackView()` provides accurate duration tracking
-4. **Statistics calculation** ’ `UserStatsService::getUserStats()` queries all relevant tables
-5. **Admin display** ’ User details page shows calculated statistics with 5-minute cache
+1. **User watches movie** ï¿½ `MovieController::show()` logs to `user_activities`
+2. **User plays movie** ï¿½ `MovieController::play()` logs to `movie_views` + increments view count
+3. **AJAX tracking** ï¿½ `MovieController::trackView()` provides accurate duration tracking
+4. **Statistics calculation** ï¿½ `UserStatsService::getUserStats()` queries all relevant tables
+5. **Admin display** ï¿½ User details page shows calculated statistics with 5-minute cache
 
 The database structure now properly supports comprehensive user statistics tracking with accurate movie view recording and efficient query performance.
+
+---
+
+## Series Tracking Fix Update (2025-09-25)
+
+### Issue Resolved: Series Watched Statistics
+**Problem**: Series Watched showing 0 despite users watching episodes
+**Root Cause**: `SeriesPlayerController::playEpisode()` was not logging episode views to `series_episode_views` table
+
+### Implementation Fix:
+
+#### 1. Enhanced SeriesEpisodeView Model
+```php
+// Added static method for consistent tracking
+public static function logView($episodeId, $userId = null)
+{
+    return self::create([
+        'episode_id' => $episodeId,
+        'user_id' => $userId ?? auth()->id(),
+        'viewed_at' => now(),
+        'ip_address' => request()->ip(),
+        'user_agent' => request()->userAgent()
+    ]);
+}
+```
+
+#### 2. Updated Series Data Flow
+**New Series Tracking Flow**:
+1. **User watches episode** â†’ `SeriesPlayerController::playEpisode()`
+2. **Episode view logged** â†’ `SeriesEpisodeView::logView()` creates record
+3. **Series activity logged** â†’ `UserActivityService::logSeriesWatch()` with episodeId
+4. **AJAX tracking** â†’ `SeriesPlayerController::trackEpisodeView()` for duration
+5. **Statistics calculation** â†’ Queries `series_episode_views` for unique series count
+
+#### 3. Database Impact
+**Query Results After Fix**:
+```sql
+-- Series Watched now returns accurate count
+SELECT COUNT(DISTINCT series_episodes.series_id)
+FROM series_episode_views
+JOIN series_episodes ON series_episode_views.episode_id = series_episodes.id
+WHERE series_episode_views.user_id = ?
+-- Result: Actual unique series count instead of 0
+```
+
+**Files Updated**:
+- `app/Models/SeriesEpisodeView.php` - Added `logView()` method
+- `app/Http/Controllers/SeriesPlayerController.php` - Added episode tracking and AJAX endpoint
+- `app/Services/UserActivityService.php` - Enhanced series watch logging
+- `routes/web.php` - Added `/series/{series}/episode/{episode}/track-view` route
+
+**Result**: Series Watched statistics now accurately reflect user viewing behavior.

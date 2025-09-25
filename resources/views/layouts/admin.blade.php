@@ -11,6 +11,11 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Admin - Noobz Cinema')</title>
 
+    {{-- Favicon --}}
+    <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}">
+    <link rel="shortcut icon" type="image/png" href="{{ asset('favicon.png') }}">
+    <link rel="apple-touch-icon" href="{{ asset('favicon.png') }}">
+
     {{-- Tailwind CDN Only --}}
     <script src="https://cdn.tailwindcss.com"></script>
 

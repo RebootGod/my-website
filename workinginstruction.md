@@ -1,0 +1,1 @@
+Pada saat fixing, selalu lakukan deep checking & validation pada apa yang dikerjakan, dan jadikan dbstructure.md, dbresult.md, functionresult.md sebagai referensi. Lalu push ke git agar laravel forge bisa melakukan deployment ke production
