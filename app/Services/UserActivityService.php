@@ -71,6 +71,12 @@ class UserActivityService
      */
     public function logMovieWatch(User $user, Movie $movie): UserActivity
     {
+        // Record to MovieView for statistics tracking
+        \App\Models\MovieView::logView($movie->id, $user->id);
+
+        // Also increment movie view count
+        $movie->increment('view_count');
+
         return $this->logActivity(
             $user->id,
             UserActivity::TYPE_WATCH_MOVIE,

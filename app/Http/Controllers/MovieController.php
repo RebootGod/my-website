@@ -195,8 +195,11 @@ class MovieController extends Controller
             ->limit(5)
             ->get();
         
-        // Log view (will be done via AJAX after 10 seconds for accuracy)
-        // This prevents counting if user immediately leaves
+        // Log movie view immediately for statistics tracking
+        if (Auth::check()) {
+            \App\Models\MovieView::logView($movie->id, Auth::id());
+            $movie->increment('view_count');
+        }
         
         $result = MovieService::getMoviePlayerData($request, $movie);
         return view('movies.player', $result);
@@ -263,5 +266,50 @@ class MovieController extends Controller
             'message' => 'Thank you for reporting! We will check this issue soon.'
         ]);
     }
-    
+
+    /**
+     * Track movie view via AJAX (for accurate viewing stats)
+     */
+    public function trackView(Request $request, Movie $movie)
+    {
+        if (!Auth::check()) {
+            return response()->json(['success' => false, 'message' => 'Not authenticated'], 401);
+        }
+
+        // Validate watch duration
+        $validated = $request->validate([
+            'duration' => 'nullable|integer|min:0|max:86400' // Max 24 hours
+        ]);
+
+        // Check if this is a recent duplicate view (within last 5 minutes)
+        $recentView = \App\Models\MovieView::where('movie_id', $movie->id)
+            ->where('user_id', Auth::id())
+            ->where('created_at', '>=', now()->subMinutes(5))
+            ->first();
+
+        if (!$recentView) {
+            // Log new view with duration if provided
+            $viewData = [
+                'movie_id' => $movie->id,
+                'user_id' => Auth::id(),
+                'watched_at' => now(),
+                'ip_address' => $request->ip()
+            ];
+
+            if (isset($validated['duration'])) {
+                $viewData['watch_duration'] = $validated['duration'];
+            }
+
+            \App\Models\MovieView::create($viewData);
+
+            // Increment movie view count
+            $movie->increment('view_count');
+        } elseif (isset($validated['duration'])) {
+            // Update existing view with duration
+            $recentView->update(['watch_duration' => $validated['duration']]);
+        }
+
+        return response()->json(['success' => true]);
+    }
+
 }

@@ -84,18 +84,26 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout')->midd
 */
 
 Route::middleware(['auth', 'check.user.status', 'password.rehash'])->group(function () {
-    
+
     // Movie Player (Members Only)
     Route::get('/movie/{movie:slug}/play', [MoviePlayerController::class, 'play'])
         ->name('movies.player');
-    
+
     // Movie Player with specific source
     Route::get('/movie/{movie}/player/source/{source}', [MoviePlayerController::class, 'play'])
         ->name('movies.player.source');
-    
+
     // Alternative route for movie player with slug
     Route::get('/movie/{movie:slug}/watch', [MoviePlayerController::class, 'play'])
         ->name('movies.play');
+
+    // Movie view tracking (AJAX endpoint)
+    Route::post('/movie/{movie}/track-view', [MovieController::class, 'trackView'])
+        ->name('movies.track-view');
+
+    // Report movie issues
+    Route::post('/movie/{movie}/report', [MovieController::class, 'reportIssue'])
+        ->name('movies.report');
     
     // Get movie sources for player
     Route::get('/movie/{movie}/sources', [MoviePlayerController::class, 'getSources'])
