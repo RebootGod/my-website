@@ -31,4 +31,16 @@ class SeriesEpisodeView extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    // Static Methods
+    public static function logView($episodeId, $userId = null)
+    {
+        return self::create([
+            'episode_id' => $episodeId,
+            'user_id' => $userId ?? auth()->id(),
+            'viewed_at' => now(),
+            'ip_address' => request()->ip(),
+            'user_agent' => request()->userAgent()
+        ]);
+    }
 }

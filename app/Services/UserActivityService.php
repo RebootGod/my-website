@@ -94,6 +94,11 @@ class UserActivityService
      */
     public function logSeriesWatch(User $user, Series $series, ?int $episodeId = null): UserActivity
     {
+        // If episode ID provided, log episode view for statistics tracking
+        if ($episodeId) {
+            \App\Models\SeriesEpisodeView::logView($episodeId, $user->id);
+        }
+
         $description = "User '{$user->username}' watched series '{$series->title}'";
         $metadata = [
             'series_id' => $series->id,

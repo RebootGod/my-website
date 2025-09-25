@@ -32,10 +32,15 @@ class SeriesPlayerController extends Controller
             abort(404, 'Episode not available');
         }
 
-        // Track episode view
+        // Track episode view and series statistics
         if (Auth::check()) {
             $series->incrementViewCount();
-            // You can also track episode-specific views if needed
+
+            // Log episode view for series statistics
+            \App\Models\SeriesEpisodeView::logView($episode->id, Auth::id());
+
+            // Also log series watching activity
+            app(\App\Services\UserActivityService::class)->logSeriesWatch(Auth::user(), $series, $episode->id);
         }
 
         // Load relationships
@@ -137,5 +142,49 @@ class SeriesPlayerController extends Controller
                 'title' => $series->title,
             ]
         ]);
+    }
+
+    /**
+     * Track episode view via AJAX (for accurate viewing stats)
+     */
+    public function trackEpisodeView(Request $request, Series $series, SeriesEpisode $episode)
+    {
+        if (!Auth::check()) {
+            return response()->json(['success' => false, 'message' => 'Not authenticated'], 401);
+        }
+
+        // Check if episode belongs to series
+        if ($episode->series_id !== $series->id) {
+            return response()->json(['success' => false, 'message' => 'Episode not found'], 404);
+        }
+
+        // Validate watch duration
+        $validated = $request->validate([
+            'duration' => 'nullable|integer|min:0|max:86400' // Max 24 hours
+        ]);
+
+        // Check if this is a recent duplicate view (within last 5 minutes)
+        $recentView = \App\Models\SeriesEpisodeView::where('episode_id', $episode->id)
+            ->where('user_id', Auth::id())
+            ->where('created_at', '>=', now()->subMinutes(5))
+            ->first();
+
+        if (!$recentView) {
+            // Log new episode view
+            $viewData = [
+                'episode_id' => $episode->id,
+                'user_id' => Auth::id(),
+                'viewed_at' => now(),
+                'ip_address' => $request->ip(),
+                'user_agent' => $request->userAgent()
+            ];
+
+            \App\Models\SeriesEpisodeView::create($viewData);
+
+            // Increment series view count
+            $series->incrementViewCount();
+        }
+
+        return response()->json(['success' => true]);
     }
 }

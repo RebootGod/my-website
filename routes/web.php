@@ -117,6 +117,10 @@ Route::middleware(['auth', 'check.user.status', 'password.rehash'])->group(funct
     Route::get('/series/{series}/episode/{episode}/info', [SeriesPlayerController::class, 'getEpisodeInfo'])
         ->name('series.episode.info');
 
+    // Episode view tracking (AJAX endpoint)
+    Route::post('/series/{series}/episode/{episode}/track-view', [SeriesPlayerController::class, 'trackEpisodeView'])
+        ->name('series.episode.track-view');
+
     // Report broken link - rate limited to prevent spam
     Route::post('/movie/{movie}/report', [ReportsController::class, 'store'])
         ->name('movies.report')
