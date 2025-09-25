@@ -67,6 +67,24 @@ class UserActivityService
     }
 
     /**
+     * Log failed login attempt
+     */
+    public function logFailedLogin(string $username, string $reason, string $ipAddress): UserActivity
+    {
+        return $this->logActivity(
+            null, // No user ID for failed logins
+            UserActivity::TYPE_LOGIN_FAILED,
+            "Failed login attempt for username '{$username}' - {$reason}",
+            [
+                'attempted_username' => $username,
+                'failure_reason' => $reason,
+                'ip_address' => $ipAddress,
+                'user_agent' => request()->userAgent(),
+            ]
+        );
+    }
+
+    /**
      * Log movie watching activity
      */
     public function logMovieWatch(User $user, Movie $movie): UserActivity

@@ -174,14 +174,19 @@
                             <label class="form-label text-light fw-bold">
                                 <i class="fas fa-user me-2"></i>Username
                             </label>
-                            <input 
-                                type="text" 
-                                name="username" 
+                            <input
+                                type="text"
+                                name="username"
                                 placeholder="Masukkan username Anda"
                                 value="{{ old('username') }}"
                                 class="form-control form-control-auth @error('username') is-invalid @enderror"
                                 required
                                 autofocus
+                                minlength="3"
+                                maxlength="20"
+                                pattern="[a-zA-Z0-9_]{3,20}"
+                                title="Username hanya boleh huruf, angka, underscore (3-20 karakter)"
+                                autocomplete="username"
                             >
                             @error('username')
                                 <div class="invalid-feedback d-block">
@@ -194,12 +199,15 @@
                             <label class="form-label text-light fw-bold">
                                 <i class="fas fa-lock me-2"></i>Password
                             </label>
-                            <input 
-                                type="password" 
-                                name="password" 
+                            <input
+                                type="password"
+                                name="password"
                                 placeholder="Masukkan password Anda"
                                 class="form-control form-control-auth @error('password') is-invalid @enderror"
                                 required
+                                minlength="8"
+                                maxlength="128"
+                                autocomplete="current-password"
                             >
                             @error('password')
                                 <div class="invalid-feedback d-block">
@@ -245,3 +253,95 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+// Security Functions for Login Form
+function sanitizeInput(input) {
+    // Remove HTML tags and trim whitespace
+    return input.replace(/<[^>]*>/g, '').trim();
+}
+
+function validateInputSecurity(input) {
+    // Check for potentially dangerous patterns
+    const dangerousPatterns = [
+        /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,
+        /javascript:/gi,
+        /on\w+\s*=/gi,
+        /data:text\/html/gi,
+        /<iframe\b/gi,
+        /<object\b/gi
+    ];
+
+    return !dangerousPatterns.some(pattern => pattern.test(input));
+}
+
+// Login form security validation
+document.addEventListener('DOMContentLoaded', function() {
+    const loginForm = document.querySelector('form[action*="login"]');
+    const usernameInput = document.querySelector('input[name="username"]');
+    const passwordInput = document.querySelector('input[name="password"]');
+
+    if (loginForm) {
+        // Username input validation
+        usernameInput.addEventListener('input', function() {
+            let value = this.value;
+
+            // Sanitize input
+            const sanitized = sanitizeInput(value);
+
+            if (sanitized !== value) {
+                this.value = sanitized;
+            }
+
+            // Validate security
+            if (!validateInputSecurity(this.value)) {
+                this.setCustomValidity('Input mengandung karakter berbahaya');
+            } else if (!/^[a-zA-Z0-9_]*$/.test(this.value)) {
+                this.setCustomValidity('Username hanya boleh huruf, angka, dan underscore');
+            } else if (this.value.length > 0 && this.value.length < 3) {
+                this.setCustomValidity('Username minimal 3 karakter');
+            } else {
+                this.setCustomValidity('');
+            }
+        });
+
+        // Form submission security check
+        loginForm.addEventListener('submit', function(e) {
+            const username = usernameInput.value;
+            const password = passwordInput.value;
+
+            // Final security validation before submission
+            if (!validateInputSecurity(username)) {
+                e.preventDefault();
+                alert('Username mengandung karakter berbahaya');
+                return false;
+            }
+
+            if (username.length < 3 || username.length > 20) {
+                e.preventDefault();
+                alert('Username harus 3-20 karakter');
+                return false;
+            }
+
+            if (password.length < 8 || password.length > 128) {
+                e.preventDefault();
+                alert('Password harus 8-128 karakter');
+                return false;
+            }
+
+            // Add loading state to prevent multiple submissions
+            const submitBtn = this.querySelector('button[type="submit"]');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Memproses...';
+
+            // Re-enable after 3 seconds to prevent indefinite lock
+            setTimeout(() => {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-sign-in-alt me-2"></i>MASUK SEKARANG';
+            }, 3000);
+        });
+    }
+});
+</script>
+@endpush

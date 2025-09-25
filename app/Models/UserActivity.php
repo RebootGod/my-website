@@ -30,6 +30,7 @@ class UserActivity extends Model
 
     // Activity type constants
     const TYPE_LOGIN = 'login';
+    const TYPE_LOGIN_FAILED = 'login_failed';
     const TYPE_LOGOUT = 'logout';
     const TYPE_WATCH_MOVIE = 'watch_movie';
     const TYPE_WATCH_SERIES = 'watch_series';
@@ -86,6 +87,7 @@ class UserActivity extends Model
     {
         return match($this->activity_type) {
             self::TYPE_LOGIN => 'fas fa-sign-in-alt',
+            self::TYPE_LOGIN_FAILED => 'fas fa-exclamation-triangle',
             self::TYPE_LOGOUT => 'fas fa-sign-out-alt',
             self::TYPE_WATCH_MOVIE => 'fas fa-film',
             self::TYPE_WATCH_SERIES => 'fas fa-tv',
@@ -102,6 +104,7 @@ class UserActivity extends Model
     {
         return match($this->activity_type) {
             self::TYPE_LOGIN => 'success',
+            self::TYPE_LOGIN_FAILED => 'danger',
             self::TYPE_LOGOUT => 'warning',
             self::TYPE_WATCH_MOVIE, self::TYPE_WATCH_SERIES => 'primary',
             self::TYPE_SEARCH => 'info',

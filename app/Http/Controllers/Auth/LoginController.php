@@ -9,6 +9,8 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\AdminActionLog;
+use App\Rules\NoXssRule;
+use App\Rules\NoSqlInjectionRule;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -27,23 +29,55 @@ class LoginController extends Controller
     public function login(Request $request)
     {
         $request->validate([
-            'username' => 'required|string',
-            'password' => 'required|string',
+            'username' => ['required', 'string', 'min:3', 'max:20', 'regex:/^[a-zA-Z0-9_]+$/', new NoXssRule(), new NoSqlInjectionRule()],
+            'password' => ['required', 'string', 'min:8', 'max:128'],
+        ], [
+            'username.regex' => 'Username hanya boleh mengandung huruf, angka, dan underscore.',
+            'username.min' => 'Username minimal 3 karakter.',
+            'username.max' => 'Username maksimal 20 karakter.',
+            'password.min' => 'Password minimal 8 karakter.',
+            'password.max' => 'Password maksimal 128 karakter.',
         ]);
 
-        $credentials = $request->only('username', 'password');
+        // Sanitize input data to prevent security issues
+        $sanitizedData = [
+            'username' => strip_tags(trim($request->username)),
+            'password' => $request->password, // Don't sanitize password as it may affect authentication
+        ];
+
+        $credentials = [
+            'username' => $sanitizedData['username'],
+            'password' => $sanitizedData['password']
+        ];
         $remember = $request->has('remember');
 
-        // Check if user exists and is active
+        // Security: Add small delay to prevent timing attacks
+        usleep(random_int(100000, 300000)); // 0.1-0.3 second random delay
+
+        // Check if user exists and is active using sanitized username
         $user = User::where('username', $credentials['username'])->first();
 
         if (!$user) {
+            // Log failed login attempt
+            app(\App\Services\UserActivityService::class)->logFailedLogin(
+                $credentials['username'],
+                'user_not_found',
+                $request->ip()
+            );
+
             return back()->withErrors([
-                'username' => 'Username tidak ditemukan.',
+                'username' => 'Username atau password salah.',
             ])->withInput($request->except('password'));
         }
 
         if ($user->status !== 'active') {
+            // Log blocked login attempt
+            app(\App\Services\UserActivityService::class)->logFailedLogin(
+                $credentials['username'],
+                'account_suspended',
+                $request->ip()
+            );
+
             return back()->withErrors([
                 'username' => 'Akun Anda telah di-suspend atau di-banned.',
             ])->withInput($request->except('password'));
@@ -84,8 +118,15 @@ class LoginController extends Controller
             return redirect()->intended(route('home'));
         }
 
+        // Log failed login attempt
+        app(\App\Services\UserActivityService::class)->logFailedLogin(
+            $credentials['username'],
+            'wrong_password',
+            $request->ip()
+        );
+
         return back()->withErrors([
-            'password' => 'Password salah.',
+            'password' => 'Username atau password salah.',
         ])->withInput($request->except('password'));
     }
 
