@@ -70,58 +70,59 @@ class HomeController extends Controller
             });
         }
 
-        // SORT OPTIONS
+        // Get movies with all filters applied (but don't sort yet)
+        $movies = $query->get();
+
+        // Build series query with same filters
+        $seriesQuery = Series::with(['genres', 'seasons'])->published();
+
+        // Apply same filters to series
+        if ($request->filled('search')) {
+            $searchTerm = $request->search;
+            $seriesQuery->where(function($q) use ($searchTerm) {
+                $q->where('title', 'LIKE', "%{$searchTerm}%")
+                  ->orWhere('description', 'LIKE', "%{$searchTerm}%");
+            });
+        }
+        if ($request->filled('genre')) {
+            $genreId = $request->genre;
+            $seriesQuery->whereHas('genres', function($q) use ($genreId) {
+                $q->where('genres.id', $genreId);
+            });
+        }
+        if ($request->filled('year')) {
+            $year = $request->year;
+            $seriesQuery->where('year', $year);
+        }
+        if ($request->filled('rating')) {
+            $seriesQuery->where('rating', '>=', $request->rating);
+        }
+
+        $series = $seriesQuery->get();
+
+        // Merge collections and apply sorting
+        $merged = $movies->concat($series);
+
+        // SORT OPTIONS for merged collection
         $sortBy = $request->get('sort', 'latest');
         switch ($sortBy) {
             case 'oldest':
-                $query->oldest();
+                $merged = $merged->sortBy('created_at')->values();
                 break;
             case 'rating_high':
-                $query->orderBy('rating', 'desc');
+                $merged = $merged->sortByDesc('rating')->values();
                 break;
             case 'rating_low':
-                $query->orderBy('rating', 'asc');
+                $merged = $merged->sortBy('rating')->values();
                 break;
             case 'alphabetical':
-                $query->orderBy('title', 'asc');
+                $merged = $merged->sortBy('title')->values();
                 break;
             case 'latest':
             default:
-                $query->latest();
+                $merged = $merged->sortByDesc('created_at')->values();
                 break;
         }
-
-        // Paginate results
-            // Ambil semua movies dan series, gabungkan, urutkan berdasarkan created_at
-            $movies = $query->get();
-            $series = Series::with(['genres', 'seasons'])
-                ->published();
-
-            // Apply filter yang sama ke series
-            if ($request->filled('search')) {
-                $searchTerm = $request->search;
-                $series->where(function($q) use ($searchTerm) {
-                    $q->where('title', 'LIKE', "%{$searchTerm}%")
-                      ->orWhere('description', 'LIKE', "%{$searchTerm}%");
-                });
-            }
-            if ($request->filled('genre')) {
-                $genreId = $request->genre;
-                $series->whereHas('genres', function($q) use ($genreId) {
-                    $q->where('genres.id', $genreId);
-                });
-            }
-            if ($request->filled('year')) {
-                $year = $request->year;
-                $series->where('year', $year);
-            }
-            if ($request->filled('rating')) {
-                $series->where('rating', '>=', $request->rating);
-            }
-            $series = $series->get();
-
-            // Gabungkan dan urutkan
-            $merged = $movies->concat($series)->sortByDesc('created_at')->values();
 
             // Paginate manual (karena ini Collection, bukan Eloquent)
             $perPage = 20;
