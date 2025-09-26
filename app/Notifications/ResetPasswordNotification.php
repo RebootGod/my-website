@@ -61,7 +61,6 @@ class ResetPasswordNotification extends Notification // implements ShouldQueue
             ->line('')
             ->line(Lang::get('Butuh bantuan? Hubungi support: :email', ['email' => $supportEmail]))
             ->salutation(Lang::get('Salam hangat,') . "\n" . $appName . ' Team')
-            ->theme('noobz-cinema')
             ->priority(1); // High priority
     }
 
