@@ -131,6 +131,15 @@ yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
 .pnpm-debug.log*
+.npm/
+.yarn/
+.pnp
+.pnp.js
+
+# NPM Cache and lock files (prevent permission issues)
+.npmrc
+.yarnrc
+.pnpm-store/
 
 # Runtime directories
 .nyc_output/
