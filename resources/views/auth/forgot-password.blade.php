@@ -254,11 +254,16 @@
                         <button type="submit"
                                 class="btn btn-primary"
                                 :disabled="isSubmitting || !canSubmit">
-                            <span x-show="isSubmitting" x-transition class="d-flex align-items-center justify-content-center">
+                            <span x-show="isSubmitting"
+                                  x-transition
+                                  style="display: none"
+                                  class="d-flex align-items-center justify-content-center">
                                 <span class="loading-spinner"></span>
                                 Mengirim Email...
                             </span>
-                            <span x-show="!isSubmitting" x-transition class="d-flex align-items-center justify-content-center">
+                            <span x-show="!isSubmitting"
+                                  x-transition
+                                  class="d-flex align-items-center justify-content-center">
                                 <i class="fas fa-envelope me-2"></i>
                                 Kirim Reset Link
                             </span>
@@ -386,15 +391,23 @@ function forgotPasswordHandler() {
         },
 
         handleSubmit(event) {
+            console.log('handleSubmit triggered', {
+                canSubmit: this.canSubmit,
+                isSubmitting: this.isSubmitting
+            });
+
             if (!this.canSubmit || this.isSubmitting) {
+                console.log('Form submission prevented');
                 event.preventDefault();
                 return;
             }
 
+            console.log('Setting isSubmitting to true');
             this.isSubmitting = true;
 
             // Reset isSubmitting after form submission completes
             setTimeout(() => {
+                console.log('Resetting isSubmitting to false');
                 this.isSubmitting = false;
             }, 5000); // Reset after 5 seconds as fallback
         }
