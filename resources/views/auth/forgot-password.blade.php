@@ -220,23 +220,9 @@
                         </div>
                     @endif
 
-                    <!-- Alpine.js Test -->
-                    <div x-data="{ test: 'Alpine.js Working!' }" class="mb-3">
-                        <small x-text="test" class="text-success"></small>
-                    </div>
-
                     <form method="POST" action="{{ route('password.email') }}" id="forgotPasswordForm"
-                          x-data="forgotPasswordHandler()" @submit.prevent="handleSubmit"
-                          @keydown.enter="$event.target.form.dispatchEvent(new Event('submit', {bubbles: true, cancelable: true}))">
+                          x-data="forgotPasswordHandler()" @submit.prevent="handleSubmit">
                         @csrf
-
-                        <!-- Debug info -->
-                        <div class="mb-2">
-                            <small class="text-info">
-                                Debug: isSubmitting = <span x-text="isSubmitting"></span>,
-                                canSubmit = <span x-text="canSubmit"></span>
-                            </small>
-                        </div>
 
                         <div class="form-group">
                             <input type="email"
@@ -254,8 +240,7 @@
 
                         <button type="submit"
                                 class="btn btn-primary"
-                                :disabled="isSubmitting || !canSubmit"
-                                @click="console.log('Button clicked!', isSubmitting)">
+                                :disabled="isSubmitting || !canSubmit">
                             <template x-if="isSubmitting">
                                 <span class="d-flex align-items-center justify-content-center">
                                     <span class="loading-spinner"></span>
@@ -300,18 +285,6 @@
 
 @push('scripts')
 <script>
-// Test Alpine.js availability
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('DOM loaded');
-    console.log('window.Alpine:', window.Alpine);
-    console.log('Alpine available:', typeof window.Alpine !== 'undefined');
-
-    // Test after Alpine loads
-    setTimeout(() => {
-        console.log('After timeout - window.Alpine:', window.Alpine);
-    }, 1000);
-});
-
 function forgotPasswordHandler() {
     return {
         email: '{{ old('email') }}',
@@ -392,17 +365,10 @@ function forgotPasswordHandler() {
         },
 
         handleSubmit(event) {
-            console.log('handleSubmit triggered', {
-                canSubmit: this.canSubmit,
-                isSubmitting: this.isSubmitting
-            });
-
             if (!this.canSubmit || this.isSubmitting) {
-                console.log('Form submission prevented');
                 return;
             }
 
-            console.log('Setting isSubmitting to true');
             this.isSubmitting = true;
 
             // Submit the form after setting loading state
