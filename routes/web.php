@@ -63,7 +63,7 @@ Route::middleware('guest')->group(function () {
     // Login Routes - Rate Limited for Security
     Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [LoginController::class, 'login'])
-        ->middleware('throttle:5,1'); // 5 attempts per minute
+        ->middleware('throttle:15,5'); // 15 attempts per 5 minutes
     
     // Registration Routes - Rate Limited for Security  
     Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
