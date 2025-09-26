@@ -144,6 +144,63 @@ password_reset_tokens:
 
 **Status**: ✅ **PRODUCTION READY** - Complete enterprise-grade forgot password system
 
+## 2025-09-26 - Button Text Display Fix
+
+### Issue Identified
+- **Problem**: Button loading text "Mengirim Email..." dan "Mereset Password..." tidak ter-display dengan baik
+- **Root Cause**: Missing CSS flexbox alignment untuk loading states pada submit buttons
+- **Files Affected**: `forgot-password.blade.php` dan `reset-password.blade.php`
+
+### Solution Implemented
+
+#### File Modified: `resources/views/auth/forgot-password.blade.php`
+**BEFORE (Display Issue)**:
+```html
+<span x-show="isSubmitting">
+    <span class="loading-spinner"></span>
+    Mengirim Email...
+</span>
+```
+
+**AFTER (Fixed Display)**:
+```html
+<span x-show="isSubmitting" class="d-flex align-items-center justify-content-center">
+    <span class="loading-spinner"></span>
+    Mengirim Email...
+</span>
+```
+
+#### File Modified: `resources/views/auth/reset-password.blade.php`
+**BEFORE (Display Issue)**:
+```html
+<span x-show="isSubmitting">
+    <span class="loading-spinner"></span>
+    Mereset Password...
+</span>
+```
+
+**AFTER (Fixed Display)**:
+```html
+<span x-show="isSubmitting" class="d-flex align-items-center justify-content-center">
+    <span class="loading-spinner"></span>
+    Mereset Password...
+</span>
+```
+
+### Technical Changes
+1. **Added Bootstrap Flexbox Classes**: `d-flex align-items-center justify-content-center`
+2. **Improved Loading State Alignment**: Loading spinner dan text sekarang ter-align dengan baik
+3. **Consistent UI Experience**: Loading state tampil professional pada kedua form
+4. **Cross-Browser Compatibility**: Flexbox support untuk semua modern browsers
+
+### Visual Improvements
+- ✅ **Loading Spinner**: Proper alignment dengan text
+- ✅ **Text Display**: "Mengirim Email..." dan "Mereset Password..." tampil sempurna
+- ✅ **Button Layout**: Consistent spacing dan alignment
+- ✅ **User Experience**: Professional loading states yang tidak mengganggu layout
+
+**Status**: ✅ **COMPLETED** - Button text display issue resolved
+
 ## 2025-09-26 - User Activity Service Login Fix
 
 ### Issue Identified

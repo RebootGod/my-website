@@ -327,11 +327,11 @@
                         <button type="submit"
                                 class="btn btn-primary"
                                 :disabled="isSubmitting || !canSubmit()">
-                            <span x-show="isSubmitting">
+                            <span x-show="isSubmitting" class="d-flex align-items-center justify-content-center">
                                 <span class="loading-spinner"></span>
                                 Mereset Password...
                             </span>
-                            <span x-show="!isSubmitting">
+                            <span x-show="!isSubmitting" class="d-flex align-items-center justify-content-center">
                                 <i class="fas fa-key me-2"></i>
                                 Reset Password
                             </span>

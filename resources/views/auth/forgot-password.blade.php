@@ -241,11 +241,11 @@
                         <button type="submit"
                                 class="btn btn-primary"
                                 :disabled="isSubmitting || !canSubmit">
-                            <span x-show="isSubmitting">
+                            <span x-show="isSubmitting" class="d-flex align-items-center justify-content-center">
                                 <span class="loading-spinner"></span>
                                 Mengirim Email...
                             </span>
-                            <span x-show="!isSubmitting">
+                            <span x-show="!isSubmitting" class="d-flex align-items-center justify-content-center">
                                 <i class="fas fa-envelope me-2"></i>
                                 Kirim Reset Link
                             </span>
