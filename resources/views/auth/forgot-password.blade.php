@@ -253,20 +253,20 @@
 
                         <button type="submit"
                                 class="btn btn-primary"
-                                :disabled="isSubmitting || !canSubmit">
-                            <span x-show="isSubmitting"
-                                  x-transition
-                                  style="display: none"
-                                  class="d-flex align-items-center justify-content-center">
-                                <span class="loading-spinner"></span>
-                                Mengirim Email...
-                            </span>
-                            <span x-show="!isSubmitting"
-                                  x-transition
-                                  class="d-flex align-items-center justify-content-center">
-                                <i class="fas fa-envelope me-2"></i>
-                                Kirim Reset Link
-                            </span>
+                                :disabled="isSubmitting || !canSubmit"
+                                @click="console.log('Button clicked!', isSubmitting)">
+                            <template x-if="isSubmitting">
+                                <span class="d-flex align-items-center justify-content-center">
+                                    <span class="loading-spinner"></span>
+                                    Mengirim Email...
+                                </span>
+                            </template>
+                            <template x-if="!isSubmitting">
+                                <span class="d-flex align-items-center justify-content-center">
+                                    <i class="fas fa-envelope me-2"></i>
+                                    Kirim Reset Link
+                                </span>
+                            </template>
                         </button>
 
                         <div class="auth-links">
