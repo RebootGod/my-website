@@ -225,6 +225,7 @@ jspm_packages/
 /notes/
 /docs/internal/
 /error/
+/tests/
 log.md
 dbstructure.md
 dbresult.md
