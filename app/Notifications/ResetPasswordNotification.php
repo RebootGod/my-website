@@ -43,7 +43,7 @@ class ResetPasswordNotification extends Notification // implements ShouldQueue
     {
         $resetUrl = $this->resetUrl($notifiable);
         $appName = config('app.name', 'Noobz Cinema');
-        $supportEmail = config('mail.support_email', 'support@noobzcinema.com');
+        $supportEmail = config('mail.support_email', 'noobz@noobz.space');
 
         return (new MailMessage)
             ->subject(Lang::get('Reset Password - ' . $appName))
