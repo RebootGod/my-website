@@ -229,6 +229,14 @@
                           x-data="forgotPasswordHandler()" @submit="handleSubmit">
                         @csrf
 
+                        <!-- Debug info -->
+                        <div class="mb-2">
+                            <small class="text-info">
+                                Debug: isSubmitting = <span x-text="isSubmitting"></span>,
+                                canSubmit = <span x-text="canSubmit"></span>
+                            </small>
+                        </div>
+
                         <div class="form-group">
                             <input type="email"
                                    class="form-control @error('email') is-invalid @enderror"
@@ -306,6 +314,11 @@ function forgotPasswordHandler() {
         rateLimitData: {},
 
         init() {
+            console.log('forgotPasswordHandler init called', {
+                isSubmitting: this.isSubmitting,
+                canSubmit: this.canSubmit
+            });
+
             if (this.email) {
                 this.checkRateLimit();
             }
