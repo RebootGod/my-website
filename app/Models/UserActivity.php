@@ -38,6 +38,10 @@ class UserActivity extends Model
     const TYPE_REGISTER = 'register';
     const TYPE_PROFILE_UPDATE = 'profile_update';
     const TYPE_PASSWORD_CHANGE = 'password_change';
+    const TYPE_PASSWORD_RESET_REQUESTED = 'password_reset_requested';
+    const TYPE_PASSWORD_RESET_SUCCESS = 'password_reset_success';
+    const TYPE_PASSWORD_RESET_FAILED = 'password_reset_failed';
+    const TYPE_PASSWORD_RESET_BLOCKED = 'password_reset_blocked';
 
     // Scope methods for filtering
     public function scopeByType($query, $type)
@@ -95,6 +99,10 @@ class UserActivity extends Model
             self::TYPE_REGISTER => 'fas fa-user-plus',
             self::TYPE_PROFILE_UPDATE => 'fas fa-user-edit',
             self::TYPE_PASSWORD_CHANGE => 'fas fa-key',
+            self::TYPE_PASSWORD_RESET_REQUESTED => 'fas fa-envelope',
+            self::TYPE_PASSWORD_RESET_SUCCESS => 'fas fa-check-circle',
+            self::TYPE_PASSWORD_RESET_FAILED => 'fas fa-times-circle',
+            self::TYPE_PASSWORD_RESET_BLOCKED => 'fas fa-shield-alt',
             default => 'fas fa-circle'
         };
     }
@@ -110,6 +118,10 @@ class UserActivity extends Model
             self::TYPE_SEARCH => 'info',
             self::TYPE_REGISTER => 'success',
             self::TYPE_PROFILE_UPDATE, self::TYPE_PASSWORD_CHANGE => 'secondary',
+            self::TYPE_PASSWORD_RESET_REQUESTED => 'info',
+            self::TYPE_PASSWORD_RESET_SUCCESS => 'success',
+            self::TYPE_PASSWORD_RESET_FAILED => 'danger',
+            self::TYPE_PASSWORD_RESET_BLOCKED => 'warning',
             default => 'default'
         };
     }

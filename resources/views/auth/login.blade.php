@@ -230,6 +230,11 @@
                         </button>
 
                         <div class="text-center">
+                            <p class="text-light mb-2">
+                                <a href="{{ route('password.request') }}" class="auth-link">
+                                    <i class="fas fa-key me-1"></i>Lupa Password?
+                                </a>
+                            </p>
                             <p class="text-light mb-3">Belum punya akun?</p>
                             <a href="{{ route('register') }}" class="btn btn-outline-light">
                                 <i class="fas fa-user-plus me-2"></i>Daftar Sekarang

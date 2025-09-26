@@ -11,6 +11,8 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\WatchlistController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\Auth\ForgotPasswordController;
+use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\AdminMovieController;
 use App\Http\Controllers\Admin\UserManagementController;
@@ -72,6 +74,28 @@ Route::middleware('guest')->group(function () {
     Route::get('/check-invite-code', [RegisterController::class, 'checkInviteCode'])
         ->name('invite.check')
         ->middleware('throttle:10,1'); // 10 checks per minute for live validation
+
+    // Password Reset Routes - Rate Limited for Security
+    Route::get('/forgot-password', [ForgotPasswordController::class, 'showLinkRequestForm'])
+        ->name('password.request');
+    Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLink'])
+        ->name('password.email')
+        ->middleware('throttle:5,60'); // 5 attempts per hour
+    Route::post('/password/rate-limit-status', [ForgotPasswordController::class, 'getRateLimitStatus'])
+        ->name('password.rate-limit-status')
+        ->middleware('throttle:20,1'); // 20 checks per minute
+
+    Route::get('/reset-password/{token}', [ResetPasswordController::class, 'showResetForm'])
+        ->name('password.reset');
+    Route::post('/reset-password', [ResetPasswordController::class, 'reset'])
+        ->name('password.update')
+        ->middleware('throttle:10,60'); // 10 attempts per hour
+    Route::post('/password/validate-token', [ResetPasswordController::class, 'validateToken'])
+        ->name('password.validate-token')
+        ->middleware('throttle:30,1'); // 30 checks per minute
+    Route::post('/password/strength', [ResetPasswordController::class, 'checkPasswordStrength'])
+        ->name('password.strength')
+        ->middleware('throttle:50,1'); // 50 checks per minute
 });
 
 // Logout
