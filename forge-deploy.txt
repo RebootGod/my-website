@@ -3,55 +3,17 @@ cd $FORGE_SITE_PATH
 # Git pull
 git pull origin $FORGE_SITE_BRANCH
 
-# Fix npm permission issues EXTREMELY AGGRESSIVELY
-echo "🔧 Fixing npm permissions with nuclear option..."
-
-# Kill any processes that might be locking files
-pkill -f node 2>/dev/null || true
-pkill -f npm 2>/dev/null || true
-
-# Multiple attempts to remove node_modules
-if [ -d "node_modules" ]; then
-    echo "🗑️ Nuclear removal of node_modules..."
-
-    # Attempt 1: Change ownership and permissions
-    sudo chown -R forge:forge node_modules 2>/dev/null || true
-    chmod -R 777 node_modules 2>/dev/null || true
-
-    # Attempt 2: Force remove with multiple methods
-    sudo rm -rf node_modules 2>/dev/null || true
-    rm -rf node_modules 2>/dev/null || true
-    find . -name "node_modules" -type d -exec sudo rm -rf {} + 2>/dev/null || true
-
-    # Attempt 3: Remove specific problematic files
-    sudo rm -rf node_modules/axios 2>/dev/null || true
-    sudo rm -rf node_modules/.bin 2>/dev/null || true
-    sudo rm -rf node_modules/.package-lock.json 2>/dev/null || true
-fi
-
-# Clear ALL npm related directories and files
-echo "🧹 Nuclear npm cache cleanup..."
+# Simple npm cleanup (ownership issues fixed)
+echo "🧹 Cleaning npm cache..."
+rm -rf node_modules 2>/dev/null || true
 npm cache clean --force 2>/dev/null || true
-sudo rm -rf ~/.npm 2>/dev/null || true
-sudo rm -rf .npm 2>/dev/null || true
-sudo rm -rf /tmp/.npm 2>/dev/null || true
-sudo rm -rf node_modules 2>/dev/null || true
-
-# Verify removal
-echo "🔍 Verifying node_modules removal..."
-if [ -d "node_modules" ]; then
-    echo "❌ node_modules still exists! Manual intervention needed."
-    ls -la node_modules/ 2>/dev/null || true
-else
-    echo "✅ node_modules successfully removed!"
-fi
 
 # Composer install
 $FORGE_COMPOSER install --no-interaction --prefer-dist --optimize-autoloader --no-dev
 
-# NPM fresh install and build
+# NPM install and build
 echo "📦 Installing npm dependencies..."
-npm install --no-audit --no-fund --prefer-offline || npm install --no-audit --no-fund
+npm install --no-audit --no-fund
 
 echo "🏗️ Building assets..."
 npm run build
