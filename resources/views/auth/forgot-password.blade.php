@@ -226,7 +226,8 @@
                     </div>
 
                     <form method="POST" action="{{ route('password.email') }}" id="forgotPasswordForm"
-                          x-data="forgotPasswordHandler()" @submit="handleSubmit">
+                          x-data="forgotPasswordHandler()" @submit.prevent="handleSubmit"
+                          @keydown.enter="$event.target.form.dispatchEvent(new Event('submit', {bubbles: true, cancelable: true}))">
                         @csrf
 
                         <!-- Debug info -->
@@ -398,18 +399,16 @@ function forgotPasswordHandler() {
 
             if (!this.canSubmit || this.isSubmitting) {
                 console.log('Form submission prevented');
-                event.preventDefault();
                 return;
             }
 
             console.log('Setting isSubmitting to true');
             this.isSubmitting = true;
 
-            // Reset isSubmitting after form submission completes
+            // Submit the form after setting loading state
             setTimeout(() => {
-                console.log('Resetting isSubmitting to false');
-                this.isSubmitting = false;
-            }, 5000); // Reset after 5 seconds as fallback
+                event.target.submit();
+            }, 100);
         }
     }
 }
