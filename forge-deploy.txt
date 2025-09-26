@@ -3,20 +3,28 @@ cd $FORGE_SITE_PATH
 # Git pull
 git pull origin $FORGE_SITE_BRANCH
 
-# Fix npm permission issues
+# Fix npm permission issues AGGRESSIVELY
+echo "🔧 Fixing npm permissions..."
 if [ -d "node_modules" ]; then
-    chmod -R 755 node_modules 2>/dev/null || true
-    rm -rf node_modules 2>/dev/null || true
+    echo "🗑️ Removing node_modules with force..."
+    chmod -R 777 node_modules 2>/dev/null || true
+    sudo rm -rf node_modules 2>/dev/null || rm -rf node_modules 2>/dev/null || true
 fi
 
-# Clear npm cache
+# Clear npm cache and .npm directory
+echo "🧹 Cleaning npm cache..."
 npm cache clean --force 2>/dev/null || true
+rm -rf ~/.npm 2>/dev/null || true
+rm -rf .npm 2>/dev/null || true
 
 # Composer install
 $FORGE_COMPOSER install --no-interaction --prefer-dist --optimize-autoloader --no-dev
 
 # NPM fresh install and build
-npm install --no-audit --no-fund --prefer-offline
+echo "📦 Installing npm dependencies..."
+npm install --no-audit --no-fund --prefer-offline || npm install --no-audit --no-fund
+
+echo "🏗️ Building assets..."
 npm run build
 
 # Laravel optimizations
