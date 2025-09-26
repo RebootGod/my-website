@@ -8,9 +8,9 @@ use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use Illuminate\Support\Facades\Lang;
 
-class ResetPasswordNotification extends Notification implements ShouldQueue
+class ResetPasswordNotification extends Notification // implements ShouldQueue
 {
-    use Queueable;
+    // use Queueable;
 
     public string $token;
     public int $expiryHours;
@@ -23,9 +23,9 @@ class ResetPasswordNotification extends Notification implements ShouldQueue
         $this->token = $token;
         $this->expiryHours = $expiryHours;
 
-        // Set queue options
-        $this->onQueue('emails');
-        $this->delay(now()->addSeconds(2)); // Small delay to prevent spam
+        // Queue options disabled for testing
+        // $this->onQueue('emails');
+        // $this->delay(now()->addSeconds(2));
     }
 
     /**
