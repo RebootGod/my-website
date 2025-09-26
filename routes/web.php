@@ -80,7 +80,7 @@ Route::middleware('guest')->group(function () {
         ->name('password.request');
     Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLink'])
         ->name('password.email')
-        ->middleware('throttle:5,60'); // 5 attempts per hour
+        ->middleware('throttle:10,10'); // 10 attempts per 10 minutes (more flexible for testing)
     Route::post('/password/rate-limit-status', [ForgotPasswordController::class, 'getRateLimitStatus'])
         ->name('password.rate-limit-status')
         ->middleware('throttle:20,1'); // 20 checks per minute
