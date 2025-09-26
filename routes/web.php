@@ -63,7 +63,7 @@ Route::middleware('guest')->group(function () {
     // Login Routes - Rate Limited for Security
     Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [LoginController::class, 'login'])
-        ->middleware('throttle:15,5'); // 15 attempts per 5 minutes
+        ->middleware('throttle:10,10'); // 10 attempts per 10 minutes
     
     // Registration Routes - Rate Limited for Security  
     Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
@@ -89,7 +89,7 @@ Route::middleware('guest')->group(function () {
         ->name('password.reset');
     Route::post('/reset-password', [ResetPasswordController::class, 'reset'])
         ->name('password.update')
-        ->middleware('throttle:30,60'); // 30 attempts per hour
+        ->middleware('throttle:15,30'); // 15 attempts per 30 minutes
     Route::post('/password/validate-token', [ResetPasswordController::class, 'validateToken'])
         ->name('password.validate-token')
         ->middleware('throttle:30,1'); // 30 checks per minute

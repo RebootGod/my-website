@@ -20,7 +20,7 @@ class ResetPasswordController extends Controller
         $this->passwordResetService = $passwordResetService;
 
         // Apply rate limiting middleware
-        $this->middleware('throttle:30,60')->only(['reset']);
+        $this->middleware('throttle:15,30')->only(['reset']);
     }
 
     /**
