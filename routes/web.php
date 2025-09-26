@@ -89,7 +89,7 @@ Route::middleware('guest')->group(function () {
         ->name('password.reset');
     Route::post('/reset-password', [ResetPasswordController::class, 'reset'])
         ->name('password.update')
-        ->middleware('throttle:10,60'); // 10 attempts per hour
+        ->middleware('throttle:30,60'); // 30 attempts per hour
     Route::post('/password/validate-token', [ResetPasswordController::class, 'validateToken'])
         ->name('password.validate-token')
         ->middleware('throttle:30,1'); // 30 checks per minute

@@ -20,7 +20,7 @@ class ResetPasswordController extends Controller
         $this->passwordResetService = $passwordResetService;
 
         // Apply rate limiting middleware
-        $this->middleware('throttle:10,60')->only(['reset']);
+        $this->middleware('throttle:30,60')->only(['reset']);
     }
 
     /**
@@ -63,9 +63,9 @@ class ResetPasswordController extends Controller
 
         // Advanced rate limiting
         $ipKey = 'reset-password-ip:' . $request->ip();
-        $executed = RateLimiter::attempt($ipKey, 5, function() {
+        $executed = RateLimiter::attempt($ipKey, 15, function() {
             return true;
-        }, 3600); // 5 attempts per hour per IP
+        }, 3600); // 15 attempts per hour per IP
 
         if (!$executed) {
             $seconds = RateLimiter::availableIn($ipKey);
@@ -146,9 +146,9 @@ class ResetPasswordController extends Controller
 
         // Per-email rate limiting for reset attempts
         $emailKey = 'reset-password-email:' . $email;
-        $emailExecuted = RateLimiter::attempt($emailKey, 3, function() {
+        $emailExecuted = RateLimiter::attempt($emailKey, 10, function() {
             return true;
-        }, 3600); // 3 attempts per hour per email
+        }, 3600); // 10 attempts per hour per email
 
         if (!$emailExecuted) {
             return back()->withErrors([
