@@ -289,8 +289,6 @@ function forgotPasswordHandler() {
         rateLimitData: {},
 
         init() {
-            console.log('Alpine.js forgotPasswordHandler initialized', { isSubmitting: this.isSubmitting });
-
             if (this.email) {
                 this.checkRateLimit();
             }
@@ -358,19 +356,15 @@ function forgotPasswordHandler() {
         },
 
         handleSubmit(event) {
-            console.log('handleSubmit called', { canSubmit: this.canSubmit, isSubmitting: this.isSubmitting });
-
             if (!this.canSubmit || this.isSubmitting) {
                 event.preventDefault();
                 return;
             }
 
-            console.log('Setting isSubmitting to true');
             this.isSubmitting = true;
 
             // Reset isSubmitting after form submission completes
             setTimeout(() => {
-                console.log('Resetting isSubmitting to false');
                 this.isSubmitting = false;
             }, 5000); // Reset after 5 seconds as fallback
         }
