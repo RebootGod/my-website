@@ -24,7 +24,7 @@ class UserActivityService
      * Log user activity
      */
     public function logActivity(
-        int $userId,
+        ?int $userId,
         string $activityType,
         string $description,
         array $metadata = [],

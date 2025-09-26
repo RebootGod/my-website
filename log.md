@@ -1,5 +1,82 @@
 # Development Log - Noobz Cinema
 
+## 2025-09-26 - User Activity Service Login Fix
+
+### Issue Identified
+- **Problem**: 500 Server Error pada saat login sebagai admin
+- **Error Message**: `UserActivityService::logActivity(): Argument #1 ($userId) must be of type int, null given`
+- **Root Cause**: Method `logActivity()` expects integer `$userId` but `logFailedLogin()` passes `null`
+
+### Investigation Results
+1. **Error Location**: `UserActivityService.php:26` - `logActivity()` method signature
+2. **Trigger Point**: `UserActivityService.php:74` - `logFailedLogin()` method calling `logActivity(null, ...)`
+3. **Call Stack**: LoginController calls `logFailedLogin()` for various failure scenarios (user not found, account suspended, wrong password)
+
+### Solution Implemented
+
+#### File Modified: `app/Services/UserActivityService.php`
+**BEFORE (Type Error)**:
+```php
+public function logActivity(
+    int $userId,  // <- Strict type, cannot accept null
+    string $activityType,
+    string $description,
+    // ...
+) {
+    return UserActivity::create([
+        'user_id' => $userId,
+        // ...
+    ]);
+}
+```
+
+**AFTER (Nullable Fix)**:
+```php
+public function logActivity(
+    ?int $userId, // <- Now accepts null for failed login attempts
+    string $activityType,
+    string $description,
+    // ...
+) {
+    return UserActivity::create([
+        'user_id' => $userId,
+        // ...
+    ]);
+}
+```
+
+#### Database Migration Created: `2025_09_26_040217_make_user_id_nullable_in_user_activities_table.php`
+**Migration Changes**:
+1. Drop existing foreign key constraint on `user_id`
+2. Make `user_id` field nullable to support failed login entries
+3. Re-add foreign key constraint with nullable support
+
+```php
+public function up(): void
+{
+    Schema::table('user_activities', function (Blueprint $table) {
+        // Drop foreign key constraint first
+        $table->dropForeign(['user_id']);
+        // Make user_id nullable
+        $table->foreignId('user_id')->nullable()->change();
+        // Re-add foreign key constraint with nullable
+        $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+    });
+}
+```
+
+### Technical Impact
+1. **Failed Login Tracking**: Now properly logs failed attempts with `user_id = null`
+2. **Security Audit**: Maintains security logging for suspicious activities
+3. **Database Integrity**: Preserves relational integrity with nullable foreign key
+4. **No Breaking Changes**: Existing functionality remains intact
+
+### Fixed Login Scenarios
+- ✅ **User Not Found**: `logFailedLogin()` can log with null user_id
+- ✅ **Account Suspended**: Failed login attempts properly recorded
+- ✅ **Wrong Password**: Tracking works for authentication failures
+- ✅ **Successful Login**: Normal login flow unaffected
+
 ## 2025-09-25 - Sort By Functionality Fix
 
 ### Issue Identified
