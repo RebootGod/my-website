@@ -201,6 +201,36 @@ password_reset_tokens:
 
 **Status**: ✅ **COMPLETED** - Button text display issue resolved
 
+### Alpine.js Loading State Fix
+**Additional Issue Found**: Alpine.js `isSubmitting` state tidak reset setelah form submission
+- **Problem**: "Mengirim Email..." dan "Mereset Password..." tetap tampil setelah submit
+- **Root Cause**: Missing reset logic untuk `isSubmitting` state
+
+**Alpine.js Logic Fixed**:
+```javascript
+// Added automatic reset after 5 seconds
+handleSubmit(event) {
+    this.isSubmitting = true;
+
+    setTimeout(() => {
+        this.isSubmitting = false;
+    }, 5000); // Reset after 5 seconds as fallback
+}
+
+// Added event listener untuk reset state
+init() {
+    window.addEventListener('beforeunload', () => {
+        this.isSubmitting = false;
+    });
+}
+```
+
+**Files Modified**:
+- `resources/views/auth/forgot-password.blade.php` - Fixed handleSubmit() dan init()
+- `resources/views/auth/reset-password.blade.php` - Fixed handleSubmit() dan added init()
+
+**Status**: ✅ **COMPLETED** - Alpine.js loading state properly managed
+
 ## 2025-09-26 - User Activity Service Login Fix
 
 ### Issue Identified

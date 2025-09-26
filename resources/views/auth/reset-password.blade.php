@@ -384,6 +384,13 @@ function resetPasswordHandler() {
         },
         passwordsMatch: false,
 
+        init() {
+            // Reset loading state on page unload
+            window.addEventListener('beforeunload', () => {
+                this.isSubmitting = false;
+            });
+        },
+
         togglePassword(field) {
             const input = document.querySelector(`input[name="${field}"]`);
             if (field === 'password') {
@@ -454,6 +461,11 @@ function resetPasswordHandler() {
             }
 
             this.isSubmitting = true;
+
+            // Reset isSubmitting after form submission completes
+            setTimeout(() => {
+                this.isSubmitting = false;
+            }, 5000); // Reset after 5 seconds as fallback
         }
     }
 }
