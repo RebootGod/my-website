@@ -220,6 +220,11 @@
                         </div>
                     @endif
 
+                    <!-- Alpine.js Test -->
+                    <div x-data="{ test: 'Alpine.js Working!' }" class="mb-3">
+                        <small x-text="test" class="text-success"></small>
+                    </div>
+
                     <form method="POST" action="{{ route('password.email') }}" id="forgotPasswordForm"
                           x-data="forgotPasswordHandler()" @submit="handleSubmit">
                         @csrf
@@ -281,6 +286,18 @@
 
 @push('scripts')
 <script>
+// Test Alpine.js availability
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM loaded');
+    console.log('window.Alpine:', window.Alpine);
+    console.log('Alpine available:', typeof window.Alpine !== 'undefined');
+
+    // Test after Alpine loads
+    setTimeout(() => {
+        console.log('After timeout - window.Alpine:', window.Alpine);
+    }, 1000);
+});
+
 function forgotPasswordHandler() {
     return {
         email: '{{ old('email') }}',
