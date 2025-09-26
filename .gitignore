@@ -224,6 +224,9 @@ jspm_packages/
 /CLAUDE.md.backup
 /notes/
 /docs/internal/
+/error/
+/tests/
+log.md
 dbstructure.md
 dbresult.md
 functionresult.md
