@@ -215,22 +215,12 @@
                             @foreach($relatedMovies as $related)
                                 <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6">
                                     <a href="{{ route('movies.show', $related->slug) }}" class="card bg-dark border-secondary h-100 text-decoration-none hover-card">
-                                        {{-- Use exact same logic as movie details page --}}
-                                        @if($related->poster_url && filter_var($related->poster_url, FILTER_VALIDATE_URL))
-                                            <img src="{{ $related->poster_path ? (str_starts_with($related->poster_path, 'http') ? $related->poster_path : 'https://image.tmdb.org/t/p/w300' . $related->poster_path) : ($related->poster_url ?: 'https://placehold.co/200x300/343a40/ffffff?text=No+Poster') }}"
-                                                 alt="{{ $related->title }}"
-                                                 class="card-img-top"
-                                                 style="height: 280px; object-fit: cover;"
-                                                 loading="lazy"
-                                                 onerror="this.onerror=null; this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                                            <div class="card-img-top d-flex align-items-center justify-content-center bg-secondary" style="height: 280px; display: none;">
-                                                <span style="color: #9ca3af; font-size: 2rem;">🎬</span>
-                                            </div>
-                                        @else
-                                            <div class="card-img-top d-flex align-items-center justify-content-center bg-secondary" style="height: 280px;">
-                                                <span style="color: #9ca3af; font-size: 2rem;">🎬</span>
-                                            </div>
-                                        @endif
+                                        {{-- EXACT same structure as movie details page - single img element --}}
+                                        <img src="{{ $related->poster_path ? (str_starts_with($related->poster_path, 'http') ? $related->poster_path : 'https://image.tmdb.org/t/p/w300' . $related->poster_path) : ($related->poster_url ?: 'https://placehold.co/200x300/343a40/ffffff?text=No+Poster') }}"
+                                             alt="{{ $related->title }}"
+                                             class="card-img-top"
+                                             style="height: 280px; object-fit: cover;"
+                                             loading="lazy">
                                         <div class="card-body p-3">
                                             <h6 class="card-title text-white mb-2" style="font-size: 0.9rem; line-height: 1.3;">{{ $related->title }}</h6>
                                             <div class="d-flex justify-content-between">
