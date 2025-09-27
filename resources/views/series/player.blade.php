@@ -4,7 +4,7 @@
 @section('title', 'Watching: ' . $series->title . ' - Episode ' . $episode->episode_number . ' - Noobz Cinema')
 
 @push('styles')
-@vite('resources/css/pages/player.css')
+<link rel="stylesheet" href="{{ asset('css/series-player.css') }}">
 @endpush
 
 @section('content')
