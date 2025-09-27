@@ -1,8 +1,9 @@
 {
   "permissions": {
     "allow": [
+      "Bash(git commit:*)",
       "Bash(git push:*)",
-      "Bash(git commit -m \"$(cat <<''EOF''\nfix: Add missing CSS/JS files to public directory\n\n🚨 CRITICAL FIX: Login page broken due to missing public assets\n\n**Issue**: \n- CSS/JS files created in resources/ but missing in public/\n- Login page showing MIME type errors and broken styling\n- initializeLoginForm is not defined errors\n\n**Files Added to Public**:\n- public/css/auth.css (350+ lines auth styling)\n- public/css/series-player.css (397 lines series styling)  \n- public/js/auth/ directory with 4 JS files:\n  * login.js, register.js, forgot-password.js, reset-password.js\n\n**Root Cause**: \nFile separation created resources/ files but forgot to copy to public/\nLaravel asset() helper requires files in public/ directory\n\n**Impact**: \n✅ Login page functionality restored\n✅ Auth system styling/JS working properly\n✅ Production deployment fixed\n\n🤖 Generated with [Claude Code](https://claude.ai/code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")"
+      "Bash(git add:*)"
     ],
     "deny": [],
     "ask": []

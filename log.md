@@ -9,6 +9,13 @@
 - **Impact**: Poor UX, no visual indication of episodes
 - **Status**: ✅ FIXED - Posters now display with proper TMDB URLs
 
+### Episode Poster Size Optimization
+🔧 **Poster Size Too Large** - Episode thumbnails were oversized
+- **Problem**: Episode posters displaying at 120px x 68px (too large)
+- **Solution**: Reduced to 80px x 45px (maintains 16:9 aspect ratio)
+- **Updated**: `.episode-poster` CSS dimensions + min-height adjustment
+- **Status**: ✅ FIXED - More proportional poster sizing
+
 ### Fixes Applied
 
 #### **1. Episode Model Enhancement**
