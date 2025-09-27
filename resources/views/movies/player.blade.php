@@ -220,20 +220,23 @@
                                             $rawPosterUrl = $related->getAttributes()['poster_url'] ?? null;
                                             $rawPosterPath = $related->getAttributes()['poster_path'] ?? null;
                                             $finalPosterUrl = $rawPosterUrl ?: $rawPosterPath;
-
-                                            if (!$finalPosterUrl) {
-                                                $finalPosterUrl = 'https://placehold.co/500x750/1a1a2e/ffffff?text=' . urlencode($related->title);
-                                            }
                                         @endphp
 
-
-                                        <img src="{{ $finalPosterUrl }}"
-                                             alt="{{ $related->title }}"
-                                             class="card-img-top"
-                                             style="height: 280px; object-fit: cover; width: 100%;"
-                                             onerror="this.onerror=null; this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                                        <div class="card-img-fallback d-flex align-items-center justify-content-center bg-secondary" style="height: 280px; display: none; width: 100%;">
-                                            <span style="color: #9ca3af; font-size: 2rem;">🎬</span>
+                                        <div class="position-relative" style="height: 280px; overflow: hidden;">
+                                            @if($finalPosterUrl)
+                                                <img src="{{ $finalPosterUrl }}"
+                                                     alt="{{ $related->title }}"
+                                                     class="card-img-top"
+                                                     style="height: 100%; width: 100%; object-fit: cover; position: absolute; top: 0; left: 0;"
+                                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                                <div class="d-flex align-items-center justify-content-center bg-secondary" style="height: 100%; width: 100%; position: absolute; top: 0; left: 0; display: none;">
+                                                    <span style="color: #9ca3af; font-size: 2rem;">🎬</span>
+                                                </div>
+                                            @else
+                                                <div class="d-flex align-items-center justify-content-center bg-secondary" style="height: 100%; width: 100%;">
+                                                    <span style="color: #9ca3af; font-size: 2rem;">🎬</span>
+                                                </div>
+                                            @endif
                                         </div>
                                         <div class="card-body p-3">
                                             <h6 class="card-title text-white mb-2" style="font-size: 0.9rem; line-height: 1.3;">{{ $related->title }}</h6>
