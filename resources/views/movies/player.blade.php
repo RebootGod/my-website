@@ -230,9 +230,9 @@
                                         <img src="{{ $finalPosterUrl }}"
                                              alt="{{ $related->title }}"
                                              class="card-img-top"
-                                             style="height: 280px; object-fit: cover;"
+                                             style="height: 280px; object-fit: cover; width: 100%;"
                                              onerror="this.onerror=null; this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                                        <div class="card-img-top d-flex align-items-center justify-content-center bg-secondary" style="height: 280px; display: none;">
+                                        <div class="card-img-fallback d-flex align-items-center justify-content-center bg-secondary" style="height: 280px; display: none; width: 100%;">
                                             <span style="color: #9ca3af; font-size: 2rem;">🎬</span>
                                         </div>
                                         <div class="card-body p-3">
