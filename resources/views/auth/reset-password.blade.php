@@ -327,14 +327,18 @@
                         <button type="submit"
                                 class="btn btn-primary"
                                 :disabled="isSubmitting || !canSubmit()">
-                            <span x-show="isSubmitting" class="d-flex align-items-center justify-content-center">
-                                <span class="loading-spinner"></span>
-                                Mereset Password...
-                            </span>
-                            <span x-show="!isSubmitting" class="d-flex align-items-center justify-content-center">
-                                <i class="fas fa-key me-2"></i>
-                                Reset Password
-                            </span>
+                            <template x-if="isSubmitting">
+                                <span class="d-flex align-items-center justify-content-center">
+                                    <span class="loading-spinner"></span>
+                                    Mereset Password...
+                                </span>
+                            </template>
+                            <template x-if="!isSubmitting">
+                                <span class="d-flex align-items-center justify-content-center">
+                                    <i class="fas fa-key me-2"></i>
+                                    Reset Password
+                                </span>
+                            </template>
                         </button>
 
                         <div class="auth-links">
@@ -454,15 +458,17 @@ function resetPasswordHandler() {
                    this.passwordStrength.strength === 'strong';
         },
 
-        handleSubmit() {
+        handleSubmit(event) {
             if (!this.canSubmit() || this.isSubmitting) {
                 return;
             }
 
             this.isSubmitting = true;
 
-            // Submit the form
-            this.$el.submit();
+            // Submit the form after setting loading state
+            setTimeout(() => {
+                event.target.submit();
+            }, 100);
         }
     }
 }
