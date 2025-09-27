@@ -215,36 +215,22 @@
                             @foreach($relatedMovies as $related)
                                 <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6">
                                     <a href="{{ route('movies.show', $related->slug) }}" class="card bg-dark border-secondary h-100 text-decoration-none hover-card">
-                                        @php
-                                            // Priority fallback: poster_url -> poster_path -> placeholder
-                                            $rawPosterUrl = $related->getAttributes()['poster_url'] ?? null;
-                                            $rawPosterPath = $related->getAttributes()['poster_path'] ?? null;
-                                            $finalPosterUrl = $rawPosterUrl ?: $rawPosterPath;
-
-                                            // For now, use guaranteed working placeholder until TMDB issue resolved
-                                            $workingPosterUrl = 'https://placehold.co/500x750/2d3748/ffffff?text=' . urlencode($related->title);
-
-                                            // Try TMDB first, but immediate fallback if issues
-                                            if ($finalPosterUrl && strpos($finalPosterUrl, 'tmdb.org') !== false) {
-                                                // TMDB URLs seem to have CORS issues, use placeholder for now
-                                                $workingPosterUrl = 'https://placehold.co/500x750/1a1a2e/00ff88?text=' . urlencode($related->title);
-                                            } else if ($finalPosterUrl) {
-                                                $workingPosterUrl = $finalPosterUrl;
-                                            }
-                                        @endphp
-
-                                        <div class="position-relative" style="height: 280px; overflow: hidden;">
-                                            <img src="{{ $workingPosterUrl }}"
+                                        {{-- Use exact same logic as movie details page --}}
+                                        @if($related->poster_url && filter_var($related->poster_url, FILTER_VALIDATE_URL))
+                                            <img src="{{ $related->poster_path ? (str_starts_with($related->poster_path, 'http') ? $related->poster_path : 'https://image.tmdb.org/t/p/w300' . $related->poster_path) : ($related->poster_url ?: 'https://placehold.co/200x300/343a40/ffffff?text=No+Poster') }}"
                                                  alt="{{ $related->title }}"
                                                  class="card-img-top"
-                                                 style="height: 100%; width: 100%; object-fit: cover; position: absolute; top: 0; left: 0;"
-                                                 onerror="console.log('Image failed:', this.src); this.style.display='none'; this.nextElementSibling.style.display='flex';">
-
-                                            {{-- Fallback only shows if image fails to load --}}
-                                            <div class="d-flex align-items-center justify-content-center bg-secondary" style="height: 100%; width: 100%; position: absolute; top: 0; left: 0; display: none;">
+                                                 style="height: 280px; object-fit: cover;"
+                                                 loading="lazy"
+                                                 onerror="this.onerror=null; this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                            <div class="card-img-top d-flex align-items-center justify-content-center bg-secondary" style="height: 280px; display: none;">
                                                 <span style="color: #9ca3af; font-size: 2rem;">🎬</span>
                                             </div>
-                                        </div>
+                                        @else
+                                            <div class="card-img-top d-flex align-items-center justify-content-center bg-secondary" style="height: 280px;">
+                                                <span style="color: #9ca3af; font-size: 2rem;">🎬</span>
+                                            </div>
+                                        @endif
                                         <div class="card-body p-3">
                                             <h6 class="card-title text-white mb-2" style="font-size: 0.9rem; line-height: 1.3;">{{ $related->title }}</h6>
                                             <div class="d-flex justify-content-between">
