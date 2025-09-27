@@ -4,7 +4,7 @@
 @section('title', 'Watching: ' . $movie->title . ' - Cinema')
 
 @push('styles')
-<link rel="stylesheet" href="{{ asset('resources/css/movie-player.css') }}">
+<link rel="stylesheet" href="{{ asset('css/movie-player.css') }}">
 @endpush
 
 @section('content')
@@ -300,7 +300,7 @@
 @endsection
 
 @push('scripts')
-<script src="{{ asset('resources/js/movie-player.js') }}"></script>
+<script src="{{ asset('js/movie-player.js') }}"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         initializeMoviePlayer({
