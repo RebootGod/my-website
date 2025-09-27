@@ -221,14 +221,23 @@
                         @forelse($stats['most_active_users'] as $activeUser)
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center">
-                                    <div class="user-avatar">
-                                        {{ substr($activeUser->user->username, 0, 1) }}
-                                    </div>
-                                    <div class="ml-3">
-                                        <a href="{{ route('admin.user-activity.show', $activeUser->user) }}" class="text-white hover:text-blue-400">
-                                            {{ $activeUser->user->username }}
-                                        </a>
-                                    </div>
+                                    @if($activeUser->user)
+                                        <div class="user-avatar">
+                                            {{ substr($activeUser->user->username, 0, 1) }}
+                                        </div>
+                                        <div class="ml-3">
+                                            <a href="{{ route('admin.user-activity.show', $activeUser->user) }}" class="text-white hover:text-blue-400">
+                                                {{ $activeUser->user->username }}
+                                            </a>
+                                        </div>
+                                    @else
+                                        <div class="user-avatar">
+                                            ?
+                                        </div>
+                                        <div class="ml-3">
+                                            <span class="text-gray-400">Anonymous/System</span>
+                                        </div>
+                                    @endif
                                 </div>
                                 <span class="text-gray-400 text-sm">
                                     {{ $activeUser->activity_count }} activities

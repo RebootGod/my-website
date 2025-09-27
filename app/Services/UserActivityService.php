@@ -252,8 +252,9 @@ class UserActivityService
                 ->pluck('count', 'activity_type')
                 ->toArray();
 
-            // Most active users
+            // Most active users (excluding anonymous activities)
             $mostActiveUsers = UserActivity::where('activity_at', '>=', $startDate)
+                ->whereNotNull('user_id') // Exclude failed login attempts
                 ->select('user_id', DB::raw('count(*) as activity_count'))
                 ->with('user:id,username')
                 ->groupBy('user_id')
