@@ -220,17 +220,24 @@
                                             $rawPosterUrl = $related->getAttributes()['poster_url'] ?? null;
                                             $rawPosterPath = $related->getAttributes()['poster_path'] ?? null;
                                             $finalPosterUrl = $rawPosterUrl ?: $rawPosterPath;
+
+                                            // For now, use guaranteed working placeholder until TMDB issue resolved
+                                            $workingPosterUrl = 'https://placehold.co/500x750/2d3748/ffffff?text=' . urlencode($related->title);
+
+                                            // Try TMDB first, but immediate fallback if issues
+                                            if ($finalPosterUrl && strpos($finalPosterUrl, 'tmdb.org') !== false) {
+                                                // TMDB URLs seem to have CORS issues, use placeholder for now
+                                                $workingPosterUrl = 'https://placehold.co/500x750/1a1a2e/00ff88?text=' . urlencode($related->title);
+                                            } else if ($finalPosterUrl) {
+                                                $workingPosterUrl = $finalPosterUrl;
+                                            }
                                         @endphp
 
                                         <div class="position-relative" style="height: 280px; overflow: hidden;">
-
-                                            {{-- Always show image with proper error handling --}}
-                                            <img src="{{ $finalPosterUrl ?: 'https://placehold.co/500x750/1a1a2e/ffffff?text=' . urlencode($related->title) }}"
+                                            <img src="{{ $workingPosterUrl }}"
                                                  alt="{{ $related->title }}"
                                                  class="card-img-top"
                                                  style="height: 100%; width: 100%; object-fit: cover; position: absolute; top: 0; left: 0;"
-                                                 crossorigin="anonymous"
-                                                 loading="lazy"
                                                  onerror="console.log('Image failed:', this.src); this.style.display='none'; this.nextElementSibling.style.display='flex';">
 
                                             {{-- Fallback only shows if image fails to load --}}
