@@ -216,27 +216,16 @@
                                 <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6">
                                     <a href="{{ route('movies.show', $related->slug) }}" class="card bg-dark border-secondary h-100 text-decoration-none hover-card">
                                         @php
-                                            // Debug: Check all poster sources
+                                            // Priority fallback: poster_url -> poster_path -> placeholder
                                             $rawPosterUrl = $related->getAttributes()['poster_url'] ?? null;
                                             $rawPosterPath = $related->getAttributes()['poster_path'] ?? null;
-                                            $accessorUrl = $related->poster_url;
-
-                                            // Priority fallback logic
                                             $finalPosterUrl = $rawPosterUrl ?: $rawPosterPath;
 
-                                            // If still no URL, use placeholder
                                             if (!$finalPosterUrl) {
                                                 $finalPosterUrl = 'https://placehold.co/500x750/1a1a2e/ffffff?text=' . urlencode($related->title);
                                             }
                                         @endphp
 
-                                        {{-- Debug info (remove in production) --}}
-                                        <div style="font-size: 10px; color: #ffffff; background: rgba(0,0,0,0.8); padding: 5px; position: absolute; top: 0; left: 0; z-index: 10; max-width: 200px; word-wrap: break-word;">
-                                            <strong>{{ $related->title }}</strong><br>
-                                            Raw URL: {{ $rawPosterUrl ?: 'NULL' }}<br>
-                                            Raw Path: {{ $rawPosterPath ?: 'NULL' }}<br>
-                                            Final: {{ $finalPosterUrl }}
-                                        </div>
 
                                         <img src="{{ $finalPosterUrl }}"
                                              alt="{{ $related->title }}"
