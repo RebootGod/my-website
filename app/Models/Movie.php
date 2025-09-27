@@ -304,7 +304,8 @@ class Movie extends Model
      */
     public function getPosterUrlAttribute(): string
     {
-        return $this->poster_path ?: 'https://placehold.co/500x750?text=No+Poster';
+        // Priority: poster_url field -> poster_path field -> placeholder
+        return $this->attributes['poster_url'] ?: $this->poster_path ?: 'https://placehold.co/500x750?text=No+Poster';
     }
 
     /**

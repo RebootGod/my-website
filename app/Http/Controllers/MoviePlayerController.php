@@ -90,7 +90,7 @@ class MoviePlayerController extends Controller
             ->published()
             ->inRandomOrder()
             ->limit(5)
-            ->get(['id', 'title', 'slug', 'poster_url', 'year', 'rating']);
+            ->get(['id', 'title', 'slug', 'poster_url', 'poster_path', 'year', 'rating']);
         }
 
         // Ensure all required variables are present
