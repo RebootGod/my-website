@@ -268,7 +268,7 @@
                     @endif
 
                     <form method="POST" action="{{ route('password.update') }}" id="resetPasswordForm"
-                          x-data="resetPasswordHandler()" @submit="handleSubmit">
+                          x-data="resetPasswordHandler()" @submit.prevent="handleSubmit">
                         @csrf
 
                         <input type="hidden" name="token" value="{{ $token }}">
@@ -454,18 +454,15 @@ function resetPasswordHandler() {
                    this.passwordStrength.strength === 'strong';
         },
 
-        handleSubmit(event) {
+        handleSubmit() {
             if (!this.canSubmit() || this.isSubmitting) {
-                event.preventDefault();
                 return;
             }
 
             this.isSubmitting = true;
 
-            // Reset isSubmitting after form submission completes
-            setTimeout(() => {
-                this.isSubmitting = false;
-            }, 5000); // Reset after 5 seconds as fallback
+            // Submit the form
+            this.$el.submit();
         }
     }
 }
