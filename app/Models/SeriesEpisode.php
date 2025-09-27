@@ -53,7 +53,11 @@ class SeriesEpisode extends Model
     // Accessors
     public function getStillUrlAttribute(): string
     {
-        return $this->still_path ?: 'https://via.placeholder.com/500x281?text=No+Still';
+        if ($this->still_path) {
+            return 'https://image.tmdb.org/t/p/w500' . $this->still_path;
+        }
+
+        return 'https://via.placeholder.com/500x281?text=No+Still';
     }
 
     public function getFormattedRuntime(): string

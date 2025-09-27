@@ -237,8 +237,165 @@ body {
     color: #ffffff;
     transition: all 0.3s ease;
     display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
+    align-items: center;
+    gap: 1rem;
+    min-height: 120px;
+}
+
+.episode-poster {
+    flex-shrink: 0;
+    width: 120px;
+    height: 68px;
+    border-radius: 8px;
+    overflow: hidden;
+    background: rgba(0, 0, 0, 0.3);
+}
+
+.episode-thumbnail {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.episode-item:hover .episode-thumbnail {
+    transform: scale(1.05);
+}
+
+.episode-info {
+    flex: 1;
+    min-width: 0;
+}
+
+/* Episode Details Styling */
+.episode-details {
+    color: white;
+}
+
+.episode-title {
+    color: #3498db;
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+}
+
+.episode-meta {
+    margin-bottom: 1rem;
+}
+
+.meta-item {
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.episode-overview {
+    color: #bdc3c7;
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+/* Episodes List Styling */
+.episodes-list {
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+.episode-name {
+    color: white;
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.episode-desc {
+    color: #bdc3c7;
+    font-size: 0.85rem;
+    margin-bottom: 0.5rem;
+}
+
+.episode-meta-small {
+    font-size: 0.8rem;
+    color: #95a5a6;
+}
+
+.episode-actions {
+    flex-shrink: 0;
+    margin-left: 1rem;
+}
+
+/* Related Series Grid */
+.related-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 1rem;
+}
+
+.related-item {
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.3s ease;
+}
+
+.related-item:hover {
+    transform: translateY(-5px);
+    color: inherit;
+    text-decoration: none;
+}
+
+.related-poster {
+    width: 100%;
+    height: 225px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+}
+
+.related-info {
+    text-align: center;
+}
+
+.related-title {
+    color: white;
+    font-size: 0.9rem;
+    margin-bottom: 0.25rem;
+}
+
+.related-meta {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    font-size: 0.8rem;
+    color: #bdc3c7;
+}
+
+/* Report Modal Styling */
+#reportModal {
+    background: rgba(0, 0, 0, 0.9);
+    backdrop-filter: blur(10px);
+}
+
+#reportModal .info-card {
+    background: rgba(15, 23, 42, 0.95);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+}
+
+#reportModal input,
+#reportModal select,
+#reportModal textarea {
+    background: rgba(55, 65, 81, 0.8);
+    border: 1px solid rgba(75, 85, 99, 0.5);
+    border-radius: 8px;
+    padding: 0.75rem;
+    color: white;
+    font-size: 0.9rem;
+}
+
+#reportModal input:focus,
+#reportModal select:focus,
+#reportModal textarea:focus {
+    border-color: rgba(59, 130, 246, 0.6);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
 .episode-item:hover {
