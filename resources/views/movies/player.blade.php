@@ -223,22 +223,15 @@
                                         @endphp
 
                                         <div class="position-relative" style="height: 280px; overflow: hidden;">
-                                            {{-- Debug: Show what we have --}}
-                                            <div style="position: absolute; top: 0; right: 0; background: rgba(255,0,0,0.8); color: white; font-size: 10px; z-index: 999; padding: 2px; max-width: 120px; word-wrap: break-word;">
-                                                Final: {{ $finalPosterUrl ? 'YES' : 'NO' }}<br>
-                                                Raw: {{ $rawPosterUrl ? 'YES' : 'NO' }}<br>
-                                                Path: {{ $rawPosterPath ? 'YES' : 'NO' }}<br>
-                                                @if($finalPosterUrl)
-                                                    URL: {{ substr($finalPosterUrl, 0, 30) }}...
-                                                @endif
-                                            </div>
 
-                                            {{-- Always show image with fallback logic --}}
+                                            {{-- Always show image with proper error handling --}}
                                             <img src="{{ $finalPosterUrl ?: 'https://placehold.co/500x750/1a1a2e/ffffff?text=' . urlencode($related->title) }}"
                                                  alt="{{ $related->title }}"
                                                  class="card-img-top"
                                                  style="height: 100%; width: 100%; object-fit: cover; position: absolute; top: 0; left: 0;"
-                                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                                 crossorigin="anonymous"
+                                                 loading="lazy"
+                                                 onerror="console.log('Image failed:', this.src); this.style.display='none'; this.nextElementSibling.style.display='flex';">
 
                                             {{-- Fallback only shows if image fails to load --}}
                                             <div class="d-flex align-items-center justify-content-center bg-secondary" style="height: 100%; width: 100%; position: absolute; top: 0; left: 0; display: none;">
