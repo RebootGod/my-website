@@ -557,7 +557,7 @@ class AdminSeriesController extends Controller
         $episode->load('season');
         $series->load('seasons');
 
-        return view('admin.series.episode-edit', compact('series', 'episode'));
+        return view('admin.series.episode-edit-modern', compact('series', 'episode'));
     }
 
     /**
