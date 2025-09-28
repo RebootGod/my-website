@@ -28,26 +28,6 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        // SECURITY: Handle exceptions securely in production
-        $exceptions->render(function (Throwable $e, $request) {
-            // Never expose sensitive information in production
-            if (app()->environment('production')) {
-                // Log the actual error for debugging
-                \Log::error('Application Error', [
-                    'message' => $e->getMessage(),
-                    'file' => $e->getFile(),
-                    'line' => $e->getLine(),
-                    'url' => $request->fullUrl(),
-                    'user_agent' => $request->userAgent(),
-                    'ip' => $request->ip(),
-                    'user_id' => auth()->id(),
-                    'trace' => $e->getTraceAsString()
-                ]);
-            }
-            
-            return null; // Let Laravel handle with custom error pages
-        });
-
         // SECURITY: Don't report authentication errors to avoid log spam
         $exceptions->dontReport([
             \Illuminate\Auth\AuthenticationException::class,
