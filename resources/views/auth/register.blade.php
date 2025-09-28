@@ -33,7 +33,7 @@
                     {{-- Invite Code Info --}}
                     <div class="text-center mb-4">
                         <p class="text-light mb-2">
-                            <i class="fas fa-info-circle me-2"></i>Butuh Invite Code?
+                            <i class="fas fa-info-circle me-2"></i>Butuh Invite Code? Join Telegram Channel kami:
                         </p>
                         <a href="https://t.me/noobzspace" class="auth-link" target="_blank">
                             <i class="fab fa-telegram me-2"></i>t.me/noobzspace
