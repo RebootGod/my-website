@@ -70,10 +70,6 @@ Route::middleware('guest')->group(function () {
     Route::post('/register', [RegisterController::class, 'register'])
         ->middleware('throttle:10,1'); // 10 attempts per minute
     
-    // Invite Code Validation - Rate Limited
-    Route::post('/check-invite-code', [RegisterController::class, 'checkInviteCode'])
-        ->name('auth.validate-invite-code')
-        ->middleware('throttle:10,1'); // 10 checks per minute for live validation
 
     // Password Reset Routes - Rate Limited for Security
     Route::get('/forgot-password', [ForgotPasswordController::class, 'showLinkRequestForm'])

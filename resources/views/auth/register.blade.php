@@ -30,7 +30,7 @@
                 <div class="auth-card p-5">
                     <h2 class="auth-title">🎬 REGISTER</h2>
 
-                    <form method="POST" action="{{ route('register') }}" id="registerForm" x-data="registerHandler()">
+                    <form method="POST" action="{{ route('register') }}" id="registerForm">
                         @csrf
 
                         <div class="row">
@@ -142,16 +142,7 @@
                                 required
                                 maxlength="50"
                                 autocomplete="off"
-                                x-model="inviteCode"
-                                @input.debounce.500ms="validateInviteCode()"
                             >
-
-                            {{-- Real-time validation feedback --}}
-                            <div id="inviteCodeFeedback"
-                                 x-show="inviteCodeValid !== null"
-                                 x-text="inviteCodeValid === true ? 'Invite code valid!' : 'Invite code tidak valid'"
-                                 :class="inviteCodeValid === true ? 'text-success mt-1' : 'text-danger mt-1'">
-                            </div>
 
                             @error('invite_code')
                                 <div class="invalid-feedback d-block">
@@ -189,14 +180,3 @@
 </div>
 @endsection
 
-@push('scripts')
-<script src="{{ asset('js/auth/register.js') }}"></script>
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        initializeRegisterForm({
-            csrfToken: '{{ csrf_token() }}',
-            inviteCodeUrl: '{{ route('auth.validate-invite-code') }}'
-        });
-    });
-</script>
-@endpush

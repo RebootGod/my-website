@@ -97,6 +97,32 @@ The `checkInviteCode()` method exists in RegisterController with proper:
 
 **Status**: ✅ **COMPLETED** - Full real-time invite code validation working
 
+### Simplification: Remove Real-time Validation
+
+#### **Decision to Simplify**:
+- **Issue**: Real-time validation complexity causing maintenance overhead
+- **Solution**: Remove Alpine.js and real-time checking for simpler, more reliable form
+- **Approach**: Keep only server-side validation on form submission
+
+#### **Changes Made**:
+**File Modified**: `resources/views/auth/register.blade.php`
+1. **Removed Alpine.js**: Removed `x-data="registerHandler()"` binding
+2. **Simplified Input**: Removed `x-model` and `@input` event handlers
+3. **Removed Feedback**: Removed real-time validation feedback div
+4. **Removed Scripts**: Removed JavaScript initialization and asset loading
+
+**File Modified**: `routes/web.php`
+1. **Removed Route**: Removed unused `auth.validate-invite-code` route
+2. **Cleaner Routes**: Simplified route structure
+
+#### **Result**:
+- **Simple Form**: Standard HTML form with server-side validation only
+- **Reliable**: No JavaScript dependencies or AJAX complexity
+- **Professional**: Clean, maintainable code structure
+- **User Experience**: Validation happens on form submit (standard behavior)
+
+**Status**: ✅ **SIMPLIFIED** - Register form now uses standard server-side validation only
+
 ---
 
 ## 2025-09-28 - Episode Poster Fix + Series Player Clean-up
