@@ -315,6 +315,13 @@ function showError(message) {
     }, 5000);
 }
 
+function hideError() {
+    const errorDiv = document.getElementById('errorMessage');
+    if (errorDiv) {
+        errorDiv.style.display = 'none';
+    }
+}
+
 // Modal functions
 function openImportModal(movie) {
     const tmdbIdInput = document.getElementById('tmdbId');
