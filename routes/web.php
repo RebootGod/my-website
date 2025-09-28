@@ -108,7 +108,7 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout')->midd
 |--------------------------------------------------------------------------
 */
 
-Route::middleware(['auth', 'check.user.status', 'password.rehash'])->group(function () {
+Route::middleware(['auth', 'check.user.status'])->group(function () {
 
     // Movie Player (Members Only)
     Route::get('/movie/{movie:slug}/play', [MoviePlayerController::class, 'play'])

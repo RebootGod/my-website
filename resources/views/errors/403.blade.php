@@ -4,7 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Akses Ditolak - {{ config('app.name') }}</title>
-    <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    @if(file_exists(public_path('css/app.css')))
+    <link href="{{ asset('css/app.css') }}?v={{ filemtime(public_path('css/app.css')) }}" rel="stylesheet">
+    @else
+    <link href="{{ asset('css/app.css') }}?v={{ time() }}" rel="stylesheet">
+    @endif
     <script src="https://cdn.tailwindcss.com" 
             integrity="sha384-6pzBo8GQ1xaHYbpRYwrFcPmLLtZ3JzKE5by3fTBqtBr3vLI6O5xmHwqDYh1pJ4" 
             crossorigin="anonymous"></script>

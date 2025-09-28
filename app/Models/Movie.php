@@ -83,17 +83,8 @@ class Movie extends Model
         return $this->hasMany(MovieView::class);
     }
     
-    public function watchHistory()
-    {
-        return $this->hasMany(WatchHistory::class);
-    }
-    
-    public function favorites()
-    {
-        return $this->hasMany(Favorite::class);
-    }
-
-    // ========================================
+    // Removed unused watchHistory and favorites relationships
+    // to prevent errors with non-existent models    // ========================================
     // SEARCH SCOPES
     // ========================================
     
