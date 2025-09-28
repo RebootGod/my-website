@@ -343,6 +343,7 @@ class SecurityTestingService
             'application' => 'Noobz Movie Platform',
             'environment' => app()->environment(),
             'owasp_version' => 'OWASP Top 10 2024/2025',
+            'overall_score' => $testResults['overall_score'],
             'compliance_status' => $this->getComplianceStatus($testResults['overall_score']),
             'executive_summary' => $this->generateExecutiveSummary($testResults),
             'detailed_findings' => $testResults['test_results'],
@@ -790,8 +791,14 @@ class SecurityTestingService
     // Helper methods for calculations
     private function calculateOverallStatus($results)
     {
-        $passCount = collect($results)->where('status', 'PASS')->count();
+        $passCount = 0;
         $totalCount = count($results);
+        
+        foreach ($results as $result) {
+            if (isset($result['status']) && $result['status'] === 'PASS') {
+                $passCount++;
+            }
+        }
         
         if ($passCount === $totalCount) return 'PASS';
         if ($passCount >= $totalCount * 0.8) return 'WARN';
