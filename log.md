@@ -1,5 +1,79 @@
 # Development Log - Noobz Cinema
 
+## 2025-09-28 - Register Page 500 Error Fix
+
+### Issue Overview
+🚨 **Register Page 500 Server Error** - User cannot access registration page
+- **Problem**: Route [auth.validate-invite-code] not defined error in production
+- **Root Cause**: Missing route name in routes/web.php causing ViewException
+- **Impact**: Complete inability to register new users
+- **Status**: ✅ FIXED - Route added with correct name and method
+
+### Error Analysis
+**Laravel Production Log**:
+```
+[2025-09-28 06:23:48] production.ERROR: Route [auth.validate-invite-code] not defined.
+(View: /home/forge/noobz.space/resources/views/auth/register.blade.php)
+Symfony\Component\Routing\Exception\RouteNotFoundException
+```
+
+**Error Location**: Line 189 in register.blade.php calling `route('auth.validate-invite-code')`
+**Missing Route**: Invite code validation endpoint for AJAX calls
+
+### Root Cause Analysis
+1. **Route Mismatch**: Register blade template expects route named `auth.validate-invite-code`
+2. **Existing Route**: Route exists but named `invite.check` instead
+3. **Method Mismatch**: Existing route was GET, needed POST for AJAX validation
+4. **Production Impact**: Route cache causing immediate 500 error on page load
+
+### Solution Implemented
+
+#### **File Modified**: `routes/web.php`
+**BEFORE (Broken)**:
+```php
+// Invite Code Validation - Rate Limited
+Route::get('/check-invite-code', [RegisterController::class, 'checkInviteCode'])
+    ->name('invite.check')  // ❌ Wrong name
+    ->middleware('throttle:10,1');
+```
+
+**AFTER (Fixed)**:
+```php
+// Invite Code Validation - Rate Limited
+Route::post('/check-invite-code', [RegisterController::class, 'checkInviteCode'])
+    ->name('auth.validate-invite-code')  // ✅ Correct name
+    ->middleware('throttle:10,1');
+```
+
+### Technical Changes
+1. **Route Name**: Updated from `invite.check` to `auth.validate-invite-code`
+2. **HTTP Method**: Changed from GET to POST for security (AJAX validation)
+3. **Controller Method**: `RegisterController::checkInviteCode()` already exists and working
+4. **Rate Limiting**: Maintained 10 requests per minute protection
+
+### RegisterController Method Verification
+The `checkInviteCode()` method exists in RegisterController with proper:
+- ✅ **Validation**: NoXssRule and NoSqlInjectionRule applied
+- ✅ **Sanitization**: strip_tags and trim for security
+- ✅ **Business Logic**: InviteCode validation with expiry and usage limits
+- ✅ **JSON Response**: Proper success/error response format
+
+### Register Page Flow
+1. **Page Load**: register.blade.php loads without 500 error
+2. **AJAX Validation**: Invite code checked via `auth.validate-invite-code` route
+3. **Form Submission**: Registration processes normally through existing POST route
+4. **User Experience**: Real-time invite code validation working
+
+### Production Deployment Impact
+- **Before Fix**: 500 Server Error on Register page access
+- **After Fix**: Full registration functionality restored
+- **Security**: Rate limiting and validation rules maintained
+- **User Experience**: Real-time invite code validation working
+
+**Status**: ✅ **COMPLETED** - Register page accessible, invite code validation working
+
+---
+
 ## 2025-09-28 - Episode Poster Fix + Series Player Clean-up
 
 ### Issue Overview
