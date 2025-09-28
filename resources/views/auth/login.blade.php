@@ -115,16 +115,6 @@
                         </div>
                     </form>
 
-                    <hr class="my-4" style="border-color: rgba(255,255,255,0.2);">
-
-                    <div class="text-center">
-                        <p class="text-light mb-2">
-                            <i class="fas fa-info-circle me-2"></i>Butuh Invite Code?
-                        </p>
-                        <a href="https://t.me/noobzspace" class="auth-link" target="_blank">
-                            <i class="fab fa-telegram me-2"></i>t.me/noobzspace
-                        </a>
-                    </div>
                 </div>
             </div>
         </div>
