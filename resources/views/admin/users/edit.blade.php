@@ -85,7 +85,6 @@
                                     $currentUserLevel = auth()->user()->getHierarchyLevel();
                                     $availableRoles = [
                                         'member' => ['name' => 'Member', 'level' => 0],
-                                        'moderator' => ['name' => 'Moderator', 'level' => 60],
                                         'admin' => ['name' => 'Admin', 'level' => 80],
                                         'super_admin' => ['name' => 'Super Admin', 'level' => 100],
                                     ];

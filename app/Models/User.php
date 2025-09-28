@@ -62,13 +62,7 @@ class User extends Authenticatable
         return $this->role && in_array(strtolower($this->role->name), ['admin', 'super_admin']);
     }
 
-    public function isModerator()
-    {
-        if (is_string($this->role)) {
-            return strtolower($this->role) === 'moderator';
-        }
-        return $this->role && strtolower($this->role->name) === 'moderator';
-    }
+    // Removed isModerator method - moderator role not in database enum
 
     public function isUser()
     {
@@ -105,8 +99,6 @@ class User extends Authenticatable
         return match($roleString) {
             'super_admin', 'super admin', 'superadmin' => 100,
             'admin' => 80,
-            'moderator' => 60,
-            'editor' => 40,
             'user', 'member' => 0,
             default => 0
         };

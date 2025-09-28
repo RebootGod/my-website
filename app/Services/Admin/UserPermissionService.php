@@ -242,7 +242,6 @@ class UserPermissionService
         return match($roleValue) {
             'super_admin' => 100,
             'admin' => 80,
-            'moderator' => 60,
             'member' => 0,  // Fixed: Database uses 'member' not 'user'
             'user' => 0,    // Keep backward compatibility
             default => 0
@@ -260,7 +259,6 @@ class UserPermissionService
         return match($role) {
             'super_admin' => 100,
             'admin' => 80,
-            'moderator' => 60,
             'member' => 0,  // Fixed: Database uses 'member' not 'user'
             'user' => 0,    // Keep backward compatibility
             default => 0
@@ -279,7 +277,7 @@ class UserPermissionService
         }
 
         // Fixed: Database uses 'member' not 'user'
-        $allRoles = ['member', 'moderator', 'admin', 'super_admin'];
+        $allRoles = ['member', 'admin', 'super_admin'];
         $assignableRoles = [];
 
         foreach ($allRoles as $role) {

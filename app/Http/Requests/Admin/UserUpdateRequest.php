@@ -49,7 +49,7 @@ class UserUpdateRequest extends FormRequest
                 'confirmed',
                 new StrongPasswordRule()
             ],
-            'role' => 'required|in:member,admin,moderator,super_admin',
+            'role' => 'required|in:member,admin,super_admin',
             'status' => 'sometimes|in:active,banned,suspended',
             'banned_reason' => 'nullable|string|max:500',
             'is_banned' => 'sometimes|boolean',

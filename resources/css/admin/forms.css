@@ -205,10 +205,7 @@
     color: #1f2937;
 }
 
-.admin-role-badge.moderator {
-    background: #3b82f6;
-    color: white;
-}
+/* Removed .admin-role-badge.moderator - role not in database enum */
 
 .admin-role-badge.member {
     background: #10b981;

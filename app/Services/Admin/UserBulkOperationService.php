@@ -456,8 +456,7 @@ class UserBulkOperationService
             'banned_users' => User::where('status', 'banned')->count(),
             'suspended_users' => User::where('status', 'suspended')->count(),
             'admin_users' => User::where('role', 'admin')->count(),
-            'moderator_users' => User::where('role', 'moderator')->count(),
-            'regular_users' => User::where('role', 'user')->count(),
+            'member_users' => User::where('role', 'member')->count(),
             'can_perform_bulk' => UserPermissionService::canPerformBulkActions(),
             'available_actions' => array_keys(self::getAvailableActions()),
         ];
