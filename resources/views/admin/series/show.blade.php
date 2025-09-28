@@ -147,14 +147,21 @@
                                                 @if($episode->runtime)
                                                     <span class="text-xs text-gray-400">{{ $episode->getFormattedRuntime() }}</span>
                                                 @endif
-                                                <button class="deleteEpisodeBtn text-red-500 hover:text-red-700 text-xs transition"
-                                                        data-episode-id="{{ $episode->id }}"
-                                                        data-episode-number="{{ $episode->episode_number }}"
-                                                        data-season-number="{{ $season->season_number }}"
-                                                        data-episode-title="{{ $episode->name }}"
-                                                        title="Delete Episode">
-                                                    <i class="fas fa-trash"></i>
-                                                </button>
+                                                <div class="flex items-center space-x-1">
+                                                    <a href="{{ route('admin.series.episodes.edit', [$series, $episode]) }}" 
+                                                       class="text-blue-500 hover:text-blue-700 text-xs transition"
+                                                       title="Edit Episode">
+                                                        <i class="fas fa-edit"></i>
+                                                    </a>
+                                                    <button class="deleteEpisodeBtn text-red-500 hover:text-red-700 text-xs transition"
+                                                            data-episode-id="{{ $episode->id }}"
+                                                            data-episode-number="{{ $episode->episode_number }}"
+                                                            data-season-number="{{ $season->season_number }}"
+                                                            data-episode-title="{{ $episode->name }}"
+                                                            title="Delete Episode">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </div>
                                             </div>
                                         </div>
                                         <h5 class="text-sm font-medium text-gray-300 mb-2">{{ $episode->name }}</h5>

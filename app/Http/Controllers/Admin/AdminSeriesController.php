@@ -542,6 +542,121 @@ class AdminSeriesController extends Controller
     }
 
     /**
+     * Edit an episode (show edit form)
+     */
+    public function editEpisode(Series $series, SeriesEpisode $episode)
+    {
+        $this->authorize('update', $series);
+
+        // Verify the episode belongs to this series
+        if ($episode->series_id !== $series->id) {
+            abort(404, 'Episode not found');
+        }
+
+        // Load relationships
+        $episode->load('season');
+        $series->load('seasons');
+
+        return view('admin.series.episode-edit', compact('series', 'episode'));
+    }
+
+    /**
+     * Update an episode
+     */
+    public function updateEpisode(Request $request, Series $series, SeriesEpisode $episode)
+    {
+        $this->authorize('update', $series);
+
+        // Verify the episode belongs to this series
+        if ($episode->series_id !== $series->id) {
+            return response()->json([
+                'success' => false,
+                'error' => 'Episode does not belong to this series.'
+            ], 400);
+        }
+
+        $request->validate([
+            'season_id' => 'required|exists:series_seasons,id',
+            'episode_number' => 'required|integer|min:1',
+            'name' => 'required|string|max:255',
+            'overview' => 'required|string',
+            'runtime' => 'required|integer|min:1',
+            'embed_url' => 'required|url',
+            'still_path' => 'nullable|url',
+            'is_active' => 'boolean'
+        ]);
+
+        try {
+            // Check if episode number already exists in this season (excluding current episode)
+            $existingEpisode = SeriesEpisode::where('season_id', $request->season_id)
+                ->where('episode_number', $request->episode_number)
+                ->where('id', '!=', $episode->id)
+                ->first();
+
+            if ($existingEpisode) {
+                return response()->json([
+                    'success' => false,
+                    'error' => 'Episode number already exists in this season.'
+                ], 400);
+            }
+
+            // Store old values for logging
+            $oldValues = [
+                'episode_number' => $episode->episode_number,
+                'name' => $episode->name,
+                'season_id' => $episode->season_id,
+                'runtime' => $episode->runtime,
+                'is_active' => $episode->is_active
+            ];
+
+            // Update episode
+            $episode->update([
+                'season_id' => $request->season_id,
+                'episode_number' => $request->episode_number,
+                'name' => $request->name,
+                'overview' => $request->overview,
+                'runtime' => $request->runtime,
+                'embed_url' => $request->embed_url,
+                'still_path' => $request->still_path,
+                'is_active' => $request->boolean('is_active', true)
+            ]);
+
+            Log::info('Episode updated successfully', [
+                'episode_id' => $episode->id,
+                'series_id' => $series->id,
+                'old_values' => $oldValues,
+                'new_values' => [
+                    'episode_number' => $episode->episode_number,
+                    'name' => $episode->name,
+                    'season_id' => $episode->season_id,
+                    'runtime' => $episode->runtime,
+                    'is_active' => $episode->is_active
+                ],
+                'admin_id' => auth()->id()
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Episode updated successfully!',
+                'episode' => $episode->load('season')
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Failed to update episode', [
+                'episode_id' => $episode->id,
+                'series_id' => $series->id,
+                'error' => $e->getMessage(),
+                'admin_id' => auth()->id()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'error' => 'Failed to update episode: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
      * Delete an episode
      */
     public function destroyEpisode(Series $series, SeriesEpisode $episode)
