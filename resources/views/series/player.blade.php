@@ -147,34 +147,7 @@
             </div>
         </div>
 
-        {{-- Related Series --}}
-        @if($relatedSeries->count() > 0)
-        <div class="row g-4 mt-4">
-            <div class="col-12">
-                <div class="info-card">
-                    <h3 class="card-title">
-                        <span>🎭</span>
-                        Related Series
-                    </h3>
-                    <div class="related-grid">
-                        @foreach($relatedSeries as $relatedItem)
-                            <a href="{{ route('series.show', $relatedItem) }}" class="related-item">
-                                <img src="{{ $relatedItem->poster_path ? 'https://image.tmdb.org/t/p/w200' . $relatedItem->poster_path : ($relatedItem->poster_url ?: 'https://via.placeholder.com/150x225?text=No+Poster') }}"
-                                     alt="{{ $relatedItem->title }}" class="related-poster">
-                                <div class="related-info">
-                                    <h6 class="related-title">{{ $relatedItem->title }}</h6>
-                                    <div class="related-meta">
-                                        <span class="year">{{ $relatedItem->year }}</span>
-                                        <span class="rating">⭐ {{ number_format($relatedItem->rating, 1) }}</span>
-                                    </div>
-                                </div>
-                            </a>
-                        @endforeach
-                    </div>
-                </div>
-            </div>
-        </div>
-        @endif
+
     </div>
 </div>
 

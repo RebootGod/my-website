@@ -82,28 +82,13 @@ class SeriesPlayerController extends Controller
             }
         }
 
-        // Get related series (same genre, excluding current series)
-        $relatedSeries = collect();
-        if ($series->genres->isNotEmpty()) {
-            $genreIds = $series->genres->pluck('id');
-            $relatedSeries = Series::whereHas('genres', function ($query) use ($genreIds) {
-                $query->whereIn('genres.id', $genreIds);
-            })
-            ->where('id', '!=', $series->id)
-            ->published()
-            ->inRandomOrder()
-            ->limit(5)
-            ->get(['id', 'slug', 'title', 'poster_path', 'poster_url', 'year', 'rating']);
-        }
-
         return view('series.player', compact(
             'series',
             'episode',
             'currentSeason',
             'seasonEpisodes',
             'previousEpisode',
-            'nextEpisode',
-            'relatedSeries'
+            'nextEpisode'
         ));
     }
 
