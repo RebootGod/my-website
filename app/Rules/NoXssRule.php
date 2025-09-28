@@ -94,8 +94,8 @@ class NoXssRule implements ValidationRule
             // Common bypasses (enhanced)
             '/&lt;.*&gt;/i',
             '/%3C.*%3E/i',
-            '/\\u00[0-9a-f]{2}/i',
-            '/\\x[0-9a-f]{2}/i',
+            '/\\\\u[0-9a-f]{4}/i',  // Unicode encoding detection
+            '/\\\\x[0-9a-f]{2}/i',  // Hex encoding detection
             
             // Attribute injection (enhanced)
             '/style\s*=.*expression/i',
