@@ -60,6 +60,11 @@
             <div id="moviesList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 <!-- Movies will be populated here -->
             </div>
+            
+            <!-- Pagination -->
+            <div id="pagination" class="mt-8 flex justify-center">
+                <!-- Pagination buttons will be populated here -->
+            </div>
         </div>
 
         <div id="noResults" class="hidden text-center py-12">

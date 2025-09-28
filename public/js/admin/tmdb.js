@@ -22,9 +22,9 @@ function initializeTMDBAdmin(config) {
     const popularBtn = document.getElementById('popularBtn');
     const trendingBtn = document.getElementById('trendingBtn');
     const loadingIndicator = document.getElementById('loadingIndicator');
-    const resultsSection = document.getElementById('resultsSection');
+    const resultsSection = document.getElementById('moviesGrid');
     const noResults = document.getElementById('noResults');
-    const movieGrid = document.getElementById('movieGrid');
+    const movieGrid = document.getElementById('moviesList');
     const pagination = document.getElementById('pagination');
 
     // Modal elements
@@ -187,7 +187,7 @@ function displayMovies(data) {
         return;
     }
 
-    const movieGrid = document.getElementById('movieGrid');
+    const movieGrid = document.getElementById('moviesList');
     movieGrid.innerHTML = '';
     selectedMovies.clear();
 
@@ -277,7 +277,7 @@ function createMovieCard(movie) {
 // Helper functions
 function showLoading() {
     const loadingIndicator = document.getElementById('loadingIndicator');
-    const resultsSection = document.getElementById('resultsSection');
+    const resultsSection = document.getElementById('moviesGrid');
     const noResults = document.getElementById('noResults');
 
     if (loadingIndicator) loadingIndicator.classList.remove('hidden');
@@ -291,7 +291,7 @@ function hideLoading() {
 }
 
 function showResults() {
-    const resultsSection = document.getElementById('resultsSection');
+    const resultsSection = document.getElementById('moviesGrid');
     const noResults = document.getElementById('noResults');
 
     if (resultsSection) resultsSection.classList.remove('hidden');
@@ -299,7 +299,7 @@ function showResults() {
 }
 
 function showNoResults() {
-    const resultsSection = document.getElementById('resultsSection');
+    const resultsSection = document.getElementById('moviesGrid');
     const noResults = document.getElementById('noResults');
 
     if (resultsSection) resultsSection.classList.add('hidden');
