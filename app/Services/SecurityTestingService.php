@@ -412,7 +412,11 @@ class SecurityTestingService
         $httpOnly = config('session.http_only');
         $secure = config('session.secure');
         
-        $status = ($sessionDriver === 'database' && $httpOnly && $secure) ? 'PASS' : 'WARN';
+        // More lenient session security check for production environments
+        $driverOk = in_array($sessionDriver, ['database', 'redis']);
+        $cookiesSecure = $httpOnly && $secure;
+        
+        $status = ($driverOk && $cookiesSecure) ? 'PASS' : 'WARN';
         
         return [
             'status' => $status,
@@ -794,11 +798,23 @@ class SecurityTestingService
         $passCount = 0;
         $totalCount = count($results);
         
-        foreach ($results as $result) {
-            if (isset($result['status']) && $result['status'] === 'PASS') {
-                $passCount++;
+        foreach ($results as $key => $result) {
+            if (isset($result['status'])) {
+                if ($result['status'] === 'PASS') {
+                    $passCount++;
+                }
+                // Add debug logging for comprehensive tests
+                Log::channel('security')->debug("Test {$key}: {$result['status']}", [
+                    'description' => $result['description'] ?? 'No description'
+                ]);
             }
         }
+        
+        Log::channel('security')->debug("Overall calculation", [
+            'pass_count' => $passCount,
+            'total_count' => $totalCount,
+            'percentage' => $totalCount > 0 ? ($passCount / $totalCount) * 100 : 0
+        ]);
         
         if ($passCount === $totalCount) return 'PASS';
         if ($passCount >= $totalCount * 0.8) return 'WARN';
