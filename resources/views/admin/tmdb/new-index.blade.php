@@ -140,51 +140,7 @@ document.addEventListener('DOMContentLoaded', function() {
         bulkImportUrl: '{{ route("admin.tmdb.bulk-import") }}',
         csrfToken: '{{ csrf_token() }}'
     });
-    // Elements
-    const searchInput = document.getElementById('searchInput');
-    const searchBtn = document.getElementById('searchBtn');
-    const popularBtn = document.getElementById('popularBtn');
-    const trendingBtn = document.getElementById('trendingBtn');
-    
-    const loadingIndicator = document.getElementById('loadingIndicator');
-    const errorMessage = document.getElementById('errorMessage');
-    const errorText = document.getElementById('errorText');
-    const moviesGrid = document.getElementById('moviesGrid');
-    const moviesList = document.getElementById('moviesList');
-    const noResults = document.getElementById('noResults');
-    
-    const importModal = document.getElementById('importModal');
-    const importForm = document.getElementById('importForm');
-    const closeModal = document.getElementById('closeModal');
-    const cancelImport = document.getElementById('cancelImport');
-
-    // Event listeners
-    searchBtn.addEventListener('click', () => {
-        const query = searchInput.value.trim();
-        if (query) {
-            searchMovies(query);
-        }
-    });
-
-    searchInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
-            searchBtn.click();
-        }
-    });
-
-    popularBtn.addEventListener('click', () => {
-        loadPopularMovies();
-    });
-
-    trendingBtn.addEventListener('click', () => {
-        loadTrendingMovies();
-    });
-
-    closeModal.addEventListener('click', hideImportModal);
-    cancelImport.addEventListener('click', hideImportModal);
-
-    // Note: All JavaScript functionality is now handled by tmdb.js
-    // The initializeTMDBAdmin function will set up all event handlers and functions
+    // All JavaScript functionality is handled by tmdb.js via initializeTMDBAdmin()
 
 });
 </script>

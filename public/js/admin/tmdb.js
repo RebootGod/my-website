@@ -102,20 +102,35 @@ async function searchMovies(query, page = 1) {
     currentType = 'search';
     currentPage = page;
 
+    console.log('Searching movies with query:', query, 'URL:', `${window.tmdbConfig.searchUrl}?query=${encodeURIComponent(query)}&page=${page}`);
     showLoading();
 
     try {
         const response = await fetch(`${window.tmdbConfig.searchUrl}?query=${encodeURIComponent(query)}&page=${page}`);
+        
+        console.log('Response status:', response.status, response.statusText);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
         const data = await response.json();
+        console.log('Response data:', data);
 
         if (data.error) {
             showError(data.error);
             return;
         }
 
+        if (data.success === false) {
+            showError(data.message || 'Search failed');
+            return;
+        }
+
         displayMovies(data);
     } catch (error) {
-        showError('Failed to search movies. Please try again.');
+        console.error('Search error:', error);
+        showError(`Failed to search movies: ${error.message}`);
     }
 }
 
