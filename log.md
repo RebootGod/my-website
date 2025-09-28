@@ -1,5 +1,65 @@
 # Development Log - Noobz Cinema
 
+## 2025-09-28 - Series Player 500 Error Fix (Related Series Links)
+
+### Issue Overview
+🚨 **Series Player 500 Server Error** - Episode player page crashing on related series links
+- **Problem**: Missing required parameter for route `series.show` in related series section
+- **Root Cause**: `$relatedSeries` query not including `slug` column needed for route model binding
+- **Impact**: Complete crash when loading series episode player page
+- **Status**: ✅ FIXED - Added `slug` column to related series query
+
+### Error Analysis
+**Laravel Production Log**:
+```
+[2025-09-28 10:43:14] production.ERROR: Missing required parameter for [Route: series.show] [URI: series/{series}] [Missing parameter: series]. 
+(View: /home/forge/noobz.space/resources/views/series/player.blade.php)
+Illuminate\Routing\Exceptions\UrlGenerationException
+```
+
+**Error Location**: Line 161 in `series/player.blade.php` calling `route('series.show', $relatedItem)`
+**Missing Parameter**: Model Series expects `slug` for route binding, but query only selected subset of columns
+
+### Root Cause Analysis
+1. **Route Model Binding**: Series model uses `slug` as route key via `getRouteKeyName()`
+2. **Incomplete Query**: Related series query only selected `['id', 'title', 'poster_path', 'poster_url', 'year', 'rating']`
+3. **Missing Slug**: Route `series.show` requires `slug` parameter for proper model binding
+4. **Production Impact**: Route generation failing causing immediate 500 error on page load
+
+### Solution Implemented
+
+#### **File Modified**: `app/Http/Controllers/SeriesPlayerController.php`
+**BEFORE (Broken)**:
+```php
+->get(['id', 'title', 'poster_path', 'poster_url', 'year', 'rating']);
+```
+
+**AFTER (Fixed)**:
+```php
+->get(['id', 'slug', 'title', 'poster_path', 'poster_url', 'year', 'rating']);
+```
+
+### Technical Changes
+1. **Query Fields**: Added `slug` column to related series query selection
+2. **Route Compatibility**: Ensures route model binding works correctly with Series model
+3. **Performance Maintained**: Only added necessary column without breaking existing functionality
+
+### Files Modified
+- `app/Http/Controllers/SeriesPlayerController.php` (Line 96)
+
+### Testing Notes
+- Route `series.show` expects Series model with `slug` attribute
+- Model binding works via `getRouteKeyName()` returning 'slug'
+- Related series links now generate proper URLs
+
+### Impact Assessment
+- **Before**: Complete 500 error on series episode player page
+- **After**: Related series links work correctly
+- **Performance**: Minimal impact, only added one column to query
+- **Security**: No security implications, slug is public data
+
+---
+
 ## 2025-09-28 - Register Page 500 Error Fix
 
 ### Issue Overview

@@ -93,7 +93,7 @@ class SeriesPlayerController extends Controller
             ->published()
             ->inRandomOrder()
             ->limit(5)
-            ->get(['id', 'title', 'poster_path', 'poster_url', 'year', 'rating']);
+            ->get(['id', 'slug', 'title', 'poster_path', 'poster_url', 'year', 'rating']);
         }
 
         return view('series.player', compact(
