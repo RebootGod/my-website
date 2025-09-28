@@ -339,6 +339,19 @@ function closeImportModal() {
     if (importForm) importForm.reset();
 }
 
+// Alias for compatibility
+function hideImportModal() {
+    closeImportModal();
+}
+
+function showImportModal(tmdbId) {
+    const tmdbIdInput = document.getElementById('tmdbId');
+    const importModal = document.getElementById('importModal');
+
+    if (tmdbIdInput) tmdbIdInput.value = tmdbId;
+    if (importModal) importModal.classList.remove('hidden');
+}
+
 function openBulkImportModal() {
     if (selectedMovies.size === 0) {
         alert('Please select at least one movie to import.');
