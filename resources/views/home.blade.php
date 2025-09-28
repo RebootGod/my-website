@@ -90,7 +90,7 @@
 
                     <div class="filter-actions">
                         <button type="submit" class="btn btn-modern">
-                            <i class="fas fa-search me-2"></i>Apply Filters
+                            <i class="fas fa-search me-2"></i>Apply
                         </button>
                         <a href="{{ route('home') }}" class="btn btn-outline-modern">
                             <i class="fas fa-refresh me-2"></i>Reset
