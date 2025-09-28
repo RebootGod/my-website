@@ -64,9 +64,9 @@
                     <div class="form-grid">
                         <!-- Season Selection -->
                         <div class="form-group">
-                            <label for="season_id" class="form-label required floating">🎬 Season</label>
+                            <label for="season_id" class="form-label required">Season</label>
                             <select name="season_id" id="season_id" class="form-input form-select" required>
-                                <option value="">🎭 Choose a season...</option>
+                                <option value="">Choose a season...</option>
                                 @foreach($series->seasons->sortBy('season_number') as $season)
                                     <option value="{{ $season->id }}" {{ $episode->season_id == $season->id ? 'selected' : '' }}>
                                         🎪 Season {{ $season->season_number }}{{ $season->name ? ' - ' . $season->name : '' }}
@@ -78,35 +78,35 @@
 
                         <!-- Episode Number -->
                         <div class="form-group">
-                            <label for="episode_number" class="form-label required floating">📺 Episode Number</label>
+                            <label for="episode_number" class="form-label required">Episode Number</label>
                             <input type="number" name="episode_number" id="episode_number" 
                                    class="form-input" value="{{ old('episode_number', $episode->episode_number) }}" 
                                    placeholder="Enter episode number (e.g. 1, 2, 3...)" 
                                    min="1" required>
-                            <div class="field-help">🔢 Episode number within the season</div>
+                            <div class="field-help">Episode number within the season</div>
                         </div>
                     </div>
 
                     <div class="form-grid">
                         <!-- Episode Name -->
                         <div class="form-group form-grid-full">
-                            <label for="name" class="form-label required floating">✨ Episode Name</label>
+                            <label for="name" class="form-label required">Episode Name</label>
                             <input type="text" name="name" id="name" 
                                    class="form-input" value="{{ old('name', $episode->name) }}" 
                                    placeholder="Enter episode title (e.g. 'The Beginning', 'Final Battle')" 
                                    maxlength="255" required>
-                            <div class="field-help">🏷️ The catchy title of this episode</div>
+                            <div class="field-help">The catchy title of this episode</div>
                         </div>
                     </div>
 
                     <!-- Episode Overview -->
                     <div class="form-group">
-                        <label for="overview" class="form-label required floating">📖 Episode Overview</label>
+                        <label for="overview" class="form-label required">Episode Overview</label>
                         <textarea name="overview" id="overview" 
                                   class="form-input form-textarea" 
                                   placeholder="Write an engaging description of this episode... What exciting things happen? What conflicts arise? Keep viewers interested!" 
                                   required>{{ old('overview', $episode->overview) }}</textarea>
-                        <div class="field-help">📝 Brief but compelling description of what happens in this episode (max 1000 characters)</div>
+                        <div class="field-help">Brief but compelling description of what happens in this episode</div>
                     </div>
                 </div>
 
@@ -120,25 +120,25 @@
                     <div class="form-grid">
                         <!-- Runtime -->
                         <div class="form-group">
-                            <label for="runtime" class="form-label required floating">⏱️ Runtime (minutes)</label>
+                            <label for="runtime" class="form-label required">Runtime (minutes)</label>
                             <input type="number" name="runtime" id="runtime" 
                                    class="form-input" value="{{ old('runtime', $episode->runtime) }}" 
                                    placeholder="e.g. 45, 60, 90" 
                                    min="1" required>
-                            <div class="field-help">🕰️ Duration in minutes (typical TV episodes: 22-60 min)</div>
+                            <div class="field-help">Duration in minutes (typical TV episodes: 22-60 min)</div>
                         </div>
 
                         <!-- Status -->
                         <div class="form-group">
-                            <label class="form-label">🔄 Status</label>
+                            <label class="form-label">Status</label>
                             <div class="form-checkbox-group">
                                 <input type="hidden" name="is_active" value="0">
                                 <input type="checkbox" name="is_active" id="is_active" 
                                        class="form-checkbox" value="1" 
                                        {{ old('is_active', $episode->is_active) ? 'checked' : '' }}>
-                                <label for="is_active" class="checkbox-label">✅ Active Episode (visible to users)</label>
+                                <label for="is_active" class="checkbox-label">Active Episode (visible to users)</label>
                             </div>
-                            <div class="field-help">🚫 Inactive episodes won't be visible to users until activated</div>
+                            <div class="field-help">Inactive episodes won't be visible to users until activated</div>
                         </div>
                     </div>
                 </div>
@@ -152,7 +152,7 @@
                     
                     <!-- Embed URL -->
                     <div class="form-group">
-                        <label for="embed_url" class="form-label required floating">🎥 Embed URL</label>
+                        <label for="embed_url" class="form-label required">Embed URL</label>
                         <div class="input-group">
                             <input type="url" name="embed_url" id="embed_url" 
                                    class="form-input" value="{{ old('embed_url', $episode->embed_url) }}" 
@@ -162,12 +162,12 @@
                                 <i class="fas fa-play"></i> Preview
                             </button>
                         </div>
-                        <div class="field-help">🔗 Direct link to the video player embed (YouTube, Vimeo, or custom player)</div>
+                        <div class="field-help">Direct link to the video player embed (YouTube, Vimeo, or custom player)</div>
                     </div>
 
                     <!-- Still Path -->
                     <div class="form-group">
-                        <label for="still_path" class="form-label floating">🖼️ Episode Thumbnail URL</label>
+                        <label for="still_path" class="form-label">Episode Thumbnail URL</label>
                         <div class="input-group">
                             <input type="url" name="still_path" id="still_path" 
                                    class="form-input" value="{{ old('still_path', $episode->still_path) }}" 
@@ -176,7 +176,7 @@
                                 <i class="fas fa-eye"></i> Preview
                             </button>
                         </div>
-                        <div class="field-help">🎨 Optional: Eye-catching thumbnail image for this episode (JPG, PNG, WebP)</div>
+                        <div class="field-help">Optional: Eye-catching thumbnail image for this episode (JPG, PNG, WebP)</div>
                     </div>
                 </div>
 

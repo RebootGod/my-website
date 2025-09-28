@@ -1,99 +1,109 @@
-/* Episode Edit Functionality Styles */
+/* Clean Modern Episode Edit Styles */
 /* File: resources/css/admin/episode-edit.css */
 
 .episode-edit-container {
-    max-width: 900px;
+    max-width: 1000px;
     margin: 0 auto;
-    padding: 2rem;
-    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    padding: 1.5rem;
+    background: #f8fafc;
     min-height: 100vh;
 }
 
 .episode-edit-header {
-    background: linear-gradient(135deg, #1e40af 0%, #7c3aed 50%, #ec4899 100%);
-    color: white;
-    padding: 2.5rem;
-    border-radius: 16px 16px 0 0;
-    margin-bottom: 0;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-    position: relative;
-    overflow: hidden;
-}
-
-.episode-edit-header::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    z-index: 0;
-}
-
-.episode-edit-header > * {
-    position: relative;
-    z-index: 1;
+    background: #fff;
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e2e8f0;
 }
 
 .episode-edit-header h1 {
-    margin: 0;
-    font-size: 1.8rem;
-    font-weight: 600;
+    margin: 0 0 0.5rem 0;
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #1a202c;
 }
 
 .episode-edit-header .breadcrumb {
-    font-size: 0.9rem;
-    opacity: 0.9;
-    margin-top: 0.5rem;
-    margin-bottom: 0;
+    font-size: 0.875rem;
+    color: #64748b;
+    margin: 0;
 }
 
 .episode-edit-header .breadcrumb a {
-    color: rgba(255, 255, 255, 0.8);
+    color: #3b82f6;
     text-decoration: none;
 }
 
 .episode-edit-header .breadcrumb a:hover {
-    color: white;
+    color: #2563eb;
     text-decoration: underline;
 }
 
 .episode-edit-form {
-    background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
-    border-radius: 0 0 16px 16px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e2e8f0;
     overflow: hidden;
-    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .episode-form-content {
-    padding: 2.5rem;
+    padding: 2rem;
 }
 
-.form-section {
+.episode-info-card {
+    background: #f1f5f9;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    padding: 1.5rem;
     margin-bottom: 2rem;
 }
 
-.form-section-title {
-    font-size: 1.3rem;
-    font-weight: 700;
-    color: #f1f5f9;
-    margin-bottom: 1.5rem;
-    padding-bottom: 0.75rem;
-    border-bottom: 2px solid #4f46e5;
+.episode-info-title {
+    font-weight: 600;
+    color: #1e40af;
+    margin-bottom: 1rem;
+    font-size: 1rem;
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
 }
 
-.form-section-title::before {
-    content: '';
-    width: 4px;
-    height: 24px;
-    background: linear-gradient(135deg, #4f46e5, #7c3aed);
-    border-radius: 2px;
+.episode-info-details {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    font-size: 0.875rem;
+    color: #475569;
+}
+
+.form-section {
+    margin-bottom: 2.5rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.form-section:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.form-section-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1a202c;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.form-section-title i {
+    color: #3b82f6;
+    font-size: 1.1rem;
 }
 
 .form-grid {
@@ -113,48 +123,41 @@
 .form-label {
     display: block;
     font-weight: 600;
-    color: #e2e8f0;
-    margin-bottom: 0.75rem;
-    font-size: 0.95rem;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
+    color: #374151;
+    margin-bottom: 0.5rem;
+    font-size: 0.875rem;
 }
 
 .form-label.required::after {
     content: " *";
-    color: #f87171;
+    color: #ef4444;
     font-weight: bold;
 }
 
 .form-input {
     width: 100%;
-    padding: 1rem 1.25rem;
-    border: 2px solid #4b5563;
-    border-radius: 12px;
-    font-size: 1rem;
-    transition: all 0.3s ease;
-    background: #111827;
-    color: #f9fafb;
-    font-weight: 500;
+    padding: 0.75rem 1rem;
+    border: 2px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+    background: #fff;
+    color: #111827;
 }
 
 .form-input:focus {
     outline: none;
-    border-color: #6366f1;
-    background: #1f2937;
-    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2), 0 4px 12px rgba(99, 102, 241, 0.15);
-    transform: translateY(-2px);
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
 .form-input:hover {
-    border-color: #6b7280;
-    background: #1f2937;
+    border-color: #9ca3af;
 }
 
 .form-input.error {
-    border-color: #f87171;
-    background: #1f1d2e;
-    color: #fca5a5;
+    border-color: #ef4444;
+    background: #fef2f2;
 }
 
 .form-input::placeholder {
@@ -163,7 +166,7 @@
 }
 
 .form-textarea {
-    min-height: 120px;
+    min-height: 100px;
     resize: vertical;
     font-family: inherit;
 }
@@ -179,113 +182,114 @@
 .form-checkbox-group {
     display: flex;
     align-items: center;
-    margin-top: 1rem;
+    margin-top: 0.5rem;
 }
 
 .form-checkbox {
-    width: 1.2rem;
-    height: 1.2rem;
+    width: 1.125rem;
+    height: 1.125rem;
     margin-right: 0.75rem;
-    accent-color: #667eea;
+    accent-color: #3b82f6;
 }
 
 .checkbox-label {
     font-weight: 500;
-    color: #e5e7eb;
+    color: #374151;
     cursor: pointer;
 }
 
-.form-checkbox {
-    width: 1.3rem;
-    height: 1.3rem;
-    margin-right: 0.75rem;
-    accent-color: #6366f1;
-    border-radius: 4px;
+.field-help {
+    font-size: 0.75rem;
+    color: #64748b;
+    margin-top: 0.25rem;
+    font-style: italic;
+}
+
+.field-error {
+    font-size: 0.75rem;
+    color: #ef4444;
+    margin-top: 0.25rem;
+    font-weight: 600;
+}
+
+.input-group {
+    display: flex;
+    gap: 0.75rem;
+    align-items: stretch;
+}
+
+.input-group .form-input {
+    flex: 1;
+}
+
+.input-group .btn {
+    flex-shrink: 0;
+    align-self: stretch;
+    display: flex;
+    align-items: center;
 }
 
 .form-actions {
-    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-    padding: 2rem 2.5rem;
-    border-top: 1px solid #475569;
+    background: #f8fafc;
+    padding: 1.5rem 2rem;
+    border-top: 1px solid #e2e8f0;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 .btn-group {
     display: flex;
-    gap: 1rem;
+    gap: 0.75rem;
 }
 
 .btn {
-    padding: 1rem 2rem;
-    border-radius: 12px;
-    font-weight: 700;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 600;
     text-decoration: none;
     display: inline-flex;
     align-items: center;
-    gap: 0.75rem;
-    transition: all 0.3s ease;
+    gap: 0.5rem;
+    transition: all 0.2s ease;
     border: none;
     cursor: pointer;
-    font-size: 1rem;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    position: relative;
-    overflow: hidden;
-}
-
-.btn::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-    transition: left 0.5s ease;
-}
-
-.btn:hover::before {
-    left: 100%;
+    font-size: 0.875rem;
+    line-height: 1;
 }
 
 .btn-primary {
-    background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 50%, #ec4899 100%);
+    background: #3b82f6;
     color: white;
-    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
 }
 
 .btn-primary:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 12px 30px rgba(59, 130, 246, 0.4);
+    background: #2563eb;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
 }
 
 .btn-secondary {
-    background: linear-gradient(135deg, #374151 0%, #4b5563 100%);
-    color: #f9fafb;
-    border: 2px solid #6b7280;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    background: #f1f5f9;
+    color: #475569;
+    border: 1px solid #cbd5e1;
 }
 
 .btn-secondary:hover {
-    background: linear-gradient(135deg, #4b5563 0%, #6b7280 100%);
-    border-color: #9ca3af;
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(75, 85, 99, 0.3);
+    background: #e2e8f0;
+    border-color: #94a3b8;
+    transform: translateY(-1px);
 }
 
 .btn-danger {
-    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    background: #ef4444;
     color: white;
-    box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
 }
 
 .btn-danger:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 12px 30px rgba(239, 68, 68, 0.4);
-    background: linear-gradient(135deg, #f87171 0%, #ef4444 100%);
+    background: #dc2626;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
 }
 
 .btn:disabled {
@@ -295,40 +299,24 @@
     box-shadow: none !important;
 }
 
-.btn i {
-    font-size: 0.9rem;
+.error-message {
+    background: #fef2f2;
+    color: #dc2626;
+    padding: 1rem;
+    border-radius: 8px;
+    border-left: 4px solid #ef4444;
+    margin: 1rem 0;
+    font-size: 0.875rem;
 }
 
-.episode-info-card {
-    background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
-    border: 1px solid #475569;
-    border-radius: 12px;
-    padding: 1.5rem;
-    margin-bottom: 2rem;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-}
-
-.episode-info-title {
-    font-weight: 700;
-    color: #60a5fa;
-    margin-bottom: 1rem;
-    font-size: 1.1rem;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.episode-info-title::before {
-    content: '📺';
-    font-size: 1.2rem;
-}
-
-.episode-info-details {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1rem;
-    font-size: 0.95rem;
-    color: #e2e8f0;
+.success-message {
+    background: #f0fdf4;
+    color: #16a34a;
+    padding: 1rem;
+    border-radius: 8px;
+    border-left: 4px solid #22c55e;
+    margin: 1rem 0;
+    font-size: 0.875rem;
 }
 
 .loading-spinner {
@@ -336,7 +324,7 @@
     width: 1rem;
     height: 1rem;
     border: 2px solid #f3f4f6;
-    border-top: 2px solid #667eea;
+    border-top: 2px solid #3b82f6;
     border-radius: 50%;
     animation: spin 1s linear infinite;
 }
@@ -345,50 +333,6 @@
     to {
         transform: rotate(360deg);
     }
-}
-
-.error-message {
-    background: #2d1b1e;
-    color: #fca5a5;
-    padding: 1rem 1.25rem;
-    border-radius: 8px;
-    border-left: 4px solid #ef4444;
-    margin: 1rem 0;
-    font-size: 0.95rem;
-    border: 1px solid #7f1d1d;
-}
-
-.success-message {
-    background: #1a2e1a;
-    color: #86efac;
-    padding: 1rem 1.25rem;
-    border-radius: 8px;
-    border-left: 4px solid #22c55e;
-    margin: 1rem 0;
-    font-size: 0.95rem;
-    border: 1px solid #14532d;
-}
-
-.field-help {
-    font-size: 0.85rem;
-    color: #9ca3af;
-    margin-top: 0.5rem;
-    font-style: italic;
-}
-
-.field-error {
-    font-size: 0.85rem;
-    color: #fca5a5;
-    margin-top: 0.5rem;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-}
-
-.field-error::before {
-    content: '⚠️';
-    font-size: 0.9rem;
 }
 
 /* Responsive Design */
@@ -426,319 +370,15 @@
 
 @media (max-width: 480px) {
     .episode-edit-header h1 {
-        font-size: 1.4rem;
+        font-size: 1.5rem;
     }
     
     .form-section-title {
-        font-size: 1.1rem;
+        font-size: 1.125rem;
     }
     
-    .btn-group {
+    .input-group {
         flex-direction: column;
-    }
-}
-
-/* Animation for form transitions */
-.episode-edit-form {
-    animation: slideUp 0.4s ease-out;
-}
-
-@keyframes slideUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* Focus management for accessibility */
-.form-input:focus,
-.form-select:focus,
-.form-textarea:focus {
-    outline: 2px solid transparent;
-    outline-offset: 2px;
-}
-
-/* High contrast mode support */
-@media (prefers-contrast: high) {
-    .form-input {
-        border-width: 3px;
-    }
-    
-    .btn {
-        border-width: 2px;
-        border-style: solid;
-    }
-    
-    .btn-primary {
-        border-color: #1e40af;
-    }
-    
-    .btn-secondary {
-        border-color: #374151;
-    }
-    
-    .btn-danger {
-        border-color: #991b1b;
-    }
-}/* Episode Edit Animations and Visual Effects */
-
-@keyframes slideDown {
-    from {
-        opacity: 0;
-        transform: translateX(-50%) translateY(-20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(-50%) translateY(0);
-    }
-}
-
-@keyframes slideUp {
-    from {
-        opacity: 1;
-        transform: translateX(-50%) translateY(0);
-    }
-    to {
-        opacity: 0;
-        transform: translateX(-50%) translateY(-20px);
-    }
-}
-
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-@keyframes pulse {
-    0%, 100% {
-        transform: scale(1);
-    }
-    50% {
-        transform: scale(1.05);
-    }
-}
-
-@keyframes shimmer {
-    0% {
-        background-position: -200px 0;
-    }
-    100% {
-        background-position: calc(200px + 100%) 0;
-    }
-}
-
-/* Loading Spinner */
-.loading-spinner-large {
-    width: 60px;
-    height: 60px;
-    border: 4px solid rgba(99, 102, 241, 0.2);
-    border-top: 4px solid #6366f1;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-    margin: 0 auto 20px;
-}
-
-.loading-content {
-    text-align: center;
-    color: #e2e8f0;
-}
-
-.loading-text {
-    font-size: 1.2rem;
-    font-weight: 600;
-    margin: 0;
-}
-
-/* Progress Bar */
-.progress-bar {
-    width: 100%;
-    height: 6px;
-    background: #374151;
-    border-radius: 3px;
-    overflow: hidden;
-    margin-bottom: 10px;
-}
-
-.progress-fill {
-    height: 100%;
-    border-radius: 3px;
-    transition: width 0.3s ease;
-    position: relative;
-}
-
-.progress-fill::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-    background-image: linear-gradient(
-        -45deg,
-        rgba(255, 255, 255, .2) 25%,
-        transparent 25%,
-        transparent 50%,
-        rgba(255, 255, 255, .2) 50%,
-        rgba(255, 255, 255, .2) 75%,
-        transparent 75%,
-        transparent
-    );
-    background-size: 30px 30px;
-    animation: shimmer 2s infinite linear;
-}
-
-/* Form Enhancements */
-.form-section {
-    animation: fadeInUp 0.5s ease forwards;
-}
-
-.form-input:focus {
-    animation: pulse 0.3s ease;
-}
-
-/* Button Hover Effects */
-.btn {
-    position: relative;
-    overflow: hidden;
-}
-
-.btn::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 0;
-    height: 0;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.3);
-    transform: translate(-50%, -50%);
-    transition: width 0.3s, height 0.3s;
-}
-
-.btn:hover::after {
-    width: 300px;
-    height: 300px;
-}
-
-/* Notification Styles */
-.notification {
-    animation: slideDown 0.3s ease;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-}
-
-/* Form Input Glow Effects */
-.form-input:focus {
-    position: relative;
-}
-
-.form-input:focus::before {
-    content: '';
-    position: absolute;
-    top: -2px;
-    left: -2px;
-    right: -2px;
-    bottom: -2px;
-    background: linear-gradient(45deg, #6366f1, #8b5cf6, #ec4899, #6366f1);
-    border-radius: 14px;
-    z-index: -1;
-    animation: spin 2s linear infinite;
-    opacity: 0.7;
-}
-
-/* Episode Info Card Animation */
-.episode-info-card {
-    animation: fadeInUp 0.6s ease 0.2s both;
-}
-
-/* Success/Error States */
-.form-input.success {
-    border-color: #22c55e;
-    box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.2);
-}
-
-.form-input.error {
-    animation: shake 0.5s ease-in-out;
-}
-
-@keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
-    20%, 40%, 60%, 80% { transform: translateX(5px); }
-}
-
-/* Floating Labels */
-.form-group {
-    position: relative;
-}
-
-.form-label {
-    transition: all 0.3s ease;
-    transform-origin: left center;
-}
-
-.form-label.floating {
-    position: absolute;
-    top: 1rem;
-    left: 1.25rem;
-    pointer-events: none;
-    z-index: 2;
-}
-
-.form-label.floated {
-    transform: translateY(-2.5rem) scale(0.85);
-    color: #6366f1 !important;
-    background: linear-gradient(135deg, #1f2937, #374151);
-    padding: 0 8px;
-    border-radius: 4px;
-}
-
-/* Card Hover Effects */
-.episode-info-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-    transition: all 0.3s ease;
-}
-
-/* Dark Theme Scrollbar */
-::-webkit-scrollbar {
-    width: 8px;
-}
-
-::-webkit-scrollbar-track {
-    background: #1f2937;
-}
-
-::-webkit-scrollbar-thumb {
-    background: linear-gradient(135deg, #6366f1, #8b5cf6);
-    border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(135deg, #4f46e5, #7c3aed);
-}
-
-/* Mobile Responsive Animations */
-@media (max-width: 768px) {
-    .form-section {
-        animation-delay: 0.1s;
-    }
-    
-    .loading-spinner-large {
-        width: 40px;
-        height: 40px;
-    }
-    
-    .loading-text {
-        font-size: 1rem;
+        gap: 0.5rem;
     }
 }

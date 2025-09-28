@@ -1,8 +1,6 @@
 /**
- * Episode Edit JavaScript Functionality
+ * Clean Episode Edit JavaScript
  * File: resources/js/admin/episode-edit.js
- * 
- * Handles episode edit form interactions, validations, and AJAX submissions
  */
 
 class EpisodeEditManager {
@@ -12,10 +10,8 @@ class EpisodeEditManager {
         this.cancelBtn = document.getElementById('cancel-btn');
         this.deleteBtn = document.getElementById('delete-btn');
         this.isSubmitting = false;
-        this.originalData = {};
         
         this.init();
-        this.addVisualEnhancements();
     }
 
     init() {
@@ -26,204 +22,6 @@ class EpisodeEditManager {
 
         this.bindEvents();
         this.setupValidation();
-        this.initializeFormData();
-        this.setupAutoSave();
-    }
-    
-    addVisualEnhancements() {
-        // Add loading overlay
-        this.createLoadingOverlay();
-        
-        // Add form animations
-        this.animateFormSections();
-        
-        // Add input focus effects
-        this.enhanceInputEffects();
-        
-        // Add progress indicator
-        this.createProgressIndicator();
-    }
-    
-    createLoadingOverlay() {
-        const overlay = document.createElement('div');
-        overlay.id = 'episode-loading-overlay';
-        overlay.innerHTML = `
-            <div class="loading-content">
-                <div class="loading-spinner-large"></div>
-                <p class="loading-text">Processing episode...</p>
-            </div>
-        `;
-        overlay.style.cssText = `
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(15, 23, 42, 0.9);
-            backdrop-filter: blur(10px);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-        `;
-        document.body.appendChild(overlay);
-    }
-    
-    animateFormSections() {
-        const sections = document.querySelectorAll('.form-section');
-        sections.forEach((section, index) => {
-            section.style.opacity = '0';
-            section.style.transform = 'translateY(20px)';
-            
-            setTimeout(() => {
-                section.style.transition = 'all 0.5s ease';
-                section.style.opacity = '1';
-                section.style.transform = 'translateY(0)';
-            }, index * 150);
-        });
-    }
-    
-    enhanceInputEffects() {
-        const inputs = this.form.querySelectorAll('input, select, textarea');
-        inputs.forEach(input => {
-            // Add floating label effect
-            this.addFloatingLabel(input);
-            
-            // Add focus glow effect
-            input.addEventListener('focus', () => {
-                input.style.boxShadow = '0 0 20px rgba(99, 102, 241, 0.3)';
-                input.style.transform = 'scale(1.02)';
-            });
-            
-            input.addEventListener('blur', () => {
-                input.style.boxShadow = '';
-                input.style.transform = 'scale(1)';
-            });
-        });
-    }
-    
-    addFloatingLabel(input) {
-        const parent = input.parentElement;
-        const label = parent.querySelector('label');
-        
-        if (label && input.type !== 'checkbox') {
-            label.style.transition = 'all 0.3s ease';
-            
-            if (input.value) {
-                label.style.transform = 'translateY(-8px) scale(0.85)';
-                label.style.color = '#6366f1';
-            }
-            
-            input.addEventListener('focus', () => {
-                label.style.transform = 'translateY(-8px) scale(0.85)';
-                label.style.color = '#6366f1';
-            });
-            
-            input.addEventListener('blur', () => {
-                if (!input.value) {
-                    label.style.transform = 'translateY(0) scale(1)';
-                    label.style.color = '#e2e8f0';
-                }
-            });
-        }
-    }
-    
-    createProgressIndicator() {
-        const progressBar = document.createElement('div');
-        progressBar.id = 'form-progress';
-        progressBar.innerHTML = `
-            <div class="progress-bar">
-                <div class="progress-fill"></div>
-            </div>
-            <div class="progress-text">Form completion: <span id="progress-percentage">0%</span></div>
-        `;
-        progressBar.style.cssText = `
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: linear-gradient(135deg, #1e293b, #374151);
-            padding: 15px;
-            border-radius: 12px;
-            border: 1px solid #475569;
-            color: #e2e8f0;
-            font-size: 14px;
-            z-index: 1000;
-            min-width: 200px;
-        `;
-        document.body.appendChild(progressBar);
-        
-        this.updateProgress();
-    }
-    
-    updateProgress() {
-        const inputs = this.form.querySelectorAll('input[required], select[required], textarea[required]');
-        const filled = Array.from(inputs).filter(input => input.value.trim() !== '').length;
-        const percentage = Math.round((filled / inputs.length) * 100);
-        
-        const progressFill = document.querySelector('#form-progress .progress-fill');
-        const progressText = document.querySelector('#progress-percentage');
-        
-        if (progressFill && progressText) {
-            progressFill.style.width = percentage + '%';
-            progressFill.style.background = `linear-gradient(90deg, #ef4444 0%, #f59e0b 50%, #22c55e 100%)`;
-            progressText.textContent = percentage + '%';
-        }
-    }
-    
-    setupAutoSave() {
-        let autoSaveTimeout;
-        
-        const inputs = this.form.querySelectorAll('input, select, textarea');
-        inputs.forEach(input => {
-            input.addEventListener('input', () => {
-                clearTimeout(autoSaveTimeout);
-                autoSaveTimeout = setTimeout(() => {
-                    this.autoSaveDraft();
-                }, 2000);
-                
-                this.updateProgress();
-            });
-        });
-    }
-    
-    autoSaveDraft() {
-        const formData = new FormData(this.form);
-        const data = Object.fromEntries(formData);
-        
-        localStorage.setItem('episode_edit_draft_' + (this.form.dataset.episodeId || 'new'), JSON.stringify(data));
-        
-        this.showNotification('Draft saved automatically', 'success', 2000);
-    }
-    
-    showNotification(message, type = 'info', duration = 3000) {
-        const notification = document.createElement('div');
-        notification.className = `notification notification-${type}`;
-        notification.textContent = message;
-        notification.style.cssText = `
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: ${type === 'success' ? '#16a34a' : type === 'error' ? '#ef4444' : '#3b82f6'};
-            color: white;
-            padding: 12px 24px;
-            border-radius: 8px;
-            z-index: 10000;
-            font-weight: 600;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-            animation: slideDown 0.3s ease;
-        `;
-        
-        document.body.appendChild(notification);
-        
-        setTimeout(() => {
-            notification.style.animation = 'slideUp 0.3s ease';
-            setTimeout(() => {
-                if (notification.parentNode) {
-                    notification.parentNode.removeChild(notification);
-                }
-            }, 300);
-        }, duration);
     }
 
     bindEvents() {
@@ -246,151 +44,114 @@ class EpisodeEditManager {
             input.addEventListener('blur', () => this.validateField(input));
             input.addEventListener('input', () => this.clearFieldError(input));
         });
-        
-        // Season change handler
-        const seasonSelect = document.getElementById('season_id');
-        if (seasonSelect) {
-            seasonSelect.addEventListener('change', () => this.handleSeasonChange());
-        }
-        
-        // URL validation
-        const urlFields = ['embed_url', 'still_path'];
-        urlFields.forEach(fieldName => {
-            const field = document.getElementById(fieldName);
-            if (field) {
-                field.addEventListener('blur', () => this.validateUrl(field));
-            }
-        });
     }
 
     setupValidation() {
-        // Set up validation rules
-        this.validationRules = {
-            season_id: {
-                required: true,
-                message: 'Please select a season'
-            },
-            episode_number: {
-                required: true,
-                min: 1,
-                type: 'number',
-                message: 'Episode number must be a positive number'
-            },
-            name: {
-                required: true,
-                maxLength: 255,
-                message: 'Episode name is required and must be less than 255 characters'
-            },
-            overview: {
-                required: true,
-                message: 'Episode overview is required'
-            },
-            runtime: {
-                required: true,
-                min: 1,
-                type: 'number',
-                message: 'Runtime must be a positive number in minutes'
-            },
-            embed_url: {
-                required: true,
-                type: 'url',
-                message: 'Please enter a valid embed URL'
-            },
-            still_path: {
-                type: 'url',
-                message: 'Please enter a valid still image URL'
-            }
-        };
-    }
-
-    initializeFormData() {
-        // Store original form data for change detection
-        this.originalData = new FormData(this.form);
-        this.hasChanges = false;
+        // Episode number uniqueness check
+        const episodeNumberInput = document.getElementById('episode_number');
+        const seasonSelect = document.getElementById('season_id');
         
-        // Enable change detection
-        const inputs = this.form.querySelectorAll('input, select, textarea');
-        inputs.forEach(input => {
-            input.addEventListener('change', () => {
-                this.hasChanges = true;
-                this.updateSubmitButton();
-            });
-        });
-    }
-
-    validateField(field) {
-        const fieldName = field.name;
-        const value = field.value.trim();
-        const rules = this.validationRules[fieldName];
-        
-        if (!rules) return true;
-        
-        // Clear previous errors
-        this.clearFieldError(field);
-        
-        // Required validation
-        if (rules.required && !value) {
-            this.showFieldError(field, rules.message);
-            return false;
-        }
-        
-        // Skip other validations if field is empty and not required
-        if (!value && !rules.required) return true;
-        
-        // Type validations
-        if (rules.type === 'number') {
-            const numValue = parseFloat(value);
-            if (isNaN(numValue)) {
-                this.showFieldError(field, 'Must be a valid number');
-                return false;
-            }
+        if (episodeNumberInput && seasonSelect) {
+            const checkUniqueness = () => {
+                const seasonId = seasonSelect.value;
+                const episodeNumber = episodeNumberInput.value;
+                
+                if (seasonId && episodeNumber) {
+                    this.checkEpisodeNumberUnique(seasonId, episodeNumber, episodeNumberInput);
+                }
+            };
             
-            if (rules.min !== undefined && numValue < rules.min) {
-                this.showFieldError(field, `Must be at least ${rules.min}`);
-                return false;
-            }
+            episodeNumberInput.addEventListener('blur', checkUniqueness);
+            seasonSelect.addEventListener('change', checkUniqueness);
         }
-        
-        if (rules.type === 'url' && value) {
-            if (!this.isValidUrl(value)) {
-                this.showFieldError(field, 'Please enter a valid URL');
-                return false;
-            }
-        }
-        
-        // Length validation
-        if (rules.maxLength && value.length > rules.maxLength) {
-            this.showFieldError(field, `Must be less than ${rules.maxLength} characters`);
-            return false;
-        }
-        
-        return true;
     }
 
-    validateUrl(field) {
-        const value = field.value.trim();
-        if (value && !this.isValidUrl(value)) {
-            this.showFieldError(field, 'Please enter a valid URL');
-            return false;
-        }
-        this.clearFieldError(field);
-        return true;
-    }
-
-    isValidUrl(string) {
+    async checkEpisodeNumberUnique(seasonId, episodeNumber, input) {
         try {
-            const url = new URL(string);
-            return url.protocol === 'http:' || url.protocol === 'https:';
-        } catch (_) {
-            return false;
+            const currentEpisodeId = this.form.dataset.episodeId;
+            const response = await fetch('/admin/series/episodes/check-unique', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                },
+                body: JSON.stringify({
+                    season_id: seasonId,
+                    episode_number: episodeNumber,
+                    exclude_id: currentEpisodeId
+                })
+            });
+            
+            const data = await response.json();
+            
+            if (!data.unique) {
+                this.showFieldError(input, 'Episode number already exists in this season');
+            } else {
+                this.clearFieldError(input);
+            }
+        } catch (error) {
+            console.error('Error checking episode uniqueness:', error);
         }
     }
 
-    showFieldError(field, message) {
-        field.classList.add('error');
+    validateField(input) {
+        this.clearFieldError(input);
+        
+        const value = input.value.trim();
+        const isRequired = input.hasAttribute('required');
+        
+        // Required field validation
+        if (isRequired && !value) {
+            this.showFieldError(input, 'This field is required');
+            return false;
+        }
+        
+        // Specific field validations
+        switch (input.type) {
+            case 'email':
+                if (value && !this.isValidEmail(value)) {
+                    this.showFieldError(input, 'Please enter a valid email address');
+                    return false;
+                }
+                break;
+                
+            case 'url':
+                if (value && !this.isValidUrl(value)) {
+                    this.showFieldError(input, 'Please enter a valid URL');
+                    return false;
+                }
+                break;
+                
+            case 'number':
+                const min = input.getAttribute('min');
+                const max = input.getAttribute('max');
+                const numValue = parseFloat(value);
+                
+                if (value && isNaN(numValue)) {
+                    this.showFieldError(input, 'Please enter a valid number');
+                    return false;
+                }
+                
+                if (min && numValue < parseFloat(min)) {
+                    this.showFieldError(input, `Value must be at least ${min}`);
+                    return false;
+                }
+                
+                if (max && numValue > parseFloat(max)) {
+                    this.showFieldError(input, `Value must be no more than ${max}`);
+                    return false;
+                }
+                break;
+        }
+        
+        return true;
+    }
+
+    showFieldError(input, message) {
+        input.classList.add('error');
         
         // Remove existing error message
-        const existingError = field.parentNode.querySelector('.field-error');
+        const existingError = input.parentElement.querySelector('.field-error');
         if (existingError) {
             existingError.remove();
         }
@@ -399,18 +160,25 @@ class EpisodeEditManager {
         const errorDiv = document.createElement('div');
         errorDiv.className = 'field-error';
         errorDiv.textContent = message;
-        field.parentNode.appendChild(errorDiv);
+        
+        input.parentElement.appendChild(errorDiv);
     }
 
-    clearFieldError(field) {
-        field.classList.remove('error');
-        const errorDiv = field.parentNode.querySelector('.field-error');
+    clearFieldError(input) {
+        input.classList.remove('error');
+        
+        const errorDiv = input.parentElement.querySelector('.field-error');
         if (errorDiv) {
             errorDiv.remove();
         }
     }
 
-    validateForm() {
+    async handleSubmit(e) {
+        e.preventDefault();
+        
+        if (this.isSubmitting) return;
+        
+        // Validate all fields
         const inputs = this.form.querySelectorAll('input, select, textarea');
         let isValid = true;
         
@@ -420,205 +188,131 @@ class EpisodeEditManager {
             }
         });
         
-        return isValid;
-    }
-
-    handleSeasonChange() {
-        // Clear episode number validation when season changes
-        const episodeNumberField = document.getElementById('episode_number');
-        if (episodeNumberField) {
-            this.clearFieldError(episodeNumberField);
-        }
-    }
-
-    updateSubmitButton() {
-        if (this.submitBtn) {
-            this.submitBtn.disabled = this.isSubmitting || !this.hasChanges;
-            
-            if (this.hasChanges && !this.isSubmitting) {
-                this.submitBtn.classList.add('btn-primary');
-                this.submitBtn.classList.remove('btn-secondary');
-            } else {
-                this.submitBtn.classList.add('btn-secondary');
-                this.submitBtn.classList.remove('btn-primary');
-            }
-        }
-    }
-
-    async handleSubmit(e) {
-        e.preventDefault();
-        
-        if (this.isSubmitting) return;
-        
-        // Validate form
-        if (!this.validateForm()) {
-            this.showMessage('Please fix the errors below', 'error');
+        if (!isValid) {
+            this.showMessage('Please fix the validation errors before submitting', 'error');
             return;
         }
         
         this.isSubmitting = true;
-        this.updateSubmitButton();
-        
-        // Show loading state
-        const originalText = this.submitBtn.innerHTML;
-        this.submitBtn.innerHTML = '<span class="loading-spinner"></span> Updating Episode...';
+        this.submitBtn.disabled = true;
+        this.submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating Episode...';
         
         try {
             const formData = new FormData(this.form);
-            
-            // Add method override for PUT request
-            formData.append('_method', 'PUT');
-            
             const response = await fetch(this.form.action, {
                 method: 'POST',
                 body: formData,
                 headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                    'Accept': 'application/json'
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
                 }
             });
             
-            const result = await response.json();
-            
-            if (result.success) {
-                this.showMessage(result.message, 'success');
-                
-                // Reset change detection
-                this.hasChanges = false;
-                this.originalData = new FormData(this.form);
+            if (response.ok) {
+                this.showMessage('Episode updated successfully!', 'success');
                 
                 // Redirect after short delay
                 setTimeout(() => {
-                    const seriesId = document.querySelector('input[name="series_id"]').value;
-                    window.location.href = `/admin/series/${seriesId}`;
+                    window.location.href = this.form.dataset.redirectUrl || '/admin/series';
                 }, 1500);
-                
             } else {
-                this.showMessage(result.error || 'Failed to update episode', 'error');
+                const errorData = await response.json();
+                this.showMessage(errorData.message || 'An error occurred while updating the episode', 'error');
             }
-            
         } catch (error) {
-            console.error('Submit error:', error);
-            this.showMessage('Network error. Please try again.', 'error');
+            console.error('Submission error:', error);
+            this.showMessage('Network error occurred. Please try again.', 'error');
         } finally {
             this.isSubmitting = false;
-            this.submitBtn.innerHTML = originalText;
-            this.updateSubmitButton();
+            this.submitBtn.disabled = false;
+            this.submitBtn.innerHTML = '<i class="fas fa-save"></i> Update Episode';
         }
     }
 
     handleCancel(e) {
         e.preventDefault();
         
-        if (this.hasChanges) {
-            if (!confirm('You have unsaved changes. Are you sure you want to leave?')) {
-                return;
+        if (this.hasFormChanged()) {
+            if (confirm('You have unsaved changes. Are you sure you want to cancel?')) {
+                window.history.back();
             }
+        } else {
+            window.history.back();
         }
-        
-        // Go back to series detail page
-        const seriesId = document.querySelector('input[name="series_id"]').value;
-        window.location.href = `/admin/series/${seriesId}`;
     }
 
-    async handleDelete(e) {
+    handleDelete(e) {
         e.preventDefault();
         
-        const episodeName = document.getElementById('name').value;
-        const episodeNumber = document.getElementById('episode_number').value;
-        
-        if (!confirm(`Are you sure you want to delete Episode ${episodeNumber}: "${episodeName}"?\n\nThis action cannot be undone.`)) {
+        if (!confirm('Are you sure you want to delete this episode? This action cannot be undone.')) {
             return;
         }
         
-        const deleteBtn = e.target.closest('button');
-        const originalText = deleteBtn.innerHTML;
-        deleteBtn.innerHTML = '<span class="loading-spinner"></span> Deleting...';
-        deleteBtn.disabled = true;
+        // Show confirmation modal or redirect to delete action
+        const deleteForm = document.createElement('form');
+        deleteForm.method = 'POST';
+        deleteForm.action = this.deleteBtn.dataset.deleteUrl;
+        deleteForm.style.display = 'none';
         
-        try {
-            const response = await fetch(this.form.action, {
-                method: 'DELETE',
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                    'Accept': 'application/json'
-                }
-            });
-            
-            const result = await response.json();
-            
-            if (result.success) {
-                this.showMessage(result.message, 'success');
-                
-                // Redirect after short delay
-                setTimeout(() => {
-                    const seriesId = document.querySelector('input[name="series_id"]').value;
-                    window.location.href = `/admin/series/${seriesId}`;
-                }, 1500);
-                
-            } else {
-                this.showMessage(result.error || 'Failed to delete episode', 'error');
-            }
-            
-        } catch (error) {
-            console.error('Delete error:', error);
-            this.showMessage('Network error. Please try again.', 'error');
-        } finally {
-            deleteBtn.innerHTML = originalText;
-            deleteBtn.disabled = false;
-        }
+        const csrfToken = document.createElement('input');
+        csrfToken.type = 'hidden';
+        csrfToken.name = '_token';
+        csrfToken.value = document.querySelector('meta[name="csrf-token"]').content;
+        
+        const methodField = document.createElement('input');
+        methodField.type = 'hidden';
+        methodField.name = '_method';
+        methodField.value = 'DELETE';
+        
+        deleteForm.appendChild(csrfToken);
+        deleteForm.appendChild(methodField);
+        document.body.appendChild(deleteForm);
+        
+        deleteForm.submit();
+    }
+
+    hasFormChanged() {
+        const formData = new FormData(this.form);
+        const currentData = Object.fromEntries(formData);
+        
+        // Compare with original data (you'd need to store this on page load)
+        return JSON.stringify(currentData) !== JSON.stringify(this.originalData || {});
     }
 
     showMessage(message, type = 'info') {
         // Remove existing messages
-        const existingMessages = document.querySelectorAll('.error-message, .success-message');
-        existingMessages.forEach(msg => msg.remove());
+        const existing = document.querySelectorAll('.alert-message');
+        existing.forEach(el => el.remove());
         
-        // Create new message
         const messageDiv = document.createElement('div');
-        messageDiv.className = type === 'error' ? 'error-message' : 'success-message';
+        messageDiv.className = `alert-message ${type === 'success' ? 'success-message' : 'error-message'}`;
         messageDiv.textContent = message;
+        messageDiv.style.position = 'fixed';
+        messageDiv.style.top = '20px';
+        messageDiv.style.right = '20px';
+        messageDiv.style.zIndex = '9999';
+        messageDiv.style.maxWidth = '400px';
         
-        // Insert at top of form
-        const formContent = document.querySelector('.episode-form-content');
-        if (formContent) {
-            formContent.insertBefore(messageDiv, formContent.firstChild);
-            
-            // Auto-remove success messages after 5 seconds
-            if (type === 'success') {
-                setTimeout(() => {
-                    if (messageDiv.parentNode) {
-                        messageDiv.remove();
-                    }
-                }, 5000);
+        document.body.appendChild(messageDiv);
+        
+        // Auto-remove after 5 seconds
+        setTimeout(() => {
+            if (messageDiv.parentNode) {
+                messageDiv.parentNode.removeChild(messageDiv);
             }
-            
-            // Scroll to message
-            messageDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }, 5000);
+    }
+
+    isValidEmail(email) {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    }
+
+    isValidUrl(url) {
+        try {
+            new URL(url);
+            return true;
+        } catch {
+            return false;
         }
-    }
-}
-
-// Utility functions
-function formatRuntime(minutes) {
-    const hours = Math.floor(minutes / 60);
-    const mins = minutes % 60;
-    
-    if (hours > 0) {
-        return `${hours}h ${mins}m`;
-    }
-    return `${mins}m`;
-}
-
-function previewUrl(url, type = 'embed') {
-    if (!url) return;
-    
-    if (type === 'embed') {
-        // Open embed URL in new tab
-        window.open(url, '_blank', 'width=800,height=600');
-    } else {
-        // Open image URL in new tab
-        window.open(url, '_blank');
     }
 }
 
@@ -627,11 +321,31 @@ document.addEventListener('DOMContentLoaded', () => {
     new EpisodeEditManager();
 });
 
-// Prevent accidental page refresh when there are unsaved changes
-window.addEventListener('beforeunload', (e) => {
-    const manager = document.querySelector('.episode-edit-form');
-    if (manager && manager.hasChanges) {
-        e.preventDefault();
-        e.returnValue = 'You have unsaved changes. Are you sure you want to leave?';
+// Global functions for preview buttons
+function previewUrl(url, type) {
+    if (!url) {
+        alert('Please enter a URL first');
+        return;
     }
-});
+    
+    if (type === 'embed') {
+        window.open(url, '_blank', 'width=800,height=600');
+    } else if (type === 'image') {
+        const img = new Image();
+        img.onload = function() {
+            const popup = window.open('', '_blank', 'width=600,height=400');
+            popup.document.write(`
+                <html>
+                    <head><title>Image Preview</title></head>
+                    <body style="margin:0;padding:20px;background:#f0f0f0;text-align:center;">
+                        <img src="${url}" style="max-width:100%;max-height:100%;"/>
+                    </body>
+                </html>
+            `);
+        };
+        img.onerror = function() {
+            alert('Failed to load image. Please check the URL.');
+        };
+        img.src = url;
+    }
+}
