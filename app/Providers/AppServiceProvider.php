@@ -12,7 +12,14 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        // Register TMDB Services
+        $this->app->singleton(\App\Services\NewTMDBService::class, function ($app) {
+            return new \App\Services\NewTMDBService();
+        });
+        
+        $this->app->singleton(\App\Services\TMDBService::class, function ($app) {
+            return new \App\Services\TMDBService();
+        });
     }
 
     /**

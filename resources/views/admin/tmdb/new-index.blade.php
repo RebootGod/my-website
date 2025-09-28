@@ -3,7 +3,7 @@
 @section('title', 'New TMDB Import - Admin')
 
 @push('styles')
-<link rel="stylesheet" href="{{ asset('css/admin/tmdb.css') }}?v={{ filemtime(public_path('css/admin/tmdb.css')) }}">
+<link rel="stylesheet" href="{{ safe_asset_version('css/admin/tmdb.css') }}">
 @endpush
 
 @section('content')
@@ -129,7 +129,7 @@
 </div>
 
 @push('scripts')
-<script src="{{ asset('js/admin/tmdb.js') }}?v={{ filemtime(public_path('js/admin/tmdb.js')) }}"></script>
+<script src="{{ safe_asset_version('js/admin/tmdb.js') }}"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     initializeTMDBAdmin({
