@@ -195,6 +195,8 @@
 
         <!-- Form Actions -->
         <div class="form-actions">
+            <div></div> <!-- Empty div for spacing -->
+            
             <div class="btn-group">
                 <button type="button" id="cancel-btn" class="btn btn-secondary">
                     <i class="fas fa-times"></i>
@@ -205,16 +207,14 @@
                     <i class="fas fa-save"></i>
                     Update Episode
                 </button>
-            </div>
-
-            @can('delete', $episode)
-            <div>
+                
+                @can('delete', $episode)
                 <button type="button" id="delete-btn" class="btn btn-danger">
                     <i class="fas fa-trash"></i>
                     Delete Episode
                 </button>
+                @endcan
             </div>
-            @endcan
         </div>
     </div>
 </div>
