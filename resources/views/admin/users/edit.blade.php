@@ -7,6 +7,10 @@
 
 @section('title', 'Edit User - ' . $user->username)
 
+@push('styles')
+<link rel="stylesheet" href="{{ asset('css/admin/forms.css') }}?v={{ filemtime(public_path('css/admin/forms.css')) }}">
+@endpush
+
 @section('content')
 <div class="container mx-auto max-w-4xl">
     {{-- Header --}}
@@ -291,16 +295,14 @@
 </div>
 
 @push('scripts')
+<script src="{{ asset('js/admin/forms.js') }}?v={{ filemtime(public_path('js/admin/forms.js')) }}"></script>
 <script>
-function generatePassword() {
-    fetch('{{ route("admin.users.generate-password") }}')
-        .then(response => response.json())
-        .then(data => {
-            document.getElementById('password').value = data.password;
-            document.getElementById('password_confirmation').value = data.password;
-            alert('Generated password: ' + data.password + '\n\nMake sure to copy this password!');
+    document.addEventListener('DOMContentLoaded', function() {
+        initializeAdminForms({
+            generatePasswordUrl: '{{ route("admin.users.generate-password") }}',
+            csrfToken: '{{ csrf_token() }}'
         });
-}
+    });
 </script>
 @endpush
 @endsection

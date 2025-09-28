@@ -7,6 +7,10 @@
 
 @section('title', 'Create Invite Code - Admin')
 
+@push('styles')
+<link rel="stylesheet" href="{{ asset('css/admin/forms.css') }}?v={{ filemtime(public_path('css/admin/forms.css')) }}">
+@endpush
+
 @section('content')
 <div class="max-w-2xl mx-auto">
     <div class="flex justify-between items-center mb-6">

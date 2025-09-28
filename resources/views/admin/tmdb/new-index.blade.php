@@ -2,6 +2,10 @@
 
 @section('title', 'New TMDB Import - Admin')
 
+@push('styles')
+<link rel="stylesheet" href="{{ asset('css/admin/tmdb.css') }}?v={{ filemtime(public_path('css/admin/tmdb.css')) }}">
+@endpush
+
 @section('content')
 <div class="container mx-auto px-6 py-8">
     <div class="flex justify-between items-center mb-8">
@@ -124,8 +128,18 @@
     </div>
 </div>
 
+@push('scripts')
+<script src="{{ asset('js/admin/tmdb.js') }}?v={{ filemtime(public_path('js/admin/tmdb.js')) }}"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    initializeTMDBAdmin({
+        searchUrl: '{{ route("admin.tmdb.new-search") }}',
+        popularUrl: '{{ route("admin.tmdb.new-popular") }}',
+        trendingUrl: '{{ route("admin.tmdb.new-trending") }}',
+        importUrl: '{{ route("admin.tmdb.new-import") }}',
+        bulkImportUrl: '{{ route("admin.tmdb.bulk-import") }}',
+        csrfToken: '{{ csrf_token() }}'
+    });
     // Elements
     const searchInput = document.getElementById('searchInput');
     const searchBtn = document.getElementById('searchBtn');
@@ -410,9 +424,7 @@ document.addEventListener('DOMContentLoaded', function() {
         errorMessage.classList.remove('hidden');
     }
 
-    function hideError() {
-        errorMessage.classList.add('hidden');
-    }
 });
 </script>
+@endpush
 @endsection

@@ -2,6 +2,10 @@
 
 @section('title', 'My Profile')
 
+@push('styles')
+<link rel="stylesheet" href="{{ asset('css/profile.css') }}?v={{ filemtime(public_path('css/profile.css')) }}">
+@endpush
+
 @section('content')
 <div class="container mt-4">
     {{-- Header with Gradient --}}
@@ -140,111 +144,4 @@
     </div>
 </div>
 
-<style>
-/* Modern Button Hover Effects */
-.modern-btn {
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    border-radius: 15px !important;
-}
-
-.modern-btn:hover {
-    transform: translateY(-5px) scale(1.02);
-    box-shadow: 0 20px 40px rgba(0,0,0,0.3) !important;
-    border-color: #fff !important;
-}
-
-.modern-btn::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
-    transition: left 0.5s;
-}
-
-.modern-btn:hover::before {
-    left: 100%;
-}
-
-/* Quick Actions Button Effects */
-.modern-action-btn {
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    border-radius: 15px !important;
-    position: relative;
-    overflow: hidden;
-}
-
-.modern-action-btn:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 15px 30px rgba(0,0,0,0.4) !important;
-    border-color: #fff !important;
-    background: rgba(255,255,255,0.05) !important;
-}
-
-.modern-action-btn:hover i {
-    transform: scale(1.1);
-    transition: transform 0.3s ease;
-}
-
-/* Card Hover Effects */
-.card {
-    transition: all 0.3s ease;
-    border-radius: 20px !important;
-}
-
-.card:hover {
-    transform: translateY(-5px);
-}
-
-/* Movie Item Hover */
-.movie-item {
-    transition: all 0.3s ease;
-    border-radius: 15px !important;
-}
-
-.movie-item:hover {
-    background: rgba(255,255,255,0.15) !important;
-    transform: translateX(10px);
-}
-
-/* Enhanced Badge Styles */
-.badge {
-    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-}
-
-/* Gradient Text */
-.text-orange {
-    color: #ff6b35 !important;
-}
-
-/* Avatar Animation */
-.rounded-circle {
-    transition: all 0.3s ease;
-}
-
-.rounded-circle:hover {
-    transform: scale(1.05);
-}
-
-/* Custom Scrollbar for Activity Section */
-.card-body::-webkit-scrollbar {
-    width: 6px;
-}
-
-.card-body::-webkit-scrollbar-track {
-    background: rgba(255,255,255,0.1);
-    border-radius: 10px;
-}
-
-.card-body::-webkit-scrollbar-thumb {
-    background: rgba(255,255,255,0.3);
-    border-radius: 10px;
-}
-
-.card-body::-webkit-scrollbar-thumb:hover {
-    background: rgba(255,255,255,0.5);
-}
-</style>
 @endsection

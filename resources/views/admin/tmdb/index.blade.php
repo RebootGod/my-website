@@ -2,6 +2,10 @@
 
 @section('title', 'Import from TMDB - Admin')
 
+@push('styles')
+<link rel="stylesheet" href="{{ asset('css/admin/tmdb.css') }}?v={{ filemtime(public_path('css/admin/tmdb.css')) }}">
+@endpush
+
 @section('content')
 <div class="container mx-auto px-6 py-8">
     <div class="flex justify-between items-center mb-8">
@@ -198,252 +202,19 @@
     </div>
 </div>
 
+@push('scripts')
+<script src="{{ asset('js/admin/tmdb.js') }}?v={{ filemtime(public_path('js/admin/tmdb.js')) }}"></script>
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const searchInput = document.getElementById('searchInput');
-    const searchBtn = document.getElementById('searchBtn');
-    const popularBtn = document.getElementById('popularBtn');
-    const trendingBtn = document.getElementById('trendingBtn');
-    const loadingIndicator = document.getElementById('loadingIndicator');
-    const resultsSection = document.getElementById('resultsSection');
-    const noResults = document.getElementById('noResults');
-    const movieGrid = document.getElementById('movieGrid');
-    const pagination = document.getElementById('pagination');
-    
-    // Modal elements
-    const importModal = document.getElementById('importModal');
-    const bulkImportModal = document.getElementById('bulkImportModal');
-    const importForm = document.getElementById('importForm');
-    const bulkImportForm = document.getElementById('bulkImportForm');
-    
-    let currentPage = 1;
-    let currentQuery = '';
-    let currentType = 'search';
-    let selectedMovies = new Set();
-
-    // Search functionality
-    searchBtn.addEventListener('click', () => {
-        const query = searchInput.value.trim();
-        if (query) {
-            searchMovies(query);
-        }
-    });
-
-    searchInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
-            searchBtn.click();
-        }
-    });
-
-    popularBtn.addEventListener('click', () => {
-        loadPopularMovies();
-    });
-
-    trendingBtn.addEventListener('click', () => {
-        loadTrendingMovies();
-    });
-
-    // Search movies
-    async function searchMovies(query, page = 1) {
-        currentQuery = query;
-        currentType = 'search';
-        currentPage = page;
-        
-        showLoading();
-        
-        try {
-            const response = await fetch(`{{ route('admin.tmdb.search') }}?query=${encodeURIComponent(query)}&page=${page}`);
-            const data = await response.json();
-            
-            if (data.error) {
-                showError(data.error);
-                return;
-            }
-            
-            displayMovies(data);
-        } catch (error) {
-            showError('Failed to search movies. Please try again.');
-        }
-    }
-
-    // Load popular movies
-    async function loadPopularMovies(page = 1) {
-        currentType = 'popular';
-        currentPage = page;
-        
-        showLoading();
-        
-        try {
-            const response = await fetch(`{{ route('admin.tmdb.popular') }}?page=${page}`);
-            const data = await response.json();
-            
-            if (data.error) {
-                showError(data.error);
-                return;
-            }
-            
-            displayMovies(data);
-        } catch (error) {
-            showError('Failed to load popular movies. Please try again.');
-        }
-    }
-
-    // Load trending movies
-    async function loadTrendingMovies() {
-        currentType = 'trending';
-        currentPage = 1;
-        
-        showLoading();
-        
-        try {
-            const response = await fetch(`{{ route('admin.tmdb.trending') }}?time_window=week`);
-            const data = await response.json();
-            
-            if (data.error) {
-                showError(data.error);
-                return;
-            }
-            
-            displayMovies(data);
-        } catch (error) {
-            showError('Failed to load trending movies. Please try again.');
-        }
-    }
-
-    // Display movies
-    function displayMovies(data) {
-        hideLoading();
-        
-        if (!data.results || data.results.length === 0) {
-            showNoResults();
-            return;
-        }
-        
-        movieGrid.innerHTML = '';
-        selectedMovies.clear();
-        
-        data.results.forEach(movie => {
-            const movieCard = createMovieCard(movie);
-            movieGrid.appendChild(movieCard);
+    document.addEventListener('DOMContentLoaded', function() {
+        initializeTMDBAdmin({
+            searchUrl: '{{ route("admin.tmdb.search") }}',
+            popularUrl: '{{ route("admin.tmdb.popular") }}',
+            trendingUrl: '{{ route("admin.tmdb.trending") }}',
+            importUrl: '{{ route("admin.tmdb.import") }}',
+            bulkImportUrl: '{{ route("admin.tmdb.bulk-import") }}',
+            csrfToken: '{{ csrf_token() }}'
         });
-        
-        createPagination(data);
-        showResults();
-    }
-
-    // Create movie card
-    function createMovieCard(movie) {
-        const card = document.createElement('div');
-        card.className = 'bg-gray-700 rounded-lg overflow-hidden hover:bg-gray-600 transition';
-        
-        const posterUrl = movie.poster_path 
-            ? `https://image.tmdb.org/t/p/w300${movie.poster_path}`
-            : '/images/no-poster.jpg';
-        
-        const releaseYear = movie.release_date ? new Date(movie.release_date).getFullYear() : 'N/A';
-        const rating = movie.vote_average ? movie.vote_average.toFixed(1) : 'N/A';
-        
-        card.innerHTML = `
-            <div class="relative">
-                <img src="${posterUrl}" alt="${movie.title}" class="w-full h-64 object-cover">
-                <div class="absolute top-2 right-2">
-                    <input type="checkbox" 
-                           class="movie-checkbox" 
-                           data-movie='${JSON.stringify(movie)}'
-                           ${movie.exists_in_db ? 'disabled' : ''}>
-                </div>
-                ${movie.exists_in_db ? '<div class="absolute top-2 left-2 bg-green-600 text-xs px-2 py-1 rounded">Imported</div>' : ''}
-            </div>
-            <div class="p-4">
-                <h3 class="font-semibold text-sm mb-2 line-clamp-2">${movie.title}</h3>
-                <div class="text-xs text-gray-400 mb-2">
-                    <span>${releaseYear}</span> • <span>★ ${rating}</span>
-                </div>
-                <div class="flex gap-2">
-                    <button class="view-details-btn flex-1 bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded text-xs transition"
-                            data-tmdb-id="${movie.tmdb_id}">
-                        View Details
-                    </button>
-                    ${!movie.exists_in_db ? `
-                        <button class="import-btn bg-green-600 hover:bg-green-700 px-3 py-1 rounded text-xs transition"
-                                data-movie='${JSON.stringify(movie)}'>
-                            Import
-                        </button>
-                    ` : ''}
-                </div>
-            </div>
-        `;
-        
-        // Add event listeners
-        const checkbox = card.querySelector('.movie-checkbox');
-        const importBtn = card.querySelector('.import-btn');
-        const detailsBtn = card.querySelector('.view-details-btn');
-        
-        if (checkbox && !movie.exists_in_db) {
-            checkbox.addEventListener('change', (e) => {
-                if (e.target.checked) {
-                    selectedMovies.add(movie);
-                } else {
-                    selectedMovies.delete(movie);
-                }
-                updateBulkImportButton();
-            });
-        }
-        
-        if (importBtn) {
-            importBtn.addEventListener('click', () => {
-                openImportModal(movie);
-            });
-        }
-        
-        if (detailsBtn) {
-            detailsBtn.addEventListener('click', () => {
-                viewMovieDetails(movie.tmdb_id);
-            });
-        }
-        
-        return card;
-    }
-
-    // Helper functions
-    function showLoading() {
-        loadingIndicator.classList.remove('hidden');
-        resultsSection.classList.add('hidden');
-        noResults.classList.add('hidden');
-    }
-
-    function hideLoading() {
-        loadingIndicator.classList.add('hidden');
-    }
-
-    function showResults() {
-        resultsSection.classList.remove('hidden');
-        noResults.classList.add('hidden');
-    }
-
-    function showNoResults() {
-        resultsSection.classList.add('hidden');
-        noResults.classList.remove('hidden');
-    }
-
-    function showError(message) {
-        hideLoading();
-        alert(message); // You can replace this with a better notification system
-    }
-
-    // Modal functions
-    function openImportModal(movie) {
-        document.getElementById('tmdbId').value = movie.tmdb_id;
-        importModal.classList.remove('hidden');
-    }
-
-    function closeImportModal() {
-        importModal.classList.add('hidden');
-        importForm.reset();
-    }
-
-    // More JavaScript functions would continue here...
-    // This is a simplified version for demonstration
-});
+    });
 </script>
+@endpush
 @endsection

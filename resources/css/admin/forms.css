@@ -1,0 +1,374 @@
+/* ======================================== */
+/* ADMIN FORMS CSS */
+/* ======================================== */
+/* Extracted styles for admin management pages (users, invite-codes) for better code organization */
+
+/* Admin Form Containers */
+.admin-form-container {
+    background: #1f2937;
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.admin-form-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.admin-form-title {
+    font-size: 1.875rem;
+    font-weight: 700;
+    color: white;
+}
+
+.admin-back-btn {
+    background: #4b5563;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.admin-back-btn:hover {
+    background: #374151;
+    transform: translateY(-1px);
+}
+
+/* Form Grid Layout */
+.admin-form-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+}
+
+@media (min-width: 1024px) {
+    .admin-form-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+/* Form Groups */
+.admin-form-group {
+    margin-bottom: 1rem;
+}
+
+.admin-form-label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #9ca3af;
+    margin-bottom: 0.25rem;
+}
+
+.admin-form-input,
+.admin-form-select,
+.admin-form-textarea {
+    width: 100%;
+    background: #374151;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    border: 1px solid #4b5563;
+    transition: all 0.3s ease;
+}
+
+.admin-form-input:focus,
+.admin-form-select:focus,
+.admin-form-textarea:focus {
+    outline: none;
+    border-color: #10b981;
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+.admin-form-input.error,
+.admin-form-select.error,
+.admin-form-textarea.error {
+    border-color: #ef4444;
+}
+
+.admin-form-error {
+    color: #f87171;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+/* Buttons */
+.admin-btn {
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    border: none;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.admin-btn-primary {
+    background: #3b82f6;
+    color: white;
+}
+
+.admin-btn-primary:hover {
+    background: #2563eb;
+    transform: translateY(-1px);
+}
+
+.admin-btn-success {
+    background: #10b981;
+    color: white;
+}
+
+.admin-btn-success:hover {
+    background: #059669;
+    transform: translateY(-1px);
+}
+
+.admin-btn-warning {
+    background: #f59e0b;
+    color: white;
+}
+
+.admin-btn-warning:hover {
+    background: #d97706;
+    transform: translateY(-1px);
+}
+
+.admin-btn-danger {
+    background: #ef4444;
+    color: white;
+}
+
+.admin-btn-danger:hover {
+    background: #dc2626;
+    transform: translateY(-1px);
+}
+
+.admin-btn-secondary {
+    background: #6b7280;
+    color: white;
+}
+
+.admin-btn-secondary:hover {
+    background: #4b5563;
+    transform: translateY(-1px);
+}
+
+.admin-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Password Generator */
+.admin-password-generator {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.admin-password-generate-btn {
+    background: #8b5cf6;
+    color: white;
+    padding: 0.5rem;
+    border-radius: 0.375rem;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.admin-password-generate-btn:hover {
+    background: #7c3aed;
+}
+
+/* Role Badge */
+.admin-role-badge {
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.375rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.admin-role-badge.super-admin {
+    background: #dc2626;
+    color: white;
+}
+
+.admin-role-badge.admin {
+    background: #f59e0b;
+    color: #1f2937;
+}
+
+.admin-role-badge.moderator {
+    background: #3b82f6;
+    color: white;
+}
+
+.admin-role-badge.member {
+    background: #10b981;
+    color: white;
+}
+
+.admin-role-badge.guest {
+    background: #6b7280;
+    color: white;
+}
+
+/* User Stats Cards */
+.admin-stats-card {
+    background: #374151;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    text-align: center;
+}
+
+.admin-stats-number {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #10b981;
+}
+
+.admin-stats-label {
+    font-size: 0.875rem;
+    color: #9ca3af;
+    margin-top: 0.25rem;
+}
+
+/* Invite Code Specific */
+.admin-invite-code {
+    background: #111827;
+    border: 1px solid #374151;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    font-family: 'Courier New', monospace;
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #10b981;
+    text-align: center;
+    position: relative;
+}
+
+.admin-invite-code-copy {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    background: #374151;
+    border: none;
+    color: #9ca3af;
+    padding: 0.25rem;
+    border-radius: 0.25rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.admin-invite-code-copy:hover {
+    background: #4b5563;
+    color: white;
+}
+
+/* Status Indicators */
+.admin-status-active {
+    color: #10b981;
+}
+
+.admin-status-inactive {
+    color: #ef4444;
+}
+
+.admin-status-pending {
+    color: #f59e0b;
+}
+
+/* Data Tables */
+.admin-table {
+    width: 100%;
+    background: #374151;
+    border-radius: 0.5rem;
+    overflow: hidden;
+}
+
+.admin-table th {
+    background: #4b5563;
+    padding: 0.75rem;
+    text-align: left;
+    font-weight: 600;
+    color: white;
+}
+
+.admin-table td {
+    padding: 0.75rem;
+    border-top: 1px solid #4b5563;
+    color: #d1d5db;
+}
+
+.admin-table tr:hover {
+    background: #4b5563;
+}
+
+/* Form Actions */
+.admin-form-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid #374151;
+}
+
+/* Loading States */
+.admin-loading-spinner {
+    width: 1rem;
+    height: 1rem;
+    border: 2px solid #374151;
+    border-top: 2px solid #3b82f6;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Success Messages */
+.admin-success-message {
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid #10b981;
+    color: #34d399;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.admin-error-message {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid #ef4444;
+    color: #f87171;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .admin-form-header {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: stretch;
+    }
+
+    .admin-form-actions {
+        flex-direction: column;
+    }
+
+    .admin-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
