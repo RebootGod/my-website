@@ -3,7 +3,7 @@
 @section('title', 'My Profile')
 
 @push('styles')
-<link rel="stylesheet" href="{{ asset('css/profile.css') }}?v={{ filemtime(public_path('css/profile.css')) }}">
+<link rel="stylesheet" href="{{ asset('css/profile.css') }}?v={{ file_exists(public_path('css/profile.css')) ? filemtime(public_path('css/profile.css')) : time() }}">
 @endpush
 
 @section('content')
