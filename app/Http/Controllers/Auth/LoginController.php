@@ -15,6 +15,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\RateLimiter;
+use App\Services\SecurityEventService;
 
 class LoginController extends Controller
 {
@@ -39,6 +40,14 @@ class LoginController extends Controller
         }, 900); // 15 minutes
 
         if (!$executed) {
+            // SECURITY: Log rate limit hit
+            app(SecurityEventService::class)->logSecurityEvent(
+                SecurityEventService::EVENT_RATE_LIMIT_HIT,
+                SecurityEventService::SEVERITY_MEDIUM,
+                "Rate limit exceeded for IP during login attempts",
+                ['rate_limit_key' => $ipKey, 'attempts' => 10]
+            );
+            
             $seconds = RateLimiter::availableIn($ipKey);
             return back()->withErrors([
                 'username' => 'Terlalu banyak percobaan login dari IP ini. Coba lagi dalam ' . ceil($seconds / 60) . ' menit.'
@@ -59,6 +68,13 @@ class LoginController extends Controller
         // SECURITY: Username-based rate limiting (5 attempts per username per hour)
         $usernameAttempts = RateLimiter::tooManyAttempts($usernameKey, 5);
         if ($usernameAttempts) {
+            // SECURITY: Log brute force attempt
+            app(SecurityEventService::class)->logBruteForceAttempt(
+                $sanitizedData['username'],
+                $request->ip(),
+                'Username rate limit exceeded'
+            );
+            
             $seconds = RateLimiter::availableIn($usernameKey);
             return back()->withErrors([
                 'username' => 'Terlalu banyak percobaan untuk username ini. Coba lagi dalam ' . ceil($seconds / 60) . ' menit.'
@@ -123,6 +139,9 @@ class LoginController extends Controller
             RateLimiter::clear($usernameKey);
             
             $user = Auth::user();
+            
+            // SECURITY: Check for suspicious login patterns
+            $this->checkSuspiciousLogin($user, $request);
 
             // Store plain password temporarily for potential rehashing
             // This will be used by PasswordRehashMiddleware and then cleared
@@ -203,5 +222,44 @@ class LoginController extends Controller
         $request->session()->regenerateToken();
 
         return redirect()->route('home');
+    }
+    
+    /**
+     * SECURITY: Check for suspicious login patterns
+     */
+    private function checkSuspiciousLogin(User $user, Request $request): void
+    {
+        $currentIP = $request->ip();
+        $currentUserAgent = $request->userAgent();
+        
+        // Check for IP address change
+        if ($user->last_login_ip && $user->last_login_ip !== $currentIP) {
+            app(SecurityEventService::class)->logSuspiciousLogin($user, 'IP address change');
+        }
+        
+        // Check for unusual time patterns (login outside normal hours)
+        $currentHour = now()->hour;
+        if ($currentHour < 6 || $currentHour > 23) {
+            app(SecurityEventService::class)->logSuspiciousLogin($user, 'Unusual login time (outside 6AM-11PM)');
+        }
+        
+        // Check for rapid successive logins (potential account sharing)
+        if ($user->last_login_at && $user->last_login_at->diffInMinutes(now()) < 2) {
+            app(SecurityEventService::class)->logSuspiciousLogin($user, 'Rapid successive login detected');
+        }
+        
+        // Check for suspicious user agent patterns
+        if (empty($currentUserAgent) || strlen($currentUserAgent) < 10) {
+            app(SecurityEventService::class)->logSuspiciousLogin($user, 'Suspicious or empty user agent');
+        }
+        
+        // Check for bot-like user agents
+        $botPatterns = ['bot', 'crawler', 'spider', 'scraper', 'curl', 'wget', 'python', 'java'];
+        foreach ($botPatterns as $pattern) {
+            if (stripos($currentUserAgent, $pattern) !== false) {
+                app(SecurityEventService::class)->logSuspiciousLogin($user, "Bot-like user agent detected: {$pattern}");
+                break;
+            }
+        }
     }
 }

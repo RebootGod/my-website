@@ -20,11 +20,13 @@ return Application::configure(basePath: dirname(__DIR__))
             'audit' => \App\Http\Middleware\AuditMiddleware::class,
             'security.headers' => \App\Http\Middleware\SecurityHeadersMiddleware::class,
             'sanitize.input' => \App\Http\Middleware\SanitizeInputMiddleware::class,
+            'security.monitor' => \App\Http\Middleware\SecurityEventMiddleware::class,
         ]);
 
         // Register global middleware
         $middleware->append([
             \App\Http\Middleware\SecurityHeadersMiddleware::class,
+            \App\Http\Middleware\SecurityEventMiddleware::class, // SECURITY: Monitor all requests
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

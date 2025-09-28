@@ -4,6 +4,7 @@ namespace App\Rules;
 
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
+use App\Services\SecurityEventService;
 
 class NoSqlInjectionRule implements ValidationRule
 {
@@ -101,6 +102,13 @@ class NoSqlInjectionRule implements ValidationRule
 
         foreach ($sqlPatterns as $pattern) {
             if (preg_match($pattern, $value)) {
+                // SECURITY: Log SQL injection attempt
+                app(SecurityEventService::class)->logInjectionAttempt(
+                    'SQL Injection',
+                    $value,
+                    $attribute
+                );
+                
                 $fail('The :attribute contains potentially malicious content.');
                 return;
             }
@@ -108,6 +116,13 @@ class NoSqlInjectionRule implements ValidationRule
 
         // Check for multiple consecutive special characters (common in injection)
         if (preg_match('/[\'";]{2,}/', $value)) {
+            // SECURITY: Log suspicious character sequence
+            app(SecurityEventService::class)->logInjectionAttempt(
+                'Character Sequence Injection',
+                $value,
+                $attribute
+            );
+            
             $fail('The :attribute contains invalid character sequences.');
             return;
         }

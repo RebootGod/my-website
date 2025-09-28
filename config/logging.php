@@ -127,6 +127,33 @@ return [
             'path' => storage_path('logs/laravel.log'),
         ],
 
+        // SECURITY: Dedicated security event logging channel
+        'security' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/security.log'),
+            'level' => env('LOG_LEVEL', 'info'),
+            'days' => env('SECURITY_LOG_DAYS', 90), // Keep security logs for 90 days
+            'replace_placeholders' => true,
+        ],
+
+        // SECURITY: Authentication-specific logging
+        'auth' => [
+            'driver' => 'daily', 
+            'path' => storage_path('logs/auth.log'),
+            'level' => 'info',
+            'days' => 60,
+            'replace_placeholders' => true,
+        ],
+
+        // SECURITY: Admin action logging
+        'admin' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/admin.log'), 
+            'level' => 'info',
+            'days' => 365, // Keep admin logs for 1 year
+            'replace_placeholders' => true,
+        ],
+
     ],
 
 ];

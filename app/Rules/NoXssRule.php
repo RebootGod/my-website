@@ -4,6 +4,7 @@ namespace App\Rules;
 
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
+use App\Services\SecurityEventService;
 
 class NoXssRule implements ValidationRule
 {
@@ -144,6 +145,13 @@ class NoXssRule implements ValidationRule
 
         foreach ($xssPatterns as $pattern) {
             if (preg_match($pattern, $value)) {
+                // SECURITY: Log XSS attempt
+                app(SecurityEventService::class)->logInjectionAttempt(
+                    'XSS Attempt',
+                    $value,
+                    $attribute
+                );
+                
                 $fail('The :attribute contains potentially harmful content.');
                 return;
             }

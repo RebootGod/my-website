@@ -211,6 +211,16 @@ Route::middleware(['auth', 'admin', CheckPermission::class . ':access_admin_pane
     Route::get('/analytics/export', [AnalyticsController::class, 'export'])->name('analytics.export');
     Route::get('/analytics/realtime', [AnalyticsController::class, 'realtime'])->name('analytics.realtime');
     
+    // Security Dashboard & Testing - OWASP Compliance
+    Route::prefix('security')->name('security.')->group(function () {
+        Route::get('/dashboard', [\App\Http\Controllers\SecurityDashboardController::class, 'index'])->name('dashboard');
+        Route::post('/tests/run', [\App\Http\Controllers\SecurityDashboardController::class, 'runTests'])->name('tests.run');
+        Route::post('/report/generate', [\App\Http\Controllers\SecurityDashboardController::class, 'generateReport'])->name('report.generate');
+        Route::get('/events', [\App\Http\Controllers\SecurityDashboardController::class, 'getSecurityEvents'])->name('events');
+        Route::get('/metrics', [\App\Http\Controllers\SecurityDashboardController::class, 'getMetrics'])->name('metrics');
+        Route::get('/threats', [\App\Http\Controllers\SecurityDashboardController::class, 'getThreatData'])->name('threats');
+    });
+    
     // TMDB Integration - New Version (Movies)
     Route::prefix('tmdb-new')->name('tmdb-new.')->group(function () {
         Route::get('/', [NewTMDBController::class, 'index'])->name('index');
