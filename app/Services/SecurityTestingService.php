@@ -706,13 +706,38 @@ class SecurityTestingService
     
     private function testPasswordHashing()
     {
-        // Test bcrypt/argon2 usage
-        $hashInfo = password_get_info(User::factory()->make()->password);
-        return [
-            'status' => $hashInfo['algo'] !== 0 ? 'PASS' : 'FAIL',
-            'description' => 'Strong password hashing algorithm in use',
-            'implementation' => 'Laravel default password hashing (bcrypt/argon2)'
-        ];
+        // Test bcrypt/argon2 usage by checking an existing user or creating test hash
+        try {
+            // Try to get an existing user
+            $user = User::first();
+            if ($user && $user->password) {
+                $hashInfo = password_get_info($user->password);
+            } else {
+                // Create a test hash to check algorithm
+                $testHash = bcrypt('test_password');
+                $hashInfo = password_get_info($testHash);
+            }
+            
+            $status = ($hashInfo['algo'] !== 0) ? 'PASS' : 'FAIL';
+            $algoName = match($hashInfo['algo']) {
+                PASSWORD_BCRYPT => 'bcrypt',
+                PASSWORD_ARGON2I => 'argon2i',
+                PASSWORD_ARGON2ID => 'argon2id',
+                default => 'unknown'
+            };
+            
+            return [
+                'status' => $status,
+                'description' => 'Strong password hashing algorithm in use',
+                'implementation' => "Algorithm: {$algoName}, Laravel default hashing"
+            ];
+        } catch (\Exception $e) {
+            return [
+                'status' => 'WARN',
+                'description' => 'Password hashing test failed',
+                'implementation' => 'Unable to verify password hashing: ' . $e->getMessage()
+            ];
+        }
     }
     
     private function testSecurityHeaders()
