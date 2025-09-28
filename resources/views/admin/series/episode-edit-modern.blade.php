@@ -17,64 +17,57 @@
 @endpush
 
 @section('content')
-<div class="episode-edit-wrapper">
-    <div class="episode-edit-container">
+<div class="container mx-auto px-6 py-8 max-w-4xl">
         
-        {{-- Header Section --}}
-        <div class="episode-header">
-            <div class="episode-header-top">
-                <div class="episode-header-content">
-                    <nav class="breadcrumb-nav">
-                        <a href="{{ route('admin.dashboard') }}">Dashboard</a> / 
-                        <a href="{{ route('admin.series.index') }}">Series</a> / 
-                        <a href="{{ route('admin.series.show', $series) }}">{{ $series->title }}</a> / 
-                        Edit Episode
-                    </nav>
-                    
-                    <h1 class="episode-title">
-                        <div class="title-icon">
-                            <i class="fas fa-edit"></i>
-                        </div>
-                        Edit Episode: {{ $episode->name }}
-                    </h1>
-                </div>
+    {{-- Header matching other admin forms --}}
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-3xl font-bold text-white">Edit Episode: {{ $episode->name }}</h1>
+        <a href="{{ route('admin.series.show', $series) }}" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg transition">
+            Back to Series
+        </a>
+    </div>
+
+    @if(session('success'))
+        <div class="bg-green-500 text-white px-6 py-3 rounded-lg mb-6">
+            {{ session('success') }}
+        </div>
+    @endif
+
+    {{-- Episode Info --}}
+    <div class="bg-gray-800 rounded-lg p-4 mb-6">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+            <div>
+                <span class="text-gray-400">Series:</span>
+                <span class="text-white ml-2">{{ $series->title }}</span>
             </div>
-            
-            <div class="episode-info-section">
-                <div class="info-grid">
-                    <div class="info-item">
-                        <div class="info-label">Series</div>
-                        <div class="info-value">{{ $series->title }}</div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-label">Season</div>
-                        <div class="info-value">{{ $episode->season->season_number }}</div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-label">Episode</div>
-                        <div class="info-value">{{ $episode->episode_number }}</div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-label">Status</div>
-                        <div class="info-value">
-                            <span class="status-badge {{ $episode->is_active ? 'active' : 'inactive' }}">
-                                <i class="fas fa-{{ $episode->is_active ? 'check-circle' : 'times-circle' }}"></i>
-                                {{ $episode->is_active ? 'Active' : 'Inactive' }}
-                            </span>
-                        </div>
-                    </div>
-                </div>
+            <div>
+                <span class="text-gray-400">Season:</span>
+                <span class="text-white ml-2">{{ $episode->season->season_number }}</span>
+            </div>
+            <div>
+                <span class="text-gray-400">Episode:</span>
+                <span class="text-white ml-2">{{ $episode->episode_number }}</span>
+            </div>
+            <div>
+                <span class="text-gray-400">Status:</span>
+                <span class="ml-2 {{ $episode->is_active ? 'text-green-400' : 'text-gray-400' }}">
+                    <i class="fas fa-{{ $episode->is_active ? 'check-circle' : 'times-circle' }}"></i>
+                    {{ $episode->is_active ? 'Active' : 'Inactive' }}
+                </span>
             </div>
         </div>
+    </div>
 
-        {{-- Main Form --}}
-        <div class="episode-form-card">
-            <div class="form-header">
-                <h2 class="form-title">
-                    <i class="fas fa-cog"></i>
-                    Episode Configuration
-                </h2>
-            </div>
+    <form id="episode-edit-form" 
+          action="{{ route('admin.series.episodes.update', [$series, $episode]) }}" 
+          method="POST" 
+          class="bg-gray-800 rounded-lg p-6"
+          data-episode-id="{{ $episode->id }}"
+          data-redirect-url="{{ route('admin.series.show', $series) }}">
+        @csrf
+        @method('PUT')
+        
+        <input type="hidden" name="series_id" value="{{ $series->id }}">
 
             <form id="episode-edit-form" 
                   action="{{ route('admin.series.episodes.update', [$series, $episode]) }}" 
@@ -86,296 +79,183 @@
                 
                 <input type="hidden" name="series_id" value="{{ $series->id }}">
 
-                <div class="form-content">
-                    
-                    {{-- Episode Details Section --}}
-                    <div class="form-section">
-                        <div class="section-header">
-                            <div class="section-icon">
-                                <i class="fas fa-play-circle"></i>
-                            </div>
-                            <div>
-                                <h3 class="section-title">Episode Details</h3>
-                                <p class="section-description">Basic information about this episode</p>
-                            </div>
-                        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {{-- Season Selection --}}
+            <div>
+                <label class="block text-sm font-medium text-gray-400 mb-2">Season *</label>
+                <select name="season_id" id="season_id" class="w-full px-4 py-2 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400" required>
+                    <option value="">Choose a season...</option>
+                    @foreach($series->seasons->sortBy('season_number') as $season)
+                        <option value="{{ $season->id }}" {{ $episode->season_id == $season->id ? 'selected' : '' }}>
+                            Season {{ $season->season_number }}{{ $season->name ? ' - ' . $season->name : '' }}
+                        </option>
+                    @endforeach
+                </select>
+                @error('season_id')
+                    <p class="text-red-400 text-sm mt-1">{{ $message }}</p>
+                @enderror
+            </div>
 
-                        <div class="form-grid">
-                            {{-- Season Selection --}}
-                            <div class="form-col-6">
-                                <div class="form-group">
-                                    <label for="season_id" class="form-label required">
-                                        <i class="fas fa-layer-group label-icon"></i>
-                                        Season
-                                    </label>
-                                    <select name="season_id" id="season_id" class="form-input form-select" required>
-                                        <option value="">Choose a season...</option>
-                                        @foreach($series->seasons->sortBy('season_number') as $season)
-                                            <option value="{{ $season->id }}" {{ $episode->season_id == $season->id ? 'selected' : '' }}>
-                                                Season {{ $season->season_number }}{{ $season->name ? ' - ' . $season->name : '' }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                    <div class="field-help">
-                                        <i class="fas fa-info-circle icon"></i>
-                                        Select which season this episode belongs to
-                                    </div>
-                                </div>
-                            </div>
+            {{-- Episode Number --}}
+            <div>
+                <label class="block text-sm font-medium text-gray-400 mb-2">Episode Number *</label>
+                <input type="number" 
+                       name="episode_number" 
+                       id="episode_number" 
+                       class="w-full px-4 py-2 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400" 
+                       value="{{ old('episode_number', $episode->episode_number) }}" 
+                       placeholder="Enter episode number (e.g. 1, 2, 3...)" 
+                       min="1" 
+                       required>
+                @error('episode_number')
+                    <p class="text-red-400 text-sm mt-1">{{ $message }}</p>
+                @enderror
+            </div>
 
-                            {{-- Episode Number --}}
-                            <div class="form-col-6">
-                                <div class="form-group">
-                                    <label for="episode_number" class="form-label required">
-                                        <i class="fas fa-hashtag label-icon"></i>
-                                        Episode Number
-                                    </label>
-                                    <input type="number" 
-                                           name="episode_number" 
-                                           id="episode_number" 
-                                           class="form-input" 
-                                           value="{{ old('episode_number', $episode->episode_number) }}" 
-                                           placeholder="Enter episode number (e.g. 1, 2, 3...)" 
-                                           min="1" 
-                                           required>
-                                    <div class="field-help">
-                                        <i class="fas fa-sort-numeric-up icon"></i>
-                                        Episode number within the season
-                                    </div>
-                                </div>
-                            </div>
+            {{-- Episode Name --}}
+            <div class="md:col-span-2">
+                <label class="block text-sm font-medium text-gray-400 mb-2">Episode Name *</label>
+                <input type="text" 
+                       name="name" 
+                       id="name" 
+                       class="w-full px-4 py-2 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400" 
+                       value="{{ old('name', $episode->name) }}" 
+                       placeholder="Enter episode title (e.g. 'The Beginning', 'Final Battle')" 
+                       maxlength="255" 
+                       required>
+                @error('name')
+                    <p class="text-red-400 text-sm mt-1">{{ $message }}</p>
+                @enderror
+            </div>
 
-                            {{-- Episode Name --}}
-                            <div class="form-col-12">
-                                <div class="form-group">
-                                    <label for="name" class="form-label required">
-                                        <i class="fas fa-heading label-icon"></i>
-                                        Episode Name
-                                    </label>
-                                    <input type="text" 
-                                           name="name" 
-                                           id="name" 
-                                           class="form-input" 
-                                           value="{{ old('name', $episode->name) }}" 
-                                           placeholder="Enter episode title (e.g. 'The Beginning', 'Final Battle')" 
-                                           maxlength="255" 
-                                           required>
-                                    <div class="field-help">
-                                        <i class="fas fa-tag icon"></i>
-                                        The catchy title of this episode
-                                    </div>
-                                </div>
-                            </div>
+            {{-- Episode Overview --}}
+            <div class="md:col-span-2">
+                <label class="block text-sm font-medium text-gray-400 mb-2">Episode Overview *</label>
+                <textarea name="overview" 
+                          id="overview" 
+                          rows="4"
+                          class="w-full px-4 py-2 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400" 
+                          placeholder="Write an engaging description of this episode... What exciting things happen?" 
+                          maxlength="1000" 
+                          required>{{ old('overview', $episode->overview) }}</textarea>
+                @error('overview')
+                    <p class="text-red-400 text-sm mt-1">{{ $message }}</p>
+                @enderror
+            </div>
 
-                            {{-- Episode Overview --}}
-                            <div class="form-col-12">
-                                <div class="form-group">
-                                    <label for="overview" class="form-label required">
-                                        <i class="fas fa-align-left label-icon"></i>
-                                        Episode Overview
-                                    </label>
-                                    <textarea name="overview" 
-                                              id="overview" 
-                                              class="form-input form-textarea" 
-                                              placeholder="Write an engaging description of this episode... What exciting things happen? What conflicts arise? Keep viewers interested!" 
-                                              maxlength="1000" 
-                                              required>{{ old('overview', $episode->overview) }}</textarea>
-                                    <div class="field-help">
-                                        <i class="fas fa-pen icon"></i>
-                                        Brief but compelling description of what happens in this episode
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+            {{-- Runtime --}}
+            <div>
+                <label class="block text-sm font-medium text-gray-400 mb-2">Runtime (minutes) *</label>
+                <input type="number" 
+                       name="runtime" 
+                       id="runtime" 
+                       class="w-full px-4 py-2 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400" 
+                       value="{{ old('runtime', $episode->runtime) }}" 
+                       placeholder="e.g. 45, 60, 90" 
+                       min="1" 
+                       max="600" 
+                       required>
+                @error('runtime')
+                    <p class="text-red-400 text-sm mt-1">{{ $message }}</p>
+                @enderror
+            </div>
 
-                    {{-- Technical Details Section --}}
-                    <div class="form-section">
-                        <div class="section-header">
-                            <div class="section-icon">
-                                <i class="fas fa-cogs"></i>
-                            </div>
-                            <div>
-                                <h3 class="section-title">Technical Details</h3>
-                                <p class="section-description">Runtime and availability settings</p>
-                            </div>
-                        </div>
-
-                        <div class="form-grid">
-                            {{-- Runtime --}}
-                            <div class="form-col-6">
-                                <div class="form-group">
-                                    <label for="runtime" class="form-label required">
-                                        <i class="fas fa-clock label-icon"></i>
-                                        Runtime (minutes)
-                                    </label>
-                                    <input type="number" 
-                                           name="runtime" 
-                                           id="runtime" 
-                                           class="form-input" 
-                                           value="{{ old('runtime', $episode->runtime) }}" 
-                                           placeholder="e.g. 45, 60, 90" 
-                                           min="1" 
-                                           max="600" 
-                                           required>
-                                    <div class="field-help">
-                                        <i class="fas fa-stopwatch icon"></i>
-                                        Duration in minutes (typical TV episodes: 22-60 min)
-                                    </div>
-                                </div>
-                            </div>
-
-                            {{-- Status --}}
-                            <div class="form-col-6">
-                                <div class="form-group">
-                                    <label class="form-label">
-                                        <i class="fas fa-toggle-on label-icon"></i>
-                                        Availability Status
-                                    </label>
-                                    <div class="checkbox-group">
-                                        <input type="hidden" name="is_active" value="0">
-                                        <input type="checkbox" 
-                                               name="is_active" 
-                                               id="is_active" 
-                                               class="form-checkbox" 
-                                               value="1" 
-                                               {{ old('is_active', $episode->is_active) ? 'checked' : '' }}>
-                                        <div>
-                                            <label for="is_active" class="checkbox-label">
-                                                Active Episode (Visible to Users)
-                                            </label>
-                                            <div class="checkbox-description">
-                                                Inactive episodes won't be visible to users until activated
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {{-- Media Sources Section --}}
-                    <div class="form-section">
-                        <div class="section-header">
-                            <div class="section-icon">
-                                <i class="fas fa-video"></i>
-                            </div>
-                            <div>
-                                <h3 class="section-title">Media Sources</h3>
-                                <p class="section-description">Video player and thumbnail configuration</p>
-                            </div>
-                        </div>
-
-                        <div class="form-grid">
-                            {{-- Embed URL --}}
-                            <div class="form-col-12">
-                                <div class="form-group">
-                                    <label for="embed_url" class="form-label required">
-                                        <i class="fas fa-play label-icon"></i>
-                                        Video Embed URL
-                                    </label>
-                                    <div class="input-group">
-                                        <input type="url" 
-                                               name="embed_url" 
-                                               id="embed_url" 
-                                               class="form-input" 
-                                               value="{{ old('embed_url', $episode->embed_url) }}" 
-                                               placeholder="https://example.com/embed/video123 or https://player.vimeo.com/video/123456" 
-                                               required>
-                                        <button type="button" 
-                                                class="btn btn-secondary preview-btn" 
-                                                data-preview-type="video">
-                                            <i class="fas fa-external-link-alt"></i>
-                                            Preview
-                                        </button>
-                                    </div>
-                                    <div class="field-help">
-                                        <i class="fas fa-link icon"></i>
-                                        Direct link to the video player embed (YouTube, Vimeo, or custom player)
-                                    </div>
-                                </div>
-                            </div>
-
-                            {{-- Thumbnail URL --}}
-                            <div class="form-col-12">
-                                <div class="form-group">
-                                    <label for="still_path" class="form-label">
-                                        <i class="fas fa-image label-icon"></i>
-                                        Episode Thumbnail URL
-                                    </label>
-                                    <div class="input-group">
-                                        <input type="url" 
-                                               name="still_path" 
-                                               id="still_path" 
-                                               class="form-input" 
-                                               value="{{ old('still_path', $episode->still_path) }}" 
-                                               placeholder="https://example.com/images/episode-thumbnail.jpg">
-                                        <button type="button" 
-                                                class="btn btn-secondary preview-btn" 
-                                                data-preview-type="image">
-                                            <i class="fas fa-eye"></i>
-                                            Preview
-                                        </button>
-                                    </div>
-                                    <div class="field-help">
-                                        <i class="fas fa-photo-video icon"></i>
-                                        Optional: Eye-catching thumbnail image for this episode (JPG, PNG, WebP)
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {{-- Validation Errors --}}
-                    @if($errors->any())
-                        <div class="form-section">
-                            <div class="alert alert-danger">
-                                <div class="alert-header">
-                                    <i class="fas fa-exclamation-triangle"></i>
-                                    <strong>Please fix the following errors:</strong>
-                                </div>
-                                <ul class="error-list">
-                                    @foreach($errors->all() as $error)
-                                        <li>{{ $error }}</li>
-                                    @endforeach
-                                </ul>
-                            </div>
-                        </div>
-                    @endif
-                </div>
-
-                {{-- Form Actions --}}
-                <div class="form-actions">
-                    <div class="form-actions-left">
-                        {{-- Progress indicator will be added here by JavaScript --}}
-                    </div>
-                    
-                    <div class="form-actions-right">
-                        <button type="button" id="cancel-btn" class="btn btn-secondary">
-                            <i class="fas fa-times"></i>
-                            Cancel
-                        </button>
-                        
-                        <button type="submit" id="submit-btn" class="btn btn-primary">
-                            <i class="fas fa-save"></i>
-                            Update Episode
-                        </button>
-                        
-                        @can('delete', $episode)
-                        <button type="button" 
-                                id="delete-btn" 
-                                class="btn btn-danger"
-                                data-delete-url="{{ route('admin.series.episodes.destroy', [$series, $episode]) }}">
-                            <i class="fas fa-trash"></i>
-                            Delete Episode
-                        </button>
-                        @endcan
+            {{-- Status --}}
+            <div>
+                <label class="block text-sm font-medium text-gray-400 mb-2">Availability Status</label>
+                <div class="flex items-center space-x-3 p-3 bg-gray-700 rounded-lg">
+                    <input type="hidden" name="is_active" value="0">
+                    <input type="checkbox" 
+                           name="is_active" 
+                           id="is_active" 
+                           class="w-4 h-4 text-green-600 bg-gray-600 border-gray-500 rounded focus:ring-green-500" 
+                           value="1" 
+                           {{ old('is_active', $episode->is_active) ? 'checked' : '' }}>
+                    <div>
+                        <label for="is_active" class="text-sm font-medium text-white">
+                            Active Episode (Visible to Users)
+                        </label>
+                        <p class="text-xs text-gray-400">
+                            Inactive episodes won't be visible to users until activated
+                        </p>
                     </div>
                 </div>
-            </form>
+            </div>
+
+            {{-- Embed URL --}}
+            <div class="md:col-span-2">
+                <label class="block text-sm font-medium text-gray-400 mb-2">Video Embed URL *</label>
+                <input type="url" 
+                       name="embed_url" 
+                       id="embed_url" 
+                       class="w-full px-4 py-2 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400" 
+                       value="{{ old('embed_url', $episode->embed_url) }}" 
+                       placeholder="https://example.com/embed/video123 or https://player.vimeo.com/video/123456" 
+                       required>
+                @error('embed_url')
+                    <p class="text-red-400 text-sm mt-1">{{ $message }}</p>
+                @enderror
+            </div>
+
+            {{-- Thumbnail URL --}}
+            <div class="md:col-span-2">
+                <label class="block text-sm font-medium text-gray-400 mb-2">Episode Thumbnail URL</label>
+                <input type="url" 
+                       name="still_path" 
+                       id="still_path" 
+                       class="w-full px-4 py-2 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400" 
+                       value="{{ old('still_path', $episode->still_path) }}" 
+                       placeholder="https://example.com/images/episode-thumbnail.jpg">
+                @error('still_path')
+                    <p class="text-red-400 text-sm mt-1">{{ $message }}</p>
+                @enderror
+            </div>
         </div>
-    </div>
-</div>
+
+        {{-- Validation Errors --}}
+        @if($errors->any())
+            <div class="bg-red-600 text-white px-6 py-3 rounded-lg mb-6">
+                <div class="flex items-center mb-2">
+                    <i class="fas fa-exclamation-triangle mr-2"></i>
+                    <strong>Please fix the following errors:</strong>
+                </div>
+                <ul class="list-disc list-inside">
+                    @foreach($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
+        {{-- Form Actions --}}
+        <div class="flex flex-col md:flex-row justify-between items-center mt-8 pt-6 border-t border-gray-700 gap-4">
+            <div class="order-2 md:order-1">
+                {{-- Progress indicator will be added here by JavaScript --}}
+            </div>
+            
+            <div class="flex items-center gap-3 order-1 md:order-2">
+                <button type="button" id="cancel-btn" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg transition">
+                    <i class="fas fa-times mr-2"></i>
+                    Cancel
+                </button>
+                
+                <button type="submit" id="submit-btn" class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg transition">
+                    <i class="fas fa-save mr-2"></i>
+                    Update Episode
+                </button>
+                
+                @can('delete', $episode)
+                <button type="button" 
+                        id="delete-btn" 
+                        class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition"
+                        data-delete-url="{{ route('admin.series.episodes.destroy', [$series, $episode]) }}">
+                    <i class="fas fa-trash mr-2"></i>
+                    Delete Episode
+                </button>
+                @endcan
+            </div>
+        </div>
+    </form>
 @endsection
 
 @push('scripts')
