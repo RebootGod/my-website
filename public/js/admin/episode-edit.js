@@ -12,8 +12,10 @@ class EpisodeEditManager {
         this.cancelBtn = document.getElementById('cancel-btn');
         this.deleteBtn = document.getElementById('delete-btn');
         this.isSubmitting = false;
+        this.originalData = {};
         
         this.init();
+        this.addVisualEnhancements();
     }
 
     init() {
@@ -25,6 +27,203 @@ class EpisodeEditManager {
         this.bindEvents();
         this.setupValidation();
         this.initializeFormData();
+        this.setupAutoSave();
+    }
+    
+    addVisualEnhancements() {
+        // Add loading overlay
+        this.createLoadingOverlay();
+        
+        // Add form animations
+        this.animateFormSections();
+        
+        // Add input focus effects
+        this.enhanceInputEffects();
+        
+        // Add progress indicator
+        this.createProgressIndicator();
+    }
+    
+    createLoadingOverlay() {
+        const overlay = document.createElement('div');
+        overlay.id = 'episode-loading-overlay';
+        overlay.innerHTML = `
+            <div class="loading-content">
+                <div class="loading-spinner-large"></div>
+                <p class="loading-text">Processing episode...</p>
+            </div>
+        `;
+        overlay.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(10px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        `;
+        document.body.appendChild(overlay);
+    }
+    
+    animateFormSections() {
+        const sections = document.querySelectorAll('.form-section');
+        sections.forEach((section, index) => {
+            section.style.opacity = '0';
+            section.style.transform = 'translateY(20px)';
+            
+            setTimeout(() => {
+                section.style.transition = 'all 0.5s ease';
+                section.style.opacity = '1';
+                section.style.transform = 'translateY(0)';
+            }, index * 150);
+        });
+    }
+    
+    enhanceInputEffects() {
+        const inputs = this.form.querySelectorAll('input, select, textarea');
+        inputs.forEach(input => {
+            // Add floating label effect
+            this.addFloatingLabel(input);
+            
+            // Add focus glow effect
+            input.addEventListener('focus', () => {
+                input.style.boxShadow = '0 0 20px rgba(99, 102, 241, 0.3)';
+                input.style.transform = 'scale(1.02)';
+            });
+            
+            input.addEventListener('blur', () => {
+                input.style.boxShadow = '';
+                input.style.transform = 'scale(1)';
+            });
+        });
+    }
+    
+    addFloatingLabel(input) {
+        const parent = input.parentElement;
+        const label = parent.querySelector('label');
+        
+        if (label && input.type !== 'checkbox') {
+            label.style.transition = 'all 0.3s ease';
+            
+            if (input.value) {
+                label.style.transform = 'translateY(-8px) scale(0.85)';
+                label.style.color = '#6366f1';
+            }
+            
+            input.addEventListener('focus', () => {
+                label.style.transform = 'translateY(-8px) scale(0.85)';
+                label.style.color = '#6366f1';
+            });
+            
+            input.addEventListener('blur', () => {
+                if (!input.value) {
+                    label.style.transform = 'translateY(0) scale(1)';
+                    label.style.color = '#e2e8f0';
+                }
+            });
+        }
+    }
+    
+    createProgressIndicator() {
+        const progressBar = document.createElement('div');
+        progressBar.id = 'form-progress';
+        progressBar.innerHTML = `
+            <div class="progress-bar">
+                <div class="progress-fill"></div>
+            </div>
+            <div class="progress-text">Form completion: <span id="progress-percentage">0%</span></div>
+        `;
+        progressBar.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #1e293b, #374151);
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid #475569;
+            color: #e2e8f0;
+            font-size: 14px;
+            z-index: 1000;
+            min-width: 200px;
+        `;
+        document.body.appendChild(progressBar);
+        
+        this.updateProgress();
+    }
+    
+    updateProgress() {
+        const inputs = this.form.querySelectorAll('input[required], select[required], textarea[required]');
+        const filled = Array.from(inputs).filter(input => input.value.trim() !== '').length;
+        const percentage = Math.round((filled / inputs.length) * 100);
+        
+        const progressFill = document.querySelector('#form-progress .progress-fill');
+        const progressText = document.querySelector('#progress-percentage');
+        
+        if (progressFill && progressText) {
+            progressFill.style.width = percentage + '%';
+            progressFill.style.background = `linear-gradient(90deg, #ef4444 0%, #f59e0b 50%, #22c55e 100%)`;
+            progressText.textContent = percentage + '%';
+        }
+    }
+    
+    setupAutoSave() {
+        let autoSaveTimeout;
+        
+        const inputs = this.form.querySelectorAll('input, select, textarea');
+        inputs.forEach(input => {
+            input.addEventListener('input', () => {
+                clearTimeout(autoSaveTimeout);
+                autoSaveTimeout = setTimeout(() => {
+                    this.autoSaveDraft();
+                }, 2000);
+                
+                this.updateProgress();
+            });
+        });
+    }
+    
+    autoSaveDraft() {
+        const formData = new FormData(this.form);
+        const data = Object.fromEntries(formData);
+        
+        localStorage.setItem('episode_edit_draft_' + (this.form.dataset.episodeId || 'new'), JSON.stringify(data));
+        
+        this.showNotification('Draft saved automatically', 'success', 2000);
+    }
+    
+    showNotification(message, type = 'info', duration = 3000) {
+        const notification = document.createElement('div');
+        notification.className = `notification notification-${type}`;
+        notification.textContent = message;
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: ${type === 'success' ? '#16a34a' : type === 'error' ? '#ef4444' : '#3b82f6'};
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            z-index: 10000;
+            font-weight: 600;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            animation: slideDown 0.3s ease;
+        `;
+        
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.style.animation = 'slideUp 0.3s ease';
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, 300);
+        }, duration);
     }
 
     bindEvents() {

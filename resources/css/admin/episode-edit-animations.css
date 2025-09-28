@@ -1,0 +1,258 @@
+/* Episode Edit Animations and Visual Effects */
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-20px);
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: -200px 0;
+    }
+    100% {
+        background-position: calc(200px + 100%) 0;
+    }
+}
+
+/* Loading Spinner */
+.loading-spinner-large {
+    width: 60px;
+    height: 60px;
+    border: 4px solid rgba(99, 102, 241, 0.2);
+    border-top: 4px solid #6366f1;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 20px;
+}
+
+.loading-content {
+    text-align: center;
+    color: #e2e8f0;
+}
+
+.loading-text {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+/* Progress Bar */
+.progress-bar {
+    width: 100%;
+    height: 6px;
+    background: #374151;
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 10px;
+}
+
+.progress-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.3s ease;
+    position: relative;
+}
+
+.progress-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background-image: linear-gradient(
+        -45deg,
+        rgba(255, 255, 255, .2) 25%,
+        transparent 25%,
+        transparent 50%,
+        rgba(255, 255, 255, .2) 50%,
+        rgba(255, 255, 255, .2) 75%,
+        transparent 75%,
+        transparent
+    );
+    background-size: 30px 30px;
+    animation: shimmer 2s infinite linear;
+}
+
+/* Form Enhancements */
+.form-section {
+    animation: fadeInUp 0.5s ease forwards;
+}
+
+.form-input:focus {
+    animation: pulse 0.3s ease;
+}
+
+/* Button Hover Effects */
+.btn {
+    position: relative;
+    overflow: hidden;
+}
+
+.btn::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.3s, height 0.3s;
+}
+
+.btn:hover::after {
+    width: 300px;
+    height: 300px;
+}
+
+/* Notification Styles */
+.notification {
+    animation: slideDown 0.3s ease;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Form Input Glow Effects */
+.form-input:focus {
+    position: relative;
+}
+
+.form-input:focus::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(45deg, #6366f1, #8b5cf6, #ec4899, #6366f1);
+    border-radius: 14px;
+    z-index: -1;
+    animation: spin 2s linear infinite;
+    opacity: 0.7;
+}
+
+/* Episode Info Card Animation */
+.episode-info-card {
+    animation: fadeInUp 0.6s ease 0.2s both;
+}
+
+/* Success/Error States */
+.form-input.success {
+    border-color: #22c55e;
+    box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.2);
+}
+
+.form-input.error {
+    animation: shake 0.5s ease-in-out;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+    20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+/* Floating Labels */
+.form-group {
+    position: relative;
+}
+
+.form-label {
+    transition: all 0.3s ease;
+    transform-origin: left center;
+}
+
+.form-label.floating {
+    position: absolute;
+    top: 1rem;
+    left: 1.25rem;
+    pointer-events: none;
+    z-index: 2;
+}
+
+.form-label.floated {
+    transform: translateY(-2.5rem) scale(0.85);
+    color: #6366f1 !important;
+    background: linear-gradient(135deg, #1f2937, #374151);
+    padding: 0 8px;
+    border-radius: 4px;
+}
+
+/* Card Hover Effects */
+.episode-info-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+}
+
+/* Dark Theme Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #1f2937;
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, #4f46e5, #7c3aed);
+}
+
+/* Mobile Responsive Animations */
+@media (max-width: 768px) {
+    .form-section {
+        animation-delay: 0.1s;
+    }
+    
+    .loading-spinner-large {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .loading-text {
+        font-size: 1rem;
+    }
+}
