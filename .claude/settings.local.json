@@ -3,7 +3,11 @@
     "allow": [
       "Bash(git commit:*)",
       "Bash(git push:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(find:*)",
+      "Bash(php:*)",
+      "Bash(rg:*)",
+      "Bash(composer run:*)"
     ],
     "deny": [],
     "ask": []

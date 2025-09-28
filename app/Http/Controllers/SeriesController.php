@@ -15,8 +15,16 @@ class SeriesController extends Controller
             abort(404);
         }
 
-        // Load relationships
-        $series->load(['genres', 'seasons.episodes']);
+        // Load relationships with proper ordering
+        $series->load([
+            'genres',
+            'seasons' => function($query) {
+                $query->orderBy('season_number');
+            },
+            'seasons.episodes' => function($query) {
+                $query->orderBy('episode_number');
+            }
+        ]);
 
         // Log series watching activity if user is authenticated
         if (auth()->check()) {

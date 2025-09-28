@@ -76,20 +76,49 @@
                     </h2>
 
                     @if($series->seasons->count() > 0)
+                        {{-- Season Navigation (only show if more than 1 season) --}}
+                        @if($series->seasons->count() > 1)
+                            <div class="seasons-nav" id="seasons-nav">
+                                <div class="container">
+                                    <div class="seasons-nav-list">
+                                        @foreach($series->seasons as $index => $season)
+                                            <a href="#season-{{ $season->season_number }}"
+                                               class="season-nav-item {{ $index === 0 ? 'active' : '' }}"
+                                               data-season="{{ $season->season_number }}">
+                                                Season {{ $season->season_number }}
+                                                <span class="badge ms-2">{{ $season->episodes->count() }}</span>
+                                            </a>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
+
                         <div class="seasons-container">
                             @foreach($series->seasons as $season)
-                                <div class="season-card mb-4">
+                                <div class="season-card mb-4" id="season-{{ $season->season_number }}">
                                     <div class="season-header">
-                                        <h3 class="season-title">Season {{ $season->season_number }}</h3>
-                                        <span class="episode-count">{{ $season->episodes->count() }} episodes</span>
+                                        <div class="season-title-wrapper">
+                                            <h3 class="season-title">Season {{ $season->season_number }}</h3>
+                                            @if($season->name && $season->name !== "Season {$season->season_number}")
+                                                <p class="season-name">{{ $season->name }}</p>
+                                            @endif
+                                        </div>
+                                        <div class="season-meta">
+                                            <span class="episode-count">{{ $season->episodes->count() }} episodes</span>
+                                            @if($season->air_date)
+                                                <span class="season-air-date">
+                                                    <i class="fas fa-calendar-alt"></i>
+                                                    {{ \Carbon\Carbon::parse($season->air_date)->format('Y') }}
+                                                </span>
+                                            @endif
+                                        </div>
                                     </div>
 
-                                    @if($season->name)
-                                        <p class="season-name">{{ $season->name }}</p>
-                                    @endif
-
                                     @if($season->overview)
-                                        <p class="season-overview">{{ $season->overview }}</p>
+                                        <div class="season-overview-wrapper">
+                                            <p class="season-overview">{{ $season->overview }}</p>
+                                        </div>
                                     @endif
 
                                     {{-- Episodes --}}
@@ -98,38 +127,97 @@
                                             @foreach($season->episodes as $episode)
                                                 <div class="episode-card"
                                                      data-episode-id="{{ $episode->id }}"
-                                                     data-episode-poster="{{ $episode->still_path }}">
-                                                    <div class="episode-header">
-                                                        <div class="episode-number">{{ $episode->episode_number }}</div>
-                                                        <div class="episode-info">
-                                                            <h4 class="episode-title">{{ $episode->name }}</h4>
-                                                            @if($episode->overview)
-                                                                <p class="episode-overview">{{ Str::limit($episode->overview, 120) }}</p>
-                                                            @endif
-                                                        </div>
-                                                    </div>
+                                                     data-season="{{ $season->season_number }}"
+                                                     data-episode="{{ $episode->episode_number }}">
 
-                                                    @if($episode->runtime || $episode->air_date)
-                                                        <div class="episode-meta">
-                                                            @if($episode->runtime)
-                                                                <span class="runtime">
-                                                                    <i class="fas fa-clock"></i>
-                                                                    {{ $episode->runtime }}m
-                                                                </span>
-                                                            @endif
-                                                            @if($episode->air_date)
-                                                                <span class="air-date">
-                                                                    <i class="fas fa-calendar"></i>
-                                                                    {{ $episode->air_date ? \Carbon\Carbon::parse($episode->air_date)->format('M d, Y') : 'TBA' }}
-                                                                </span>
-                                                            @endif
+                                                    {{-- Episode Thumbnail --}}
+                                                    @if($episode->still_path)
+                                                        <div class="episode-thumbnail-wrapper">
+                                                            <img src="{{ $episode->still_url }}"
+                                                                 alt="Episode {{ $episode->episode_number }}"
+                                                                 class="episode-thumbnail"
+                                                                 loading="lazy">
+                                                            <div class="episode-play-overlay">
+                                                                <i class="fas fa-play"></i>
+                                                            </div>
+                                                        </div>
+                                                    @else
+                                                        <div class="episode-thumbnail-placeholder">
+                                                            <i class="fas fa-film"></i>
                                                         </div>
                                                     @endif
+
+                                                    <div class="episode-content">
+                                                        <div class="episode-header">
+                                                            <div class="episode-number">{{ $episode->episode_number }}</div>
+                                                            <div class="episode-info">
+                                                                <h4 class="episode-title">
+                                                                    Episode {{ $episode->episode_number }}
+                                                                    @if($episode->name && $episode->name !== "Episode {$episode->episode_number}")
+                                                                        : {{ $episode->name }}
+                                                                    @endif
+                                                                </h4>
+                                                                @if($episode->overview)
+                                                                    <p class="episode-overview">{{ Str::limit($episode->overview, 150) }}</p>
+                                                                @else
+                                                                    <p class="episode-overview text-muted">There is no Description on TMDB</p>
+                                                                @endif
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="episode-meta">
+                                                            <div class="episode-meta-left">
+                                                                @if($episode->runtime)
+                                                                    <span class="runtime">
+                                                                        <i class="fas fa-clock"></i>
+                                                                        {{ $episode->getFormattedRuntime() }}
+                                                                    </span>
+                                                                @endif
+                                                                @if($episode->air_date)
+                                                                    <span class="air-date">
+                                                                        <i class="fas fa-calendar"></i>
+                                                                        {{ \Carbon\Carbon::parse($episode->air_date)->format('M d, Y') }}
+                                                                    </span>
+                                                                @endif
+                                                            </div>
+                                                            <div class="episode-meta-right">
+                                                                @if($episode->vote_average && $episode->vote_average > 0)
+                                                                    <span class="episode-rating">
+                                                                        <i class="fas fa-star"></i>
+                                                                        {{ number_format($episode->vote_average, 1) }}
+                                                                    </span>
+                                                                @endif
+                                                                @if($episode->embed_url)
+                                                                    <span class="watch-available">
+                                                                        <i class="fas fa-play-circle text-success"></i>
+                                                                        Available
+                                                                    </span>
+                                                                @else
+                                                                    <span class="watch-unavailable">
+                                                                        <i class="fas fa-clock text-warning"></i>
+                                                                        Coming Soon
+                                                                    </span>
+                                                                @endif
+                                                            </div>
+                                                        </div>
+
+                                                        {{-- Play Button --}}
+                                                        @if($episode->embed_url)
+                                                            <div class="episode-actions">
+                                                                <a href="{{ route('series.episode.watch', ['series' => $series, 'episode' => $episode->id]) }}"
+                                                                   class="btn btn-play btn-primary">
+                                                                    <i class="fas fa-play me-2"></i>
+                                                                    Watch Episode
+                                                                </a>
+                                                            </div>
+                                                        @endif
+                                                    </div>
                                                 </div>
                                             @endforeach
                                         </div>
                                     @else
-                                        <div class="text-center">
+                                        <div class="text-center py-5">
+                                            <i class="fas fa-film text-muted mb-3" style="font-size: 3rem;"></i>
                                             <p class="text-muted">No episodes available for this season.</p>
                                         </div>
                                     @endif
@@ -137,8 +225,9 @@
                             @endforeach
                         </div>
                     @else
-                        <div class="text-center">
-                            <p class="text-muted">No seasons available for this series.</p>
+                        <div class="text-center py-5">
+                            <i class="fas fa-tv text-muted mb-3" style="font-size: 4rem;"></i>
+                            <p class="text-muted mb-0">No seasons available for this series.</p>
                         </div>
                     @endif
                 </div>
