@@ -1,0 +1,247 @@
+/* Episode Draft Manager Styles */
+/* File: resources/css/admin/episode-draft-manager.css */
+
+.draft-restore-dialog {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.draft-restore-dialog.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.draft-dialog-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+}
+
+.draft-dialog-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    max-width: 500px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.draft-dialog-header {
+    padding: 1.5rem 2rem 1rem;
+    border-bottom: 1px solid #e2e8f0;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.draft-dialog-header i {
+    font-size: 1.25rem;
+}
+
+.draft-dialog-header h5 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1a202c;
+}
+
+.draft-dialog-body {
+    padding: 1.5rem 2rem;
+}
+
+.draft-dialog-body p {
+    margin: 0 0 1rem;
+    color: #4a5568;
+    font-size: 0.95rem;
+}
+
+.draft-changes-list {
+    background: #f8fafc;
+    border-radius: 8px;
+    padding: 1rem;
+    border: 1px solid #e2e8f0;
+}
+
+.draft-change-item {
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.draft-change-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.draft-change-item strong {
+    display: block;
+    color: #2d3748;
+    font-size: 0.875rem;
+    margin-bottom: 0.5rem;
+}
+
+.draft-change-values {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.current-value,
+.draft-value {
+    font-size: 0.8rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+}
+
+.current-value {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.draft-value {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.draft-dialog-actions {
+    padding: 1rem 2rem 1.5rem;
+    border-top: 1px solid #e2e8f0;
+    display: flex;
+    gap: 0.75rem;
+    justify-content: flex-end;
+}
+
+.draft-dialog-actions .btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.2s ease;
+    border: none;
+    cursor: pointer;
+    font-size: 0.875rem;
+}
+
+/* Draft Indicator */
+.draft-indicator {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: #16a34a;
+    color: white;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3);
+    font-size: 0.875rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    z-index: 9999;
+    opacity: 0;
+    transform: translateX(100%);
+    transition: all 0.3s ease;
+}
+
+.draft-indicator.show {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.draft-indicator i {
+    font-size: 1rem;
+}
+
+/* Notifications */
+.notification {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.875rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 9999;
+    opacity: 0;
+    transform: translateX(-50%) translateY(-20px);
+    transition: all 0.3s ease;
+}
+
+.notification.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+.notification-success {
+    background: #16a34a;
+    color: white;
+}
+
+.notification-error {
+    background: #dc2626;
+    color: white;
+}
+
+.notification-info {
+    background: #2563eb;
+    color: white;
+}
+
+.notification-warning {
+    background: #d97706;
+    color: white;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .draft-dialog-content {
+        width: 95%;
+        max-width: none;
+    }
+    
+    .draft-dialog-header,
+    .draft-dialog-body,
+    .draft-dialog-actions {
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
+    }
+    
+    .draft-dialog-actions {
+        flex-direction: column;
+    }
+    
+    .draft-dialog-actions .btn {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .draft-change-values {
+        gap: 0.5rem;
+    }
+    
+    .draft-indicator {
+        right: 10px;
+        left: 10px;
+        text-align: center;
+    }
+}

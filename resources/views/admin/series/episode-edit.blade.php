@@ -8,6 +8,11 @@
 @else
 <link rel="stylesheet" href="{{ asset('css/admin/episode-edit.css') }}?v={{ time() }}">
 @endif
+@if(file_exists(public_path('css/admin/episode-draft-manager.css')))
+<link rel="stylesheet" href="{{ asset('css/admin/episode-draft-manager.css') }}?v={{ filemtime(public_path('css/admin/episode-draft-manager.css')) }}">
+@else
+<link rel="stylesheet" href="{{ asset('css/admin/episode-draft-manager.css') }}?v={{ time() }}">
+@endif
 @endpush
 
 @section('content')
@@ -47,7 +52,7 @@
                 </div>
             </div>
 
-            <form id="episode-edit-form" action="{{ route('admin.series.episodes.update', [$series, $episode]) }}" method="POST">
+            <form id="episode-edit-form" action="{{ route('admin.series.episodes.update', [$series, $episode]) }}" method="POST" data-episode-id="{{ $episode->id }}">
                 @csrf
                 @method('PUT')
                 
@@ -265,6 +270,11 @@
 @else
 <script src="{{ asset('js/admin/episode-edit.js') }}?v={{ time() }}"></script>
 @endif
+@if(file_exists(public_path('js/admin/episode-draft-manager.js')))
+<script src="{{ asset('js/admin/episode-draft-manager.js') }}?v={{ filemtime(public_path('js/admin/episode-draft-manager.js')) }}"></script>
+@else
+<script src="{{ asset('js/admin/episode-draft-manager.js') }}?v={{ time() }}"></script>
+@endif
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -299,70 +309,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Auto-save draft functionality (optional)
-    let draftTimer;
-    const formInputs = document.querySelectorAll('#episode-edit-form input, #episode-edit-form textarea, #episode-edit-form select');
-    formInputs.forEach(input => {
-        input.addEventListener('input', function() {
-            clearTimeout(draftTimer);
-            draftTimer = setTimeout(() => {
-                saveDraft();
-            }, 2000); // Save draft after 2 seconds of inactivity
-        });
-    });
 
-    function saveDraft() {
-        const formData = new FormData(document.getElementById('episode-edit-form'));
-        const draft = {};
-        
-        for (let [key, value] of formData.entries()) {
-            draft[key] = value;
-        }
-        
-        localStorage.setItem('episode_edit_draft_{{ $episode->id }}', JSON.stringify(draft));
-        
-        // Show subtle indication that draft was saved
-        const indicator = document.createElement('span');
-        indicator.textContent = '✓ Draft saved';
-        indicator.className = 'text-success small ms-2';
-        indicator.style.opacity = '0';
-        indicator.style.transition = 'opacity 0.3s';
-        
-        const title = document.querySelector('.episode-edit-header h1');
-        title.appendChild(indicator);
-        
-        setTimeout(() => indicator.style.opacity = '1', 100);
-        setTimeout(() => {
-            indicator.style.opacity = '0';
-            setTimeout(() => indicator.remove(), 300);
-        }, 2000);
-    }
-
-    // Load draft on page load if available
-    const savedDraft = localStorage.getItem('episode_edit_draft_{{ $episode->id }}');
-    if (savedDraft) {
-        try {
-            const draft = JSON.parse(savedDraft);
-            let hasChanges = false;
-            
-            Object.keys(draft).forEach(key => {
-                const input = document.querySelector(`[name="${key}"]`);
-                if (input && input.value !== draft[key]) {
-                    if (confirm('A draft of your changes was found. Would you like to restore it?')) {
-                        input.value = draft[key];
-                        hasChanges = true;
-                    }
-                }
-            });
-            
-            if (hasChanges) {
-                // Clear the draft since we restored it
-                localStorage.removeItem('episode_edit_draft_{{ $episode->id }}');
-            }
-        } catch (e) {
-            console.warn('Failed to load draft:', e);
-        }
-    }
 });
 </script>
 @endpush

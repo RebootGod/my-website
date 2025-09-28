@@ -10,6 +10,7 @@ class EpisodeEditManager {
         this.cancelBtn = document.getElementById('cancel-btn');
         this.deleteBtn = document.getElementById('delete-btn');
         this.isSubmitting = false;
+        this.episodeId = this.form ? this.form.dataset.episodeId : null;
         
         this.init();
     }
@@ -208,6 +209,12 @@ class EpisodeEditManager {
             });
             
             if (response.ok) {
+                // Clear any saved drafts
+                const episodeId = this.form.dataset.episodeId;
+                if (episodeId) {
+                    localStorage.removeItem(`episode_edit_draft_${episodeId}`);
+                }
+                
                 this.showMessage('Episode updated successfully!', 'success');
                 
                 // Redirect after short delay
