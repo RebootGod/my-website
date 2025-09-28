@@ -14,6 +14,7 @@ use App\Rules\NoSqlInjectionRule;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\RateLimiter;
 
 class LoginController extends Controller
 {
@@ -28,6 +29,22 @@ class LoginController extends Controller
 
     public function login(Request $request)
     {
+        // SECURITY: Rate limiting for brute force protection
+        $ipKey = 'login_attempts:' . $request->ip();
+        $usernameKey = 'login_attempts_user:' . $request->input('username');
+        
+        // Check IP-based rate limiting (10 attempts per 15 minutes)
+        $executed = RateLimiter::attempt($ipKey, 10, function() {
+            return true;
+        }, 900); // 15 minutes
+
+        if (!$executed) {
+            $seconds = RateLimiter::availableIn($ipKey);
+            return back()->withErrors([
+                'username' => 'Terlalu banyak percobaan login dari IP ini. Coba lagi dalam ' . ceil($seconds / 60) . ' menit.'
+            ])->withInput($request->only('username'));
+        }
+
         $request->validate([
             'username' => ['required', 'string', 'min:3', 'max:20', 'regex:/^[a-zA-Z0-9_]+$/', new NoXssRule(), new NoSqlInjectionRule()],
             'password' => ['required', 'string', 'min:8', 'max:128'],
@@ -38,6 +55,15 @@ class LoginController extends Controller
             'password.min' => 'Password minimal 8 karakter.',
             'password.max' => 'Password maksimal 128 karakter.',
         ]);
+
+        // SECURITY: Username-based rate limiting (5 attempts per username per hour)
+        $usernameAttempts = RateLimiter::tooManyAttempts($usernameKey, 5);
+        if ($usernameAttempts) {
+            $seconds = RateLimiter::availableIn($usernameKey);
+            return back()->withErrors([
+                'username' => 'Terlalu banyak percobaan untuk username ini. Coba lagi dalam ' . ceil($seconds / 60) . ' menit.'
+            ])->withInput($request->only('username'));
+        }
 
         // Sanitize input data to prevent security issues
         $sanitizedData = [
@@ -54,36 +80,48 @@ class LoginController extends Controller
         // Security: Add small delay to prevent timing attacks
         usleep(random_int(100000, 300000)); // 0.1-0.3 second random delay
 
-        // Check if user exists and is active using sanitized username
+        // SECURITY: Consistent timing for all authentication paths
         $user = User::where('username', $credentials['username'])->first();
+        $authenticationFailed = false;
+        $failureReason = 'invalid_credentials';
 
         if (!$user) {
+            $authenticationFailed = true;
+            $failureReason = 'user_not_found';
+        } elseif ($user->status !== 'active') {
+            $authenticationFailed = true;
+            $failureReason = 'account_suspended';
+        }
+
+        // SECURITY: Add consistent delay regardless of failure reason
+        if ($authenticationFailed) {
+            // SECURITY: Hit username-based rate limiter on failed attempt
+            RateLimiter::hit($usernameKey, 3600); // 1 hour decay
+
+            // Additional delay for failed attempts
+            usleep(random_int(100000, 300000));
+
             // Log failed login attempt
             app(\App\Services\UserActivityService::class)->logFailedLogin(
                 $credentials['username'],
-                'user_not_found',
+                $failureReason,
                 $request->ip()
             );
 
-            return back()->withErrors([
-                'username' => 'Username atau password salah.',
-            ])->withInput($request->except('password'));
-        }
-
-        if ($user->status !== 'active') {
-            // Log blocked login attempt
-            app(\App\Services\UserActivityService::class)->logFailedLogin(
-                $credentials['username'],
-                'account_suspended',
-                $request->ip()
-            );
+            // SECURITY: Generic error message to prevent user enumeration
+            $errorMessage = ($failureReason === 'account_suspended') 
+                ? 'Akun Anda telah di-suspend atau di-banned.'
+                : 'Username atau password salah.';
 
             return back()->withErrors([
-                'username' => 'Akun Anda telah di-suspend atau di-banned.',
+                'username' => $errorMessage,
             ])->withInput($request->except('password'));
         }
 
         if (Auth::attempt($credentials, $remember)) {
+            // SECURITY: Clear rate limiting on successful login
+            RateLimiter::clear($usernameKey);
+            
             $user = Auth::user();
 
             // Store plain password temporarily for potential rehashing
@@ -117,6 +155,12 @@ class LoginController extends Controller
 
             return redirect()->intended(route('home'));
         }
+
+        // SECURITY: Hit username-based rate limiter on wrong password
+        RateLimiter::hit($usernameKey, 3600); // 1 hour decay
+
+        // SECURITY: Add delay to prevent timing attacks
+        usleep(random_int(100000, 300000));
 
         // Log failed login attempt
         app(\App\Services\UserActivityService::class)->logFailedLogin(

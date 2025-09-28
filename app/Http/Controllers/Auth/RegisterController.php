@@ -18,6 +18,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\RateLimiter;
 
 class RegisterController extends Controller
 {
@@ -116,20 +117,39 @@ class RegisterController extends Controller
 
     public function checkInviteCode(Request $request)
     {
+        // SECURITY: CSRF Protection for AJAX requests
+        if (!$request->ajax()) {
+            abort(404);
+        }
+
+        // SECURITY: Rate limiting to prevent brute force attacks
+        $key = 'invite-check:' . $request->ip();
+        if (!RateLimiter::attempt($key, 5, function() { return true; }, 300)) {
+            return response()->json([
+                'valid' => false, 
+                'message' => 'Terlalu banyak percobaan. Coba lagi dalam 5 menit.',
+                'rate_limited' => true
+            ], 429);
+        }
+
         // Validate and sanitize the invite code input
         $request->validate([
             'code' => ['required', 'string', 'max:50', new NoXssRule(), new NoSqlInjectionRule()],
         ]);
 
         $code = strip_tags(trim($request->get('code')));
+        
+        // SECURITY: Add timing attack protection
+        usleep(random_int(200000, 500000)); // 0.2-0.5 second random delay
+
         $inviteCode = InviteCode::whereRaw('BINARY code = ?', [$code])->first();
 
-        if (!$inviteCode) {
-            return response()->json(['valid' => false, 'message' => 'Invite code tidak ditemukan.']);
-        }
-
-        if (!$inviteCode->isValid()) {
-            return response()->json(['valid' => false, 'message' => 'Invite code expired atau sudah mencapai limit.']);
+        // SECURITY: Generic error messages to prevent enumeration
+        if (!$inviteCode || !$inviteCode->isValid()) {
+            return response()->json([
+                'valid' => false, 
+                'message' => 'Invite code tidak valid atau sudah expired.'
+            ]);
         }
 
         return response()->json(['valid' => true, 'message' => 'Invite code valid.']);

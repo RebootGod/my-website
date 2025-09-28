@@ -1,6 +1,34 @@
+# SECURITY: Server Information Disclosure Prevention
 <IfModule mod_headers.c>
+    # Remove server signatures
+    Header unset Server
+    Header unset X-Powered-By
+    Header unset X-Pingback
+    
+    # SECURITY: Comprehensive security headers (backup for middleware)
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-Frame-Options "DENY"
+    Header always set X-XSS-Protection "1; mode=block"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    
+    # SECURITY: HSTS for HTTPS enforcement (production only)
+    <If "%{HTTPS} == 'on'">
+        Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+    </If>
+    
+    # SECURITY: Content Security Policy
     Header set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://code.jquery.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://static.cloudflareinsights.com; connect-src 'self' https://cdn.jsdelivr.net injections.adguard.org;"
 </IfModule>
+
+# SECURITY: Prevent access to sensitive files
+<Files ~ "^\.">
+    Require all denied
+</Files>
+
+# SECURITY: Block access to sensitive directories and files
+<LocationMatch "/(\.env|\.git|storage|bootstrap/cache|database|tests|vendor|composer\.(json|lock)|artisan)">
+    Require all denied
+</LocationMatch>
 <IfModule mod_rewrite.c>
     <IfModule mod_negotiation.c>
         Options -MultiViews -Indexes

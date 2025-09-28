@@ -134,6 +134,7 @@ class ForgotPasswordController extends Controller
 
     /**
      * Get rate limit status (AJAX endpoint)
+     * SECURITY: Limited information disclosure
      */
     public function getRateLimitStatus(Request $request)
     {
@@ -141,32 +142,65 @@ class ForgotPasswordController extends Controller
             abort(404);
         }
 
+        // SECURITY: Additional rate limiting for this endpoint
+        $statusKey = 'rate-limit-check:' . $request->ip();
+        if (!RateLimiter::attempt($statusKey, 10, function() { return true; }, 60)) {
+            return response()->json([
+                'can_attempt' => false,
+                'message' => 'Terlalu banyak pengecekan status. Coba lagi nanti.'
+            ], 429);
+        }
+
         $email = $request->get('email', '');
         $rateLimitStatus = $this->passwordResetService->getRemainingAttempts($email, $request->ip());
 
+        // SECURITY: Return minimal information to prevent information disclosure
         return response()->json([
             'can_attempt' => $rateLimitStatus['can_attempt'],
-            'email_attempts_remaining' => $rateLimitStatus['email_attempts_remaining'],
-            'ip_attempts_remaining' => $rateLimitStatus['ip_attempts_remaining'],
-            'reset_in_minutes' => ceil($rateLimitStatus['reset_in_seconds'] / 60),
             'message' => $rateLimitStatus['can_attempt']
                 ? 'Anda dapat mengirim reset password.'
-                : 'Batas percobaan tercapai. Coba lagi nanti.'
+                : 'Batas percobaan tercapai. Coba lagi dalam beberapa menit.',
+            // REMOVED: Detailed attempt counts and timing information
         ]);
     }
 
     /**
      * Show password reset statistics (Admin only)
+     * SECURITY: Enhanced admin authorization and CSRF protection
      */
     public function showStatistics(Request $request)
     {
-        // Check admin permission
+        // SECURITY: Enhanced admin permission check
         if (!auth()->check() || !auth()->user()->isAdmin()) {
             abort(403, 'Akses ditolak.');
         }
 
-        $days = $request->get('days', 7);
+        // SECURITY: CSRF protection for admin endpoints
+        if (!$request->ajax() && $request->isMethod('post')) {
+            // For POST requests, CSRF token is automatically validated by middleware
+        }
+
+        // SECURITY: Input validation and sanitization
+        $days = min(max((int)$request->get('days', 7), 1), 90); // Limit to 1-90 days
+
+        // SECURITY: Rate limiting for admin statistics
+        $adminKey = 'admin-stats:' . auth()->id();
+        if (!RateLimiter::attempt($adminKey, 20, function() { return true; }, 60)) {
+            return response()->json([
+                'error' => 'Terlalu banyak permintaan statistik. Coba lagi nanti.'
+            ], 429);
+        }
+
         $stats = $this->passwordResetService->getResetStatistics($days);
+
+        // SECURITY: Log admin access to statistics
+        logger()->info('Admin accessed password reset statistics', [
+            'admin_id' => auth()->id(),
+            'admin_username' => auth()->user()->username,
+            'days_requested' => $days,
+            'ip' => $request->ip(),
+            'user_agent' => $request->userAgent()
+        ]);
 
         return response()->json($stats);
     }

@@ -21,42 +21,82 @@ class NoSqlInjectionRule implements ValidationRule
         // Convert to lowercase for case-insensitive checking
         $lowerValue = strtolower($value);
 
-        // SQL injection patterns to detect
+        // ENHANCED SQL injection patterns to detect
         $sqlPatterns = [
             // SQL keywords
-            '/\b(union|select|insert|update|delete|drop|create|alter|exec|execute)\b/i',
+            '/\b(union|select|insert|update|delete|drop|create|alter|exec|execute|truncate|replace)\b/i',
 
             // SQL operators and functions
-            '/\b(and|or|not|like|in|exists|having|group\s+by|order\s+by)\b/i',
+            '/\b(and|or|not|like|in|exists|having|group\s+by|order\s+by|limit|offset|into|from|where)\b/i',
 
             // SQL comment patterns
             '/--/',
             '/\/\*.*?\*\//',
+            '/#.*/',
+            '/;.*--/',
 
-            // SQL injection characters
+            // SQL injection characters and sequences
             '/[\'";]/',
+            '/\|\|/',
+            '/&&/',
 
-            // Hex encoding attempts
+            // Hex and binary encoding attempts
             '/0x[0-9a-f]+/i',
+            '/\bchar\s*\(/i',
+            '/\bascii\s*\(/i',
 
-            // UNION-based injection
+            // UNION-based injection (enhanced)
             '/union\s+(all\s+)?select/i',
+            '/\bunion\b.*\bselect\b/i',
 
-            // Boolean-based injection
-            '/(\s+(and|or)\s+)?[\'"]?\w*[\'"]?\s*(=|!=|<>|>|<)\s*[\'"]?\w*[\'"]?(\s+(and|or)\s+)?/i',
+            // Boolean-based injection (enhanced)
+            '/(\s+(and|or)\s+)?[\'"]?\w*[\'"]?\s*(=|!=|<>|>|<|>=|<=)\s*[\'"]?\w*[\'"]?(\s+(and|or)\s+)?/i',
+            '/\b(true|false)\b\s*(=|!=)/i',
+            '/\d+\s*(=|!=)\s*\d+/i',
 
-            // Time-based injection
-            '/\b(sleep|benchmark|waitfor|delay)\s*\(/i',
+            // Time-based injection (enhanced)
+            '/\b(sleep|benchmark|waitfor|delay|pg_sleep)\s*\(/i',
+            '/\bif\s*\(\s*\w+\s*,\s*sleep\s*\(/i',
 
-            // Error-based injection
-            '/\b(extractvalue|updatexml|exp)\s*\(/i',
+            // Error-based injection (enhanced)
+            '/\b(extractvalue|updatexml|exp|floor|rand|count|group_concat)\s*\(/i',
+            '/\b(convert|cast|try_convert)\s*\(/i',
 
-            // Stored procedures
-            '/\bsp_\w+/i',
-            '/\bxp_\w+/i',
+            // Stored procedures (enhanced)
+            '/\b(sp_|xp_|fn_|sys\.)\w+/i',
 
-            // Database functions
-            '/\b(version|user|database|schema|table_name|column_name)\s*\(/i',
+            // Database functions (enhanced)
+            '/\b(version|user|database|schema|table_name|column_name|information_schema|current_user|session_user)\s*(\(|\b)/i',
+
+            // NoSQL injection patterns
+            '/\{\s*["\']?\$\w+["\']?\s*:/i',
+            '/\{\s*["\']?\$ne["\']?\s*:/i',
+            '/\{\s*["\']?\$regex["\']?\s*:/i',
+            '/\{\s*["\']?\$where["\']?\s*:/i',
+            '/\{\s*["\']?\$gt["\']?\s*:/i',
+            '/\{\s*["\']?\$lt["\']?\s*:/i',
+
+            // LDAP injection patterns
+            '/\*\)\(.*=\*\)\)\(\|\(/i',
+            '/\(\|\(\w+=\*\)/i',
+
+            // XML injection patterns
+            '/<!--\s*#\s*exec/i',
+            '/<!ENTITY/i',
+            '/<!\[CDATA\[/i',
+
+            // Advanced bypass patterns
+            '/\bCONCAT\s*\(/i',
+            '/\bSUBSTRING\s*\(/i',
+            '/\bLEFT\s*\(/i',
+            '/\bRIGHT\s*\(/i',
+            '/\bMID\s*\(/i',
+            '/\bLEN\s*\(/i',
+            '/\bCHAR_LENGTH\s*\(/i',
+
+            // Encoding bypass attempts
+            '/&#x?[0-9a-f]+;.*[\'";]/i',
+            '/%[0-9a-f]{2}.*[\'";]/i',
         ];
 
         foreach ($sqlPatterns as $pattern) {

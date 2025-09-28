@@ -18,20 +18,26 @@ class NoXssRule implements ValidationRule
             return;
         }
 
-        // XSS patterns to detect
+        // ENHANCED XSS patterns to detect
         $xssPatterns = [
-            // Script tags
+            // Script tags (enhanced)
             '/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/mi',
+            '/<script[^>]*>.*?<\/script>/si',
+            '/&lt;script/i',
+            '/%3Cscript/i',
 
-            // JavaScript in various contexts
+            // JavaScript in various contexts (enhanced)
             '/javascript:/i',
             '/vbscript:/i',
             '/data:text\/html/i',
+            '/data:application\/x-javascript/i',
+            '/data:text\/javascript/i',
 
-            // Event handlers
+            // Event handlers (enhanced)
             '/on\w+\s*=/i',
+            '/on(load|error|click|mouse|key|focus|blur|change|submit|resize)\s*=/i',
 
-            // Iframe and other dangerous tags
+            // Dangerous HTML tags (enhanced)
             '/<iframe\b/i',
             '/<object\b/i',
             '/<embed\b/i',
@@ -40,14 +46,75 @@ class NoXssRule implements ValidationRule
             '/<link\b/i',
             '/<style\b/i',
             '/<form\b/i',
+            '/<input\b.*type\s*=\s*["\']?hidden/i',
 
-            // Common XSS vectors
+            // CSS injection vectors
             '/expression\s*\(/i',
             '/url\s*\(/i',
             '/@import/i',
+            '/behavior\s*:/i',
+            '/-moz-binding/i',
+            '/binding\s*:/i',
 
-            // HTML entities that could be XSS
+            // HTML entities that could be XSS (enhanced)
             '/&#x?[0-9a-f]+;/i',
+            '/&\w+;.*<.*>/i',
+
+            // Modern XSS vectors
+            '/\$\{.*\}/i', // Template literals
+            '/`.*\$\{.*\}.*`/i', // Template literal syntax
+            '/<\w+.*\son\w+\s*=/i', // Generic event handler detection
+            
+            // Web Components XSS
+            '/<[\w-]+\b[^>]*on\w+/i',
+            
+            // SVG XSS (enhanced)
+            '/<svg\b/i',
+            '/<use\b/i',
+            '/<foreignObject\b/i',
+            
+            // CSS data URLs
+            '/background\s*:\s*url\s*\(\s*["\']?data:/i',
+            '/content\s*:\s*["\'].*<.*>/i',
+            
+            // DOM clobbering
+            '/<\w+\s+name\s*=\s*["\']?(constructor|prototype|__proto__|valueOf)/i',
+            
+            // JSONP XSS
+            '/callback\s*=\s*\w+/i',
+            
+            // AngularJS XSS
+            '/\{\{.*\}\}/i',
+            '/ng-\w+\s*=/i',
+            
+            // React XSS
+            '/dangerouslySetInnerHTML/i',
+            
+            // Common bypasses (enhanced)
+            '/&lt;.*&gt;/i',
+            '/%3C.*%3E/i',
+            '/\\u00[0-9a-f]{2}/i',
+            '/\\x[0-9a-f]{2}/i',
+            
+            // Attribute injection (enhanced)
+            '/style\s*=.*expression/i',
+            '/background.*expression/i',
+            '/href\s*=\s*["\']?javascript:/i',
+            '/src\s*=\s*["\']?javascript:/i',
+            
+            // XML/XHTML injections (enhanced)
+            '/<!\[CDATA\[/i',
+            '/<\?xml/i',
+            '/<!DOCTYPE/i',
+            
+            // Markdown XSS
+            '/!\[.*\]\(javascript:/i',
+            '/\[.*\]\(javascript:/i',
+            
+            // Protocol handlers
+            '/mhtml:/i',
+            '/jar:/i',
+            '/view-source:/i',
 
             // Base64 encoded content that might be malicious
             '/data:.*base64/i',
