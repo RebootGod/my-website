@@ -3,7 +3,11 @@
 @section("title", "Edit Profile")
 
 @push('styles')
+@if(file_exists(public_path('css/profile.css')))
 <link rel="stylesheet" href="{{ asset('css/profile.css') }}?v={{ filemtime(public_path('css/profile.css')) }}">
+@else
+<link rel="stylesheet" href="{{ asset('css/profile.css') }}?v={{ time() }}">
+@endif
 @endpush
 
 @section("content")
@@ -315,7 +319,11 @@
 
 
 @push('scripts')
+@if(file_exists(public_path('js/profile.js')))
 <script src="{{ asset('js/profile.js') }}?v={{ filemtime(public_path('js/profile.js')) }}"></script>
+@else
+<script src="{{ asset('js/profile.js') }}?v={{ time() }}"></script>
+@endif
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         initializeProfile({
