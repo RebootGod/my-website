@@ -8,12 +8,12 @@ use Illuminate\Support\Facades\Log;
 
 class RunSecurityTests extends Command
 {
-    protected $signature = 'security:test 
+    protected $signature = 'security:owasp 
                             {--category= : Specific OWASP category to test (A01-A10)}
                             {--report : Generate compliance report}
                             {--format=table : Output format (table, json)}';
 
-    protected $description = 'Run comprehensive OWASP Top 10 2024/2025 security tests';
+    protected $description = 'Run comprehensive OWASP Top 10 2024/2025 compliance tests';
 
     private SecurityTestingService $securityTestingService;
 
@@ -25,8 +25,8 @@ class RunSecurityTests extends Command
 
     public function handle()
     {
-        $this->info('🔒 Starting Noobz Movie Security Testing Suite');
-        $this->info('📋 OWASP Top 10 2024/2025 Compliance Testing');
+        $this->info('🔒 Starting OWASP Top 10 2024/2025 Security Testing Suite');
+        $this->info('📋 Comprehensive Security Compliance Analysis');
         $this->newLine();
 
         $startTime = microtime(true);
