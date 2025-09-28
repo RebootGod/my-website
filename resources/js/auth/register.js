@@ -116,7 +116,7 @@ function registerHandler() {
                         'X-CSRF-TOKEN': window.authConfig.csrfToken,
                         'X-Requested-With': 'XMLHttpRequest'
                     },
-                    body: JSON.stringify({ invite_code: this.inviteCode })
+                    body: JSON.stringify({ code: this.inviteCode })
                 });
 
                 const data = await response.json();

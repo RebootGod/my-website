@@ -30,7 +30,7 @@
                 <div class="auth-card p-5">
                     <h2 class="auth-title">🎬 REGISTER</h2>
 
-                    <form method="POST" action="{{ route('register') }}" id="registerForm">
+                    <form method="POST" action="{{ route('register') }}" id="registerForm" x-data="registerHandler()">
                         @csrf
 
                         <div class="row">
@@ -142,13 +142,22 @@
                                 required
                                 maxlength="50"
                                 autocomplete="off"
+                                x-model="inviteCode"
+                                @input.debounce.500ms="validateInviteCode()"
                             >
+
+                            {{-- Real-time validation feedback --}}
+                            <div id="inviteCodeFeedback"
+                                 x-show="inviteCodeValid !== null"
+                                 x-text="inviteCodeValid === true ? 'Invite code valid!' : 'Invite code tidak valid'"
+                                 :class="inviteCodeValid === true ? 'text-success mt-1' : 'text-danger mt-1'">
+                            </div>
+
                             @error('invite_code')
                                 <div class="invalid-feedback d-block">
                                     <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
                                 </div>
                             @enderror
-                            <div id="inviteCodeFeedback" class="invite-feedback"></div>
                         </div>
 
                         <button type="submit" class="btn btn-auth-primary mb-4">
