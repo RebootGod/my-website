@@ -136,7 +136,7 @@ class UserManagementController extends Controller
 
         // Store old values for logging
         $oldValues = [
-            'name' => $user->name,
+            'username' => $user->username,
             'email' => $user->email,
             'role' => $user->role,
             'status' => $user->status
@@ -144,19 +144,19 @@ class UserManagementController extends Controller
 
         // Prepare update data
         $updateData = [
-            'name' => $request->name,
+            'username' => $request->username,
             'email' => $request->email,
             'role' => $request->role,
         ];
+        
+        // Update status if provided
+        if ($request->has('status') && $request->status !== $user->status) {
+            $updateData['status'] = $request->status;
+        }
 
         // Update password if provided
         if ($request->filled('password')) {
             $updateData['password'] = Hash::make($request->password);
-        }
-
-        // Handle ban status
-        if ($request->has('is_banned')) {
-            $updateData['status'] = $request->boolean('is_banned') ? 'banned' : 'active';
         }
 
         // Update user

@@ -84,7 +84,7 @@
                                 @php
                                     $currentUserLevel = auth()->user()->getHierarchyLevel();
                                     $availableRoles = [
-                                        'user' => ['name' => 'User/Member', 'level' => 0],
+                                        'member' => ['name' => 'Member', 'level' => 0],
                                         'moderator' => ['name' => 'Moderator', 'level' => 60],
                                         'admin' => ['name' => 'Admin', 'level' => 80],
                                         'super_admin' => ['name' => 'Super Admin', 'level' => 100],
@@ -130,7 +130,7 @@
                                 class="w-full bg-gray-700 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-green-400 @error('status') border-red-500 @enderror"
                                 {{ $user->id === auth()->id() ? 'disabled' : '' }}>
                             <option value="active" {{ old('status', $user->status) == 'active' ? 'selected' : '' }}>Active</option>
-                            <option value="inactive" {{ old('status', $user->status) == 'inactive' ? 'selected' : '' }}>Inactive</option>
+                            <option value="suspended" {{ old('status', $user->status) == 'suspended' ? 'selected' : '' }}>Suspended</option>
                             <option value="banned" {{ old('status', $user->status) == 'banned' ? 'selected' : '' }}>Banned</option>
                         </select>
                         @if($user->id === auth()->id())

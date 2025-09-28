@@ -27,7 +27,14 @@ class UserUpdateRequest extends FormRequest
         $userId = $this->route('user')->id ?? null;
         
         return [
-            'name' => 'required|string|max:255|min:2',
+            'username' => [
+                'required',
+                'string',
+                'max:255',
+                'min:3',
+                'regex:/^[a-zA-Z0-9_-]+$/',
+                Rule::unique('users')->ignore($userId),
+            ],
             'email' => [
                 'required',
                 'string',
@@ -42,7 +49,7 @@ class UserUpdateRequest extends FormRequest
                 'confirmed',
                 new StrongPasswordRule()
             ],
-            'role' => 'required|in:user,admin,moderator,super_admin',
+            'role' => 'required|in:member,admin,moderator,super_admin',
             'status' => 'sometimes|in:active,banned,suspended',
             'banned_reason' => 'nullable|string|max:500',
             'is_banned' => 'sometimes|boolean',
