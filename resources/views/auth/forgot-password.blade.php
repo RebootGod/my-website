@@ -3,7 +3,7 @@
 @section('title', 'Forgot Password - Noobz Cinema')
 
 @push('styles')
-<link rel="stylesheet" href="{{ asset('css/auth.css') }}">
+<link rel="stylesheet" href="{{ asset('css/auth.css') }}?v={{ filemtime(public_path('css/auth.css')) }}">
 @endpush
 
 @section('content')
