@@ -228,11 +228,23 @@ class UserPermissionService
      */
     public static function getHierarchyLevel(User $user): int
     {
-        return match($user->role) {
+        // Handle both string role field and Role relationship
+        $roleValue = $user->role;
+        
+        // If role is a relationship object, get the name
+        if (is_object($roleValue) && isset($roleValue->name)) {
+            $roleValue = $roleValue->name;
+        }
+        
+        // Convert to lowercase and normalize
+        $roleValue = strtolower(str_replace(['-', ' '], '_', (string) $roleValue));
+        
+        return match($roleValue) {
             'super_admin' => 100,
             'admin' => 80,
             'moderator' => 60,
-            'user' => 0,
+            'member' => 0,  // Fixed: Database uses 'member' not 'user'
+            'user' => 0,    // Keep backward compatibility
             default => 0
         };
     }
@@ -242,11 +254,15 @@ class UserPermissionService
      */
     public static function getRoleHierarchyLevel(string $role): int
     {
+        // Convert to lowercase and normalize
+        $role = strtolower(str_replace(['-', ' '], '_', $role));
+        
         return match($role) {
             'super_admin' => 100,
             'admin' => 80,
             'moderator' => 60,
-            'user' => 0,
+            'member' => 0,  // Fixed: Database uses 'member' not 'user'
+            'user' => 0,    // Keep backward compatibility
             default => 0
         };
     }
@@ -262,7 +278,8 @@ class UserPermissionService
             return [];
         }
 
-        $allRoles = ['user', 'moderator', 'admin', 'super_admin'];
+        // Fixed: Database uses 'member' not 'user'
+        $allRoles = ['member', 'moderator', 'admin', 'super_admin'];
         $assignableRoles = [];
 
         foreach ($allRoles as $role) {
