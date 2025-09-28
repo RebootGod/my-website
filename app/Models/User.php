@@ -295,4 +295,42 @@ class User extends Authenticatable
     {
         return $this->hasMany(UserActivity::class);
     }
+
+    /**
+     * Get all permissions for the user
+     */
+    public function getAllPermissions()
+    {
+        if ($this->isSuperAdmin()) {
+            // Super admin has all permissions
+            return Permission::all();
+        }
+
+        // If user has role relation loaded
+        if ($this->relationLoaded('role') && $this->role) {
+            return $this->role->permissions ?? collect();
+        }
+
+        // If user has role_id, load the role and permissions
+        if ($this->role_id) {
+            $role = Role::with('permissions')->find($this->role_id);
+            return $role ? $role->permissions : collect();
+        }
+
+        // Fallback for string-based roles
+        if (is_string($this->role)) {
+            $role = Role::with('permissions')->whereRaw('LOWER(name) = ?', [strtolower($this->role)])->first();
+            return $role ? $role->permissions : collect();
+        }
+
+        return collect(); // Return empty collection if no role found
+    }
+
+    /**
+     * Get permission names as array
+     */
+    public function getPermissionNames()
+    {
+        return $this->getAllPermissions()->pluck('name')->toArray();
+    }
 }

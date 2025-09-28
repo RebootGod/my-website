@@ -189,6 +189,18 @@ class SecurityEventService
      */
     public function logAdminAccess(User $user, string $action, string $resource = null): void
     {
+        try {
+            $permissions = method_exists($user, 'getAllPermissions') 
+                ? $user->getAllPermissions()->pluck('name')->toArray()
+                : [];
+        } catch (\Exception $e) {
+            $permissions = [];
+            \Log::warning('Failed to get user permissions for security logging', [
+                'user_id' => $user->id,
+                'error' => $e->getMessage()
+            ]);
+        }
+
         $this->logSecurityEvent(
             self::EVENT_ADMIN_ACCESS,
             self::SEVERITY_MEDIUM,
@@ -197,10 +209,10 @@ class SecurityEventService
             [
                 'admin_user_id' => $user->id,
                 'admin_username' => $user->username,
-                'admin_role' => $user->role,
+                'admin_role' => is_object($user->role) ? $user->role->name : $user->role,
                 'action' => $action,
                 'resource' => $resource,
-                'permissions' => $user->getAllPermissions()->pluck('name')->toArray(),
+                'permissions' => $permissions,
             ],
             $user->id
         );
