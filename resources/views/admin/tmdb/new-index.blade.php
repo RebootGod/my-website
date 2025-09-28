@@ -133,10 +133,10 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     initializeTMDBAdmin({
-        searchUrl: '{{ route("admin.tmdb.new-search") }}',
-        popularUrl: '{{ route("admin.tmdb.new-popular") }}',
-        trendingUrl: '{{ route("admin.tmdb.new-trending") }}',
-        importUrl: '{{ route("admin.tmdb.new-import") }}',
+        searchUrl: '{{ route("admin.tmdb-new.search") }}',
+        popularUrl: '{{ route("admin.tmdb-new.popular") }}',
+        trendingUrl: '{{ route("admin.tmdb-new.trending") }}',
+        importUrl: '{{ route("admin.tmdb-new.import") }}',
         bulkImportUrl: '{{ route("admin.tmdb.bulk-import") }}',
         csrfToken: '{{ csrf_token() }}'
     });
