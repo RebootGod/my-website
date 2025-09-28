@@ -7,123 +7,64 @@
 @endpush
 
 @section('content')
-<div class="auth-container py-5">
-    <div class="auth-bg-pattern"></div>
-
+<div class="forgot-password-container">
     <div class="container">
         <div class="row justify-content-center">
-            <div class="col-md-8 col-lg-6">
-                <div class="auth-card p-5 mx-auto">
-                    <h1 class="auth-title">Forgot Password</h1>
-                    <p class="auth-subtitle">
-                        Masukkan email Anda dan kami akan mengirimkan link untuk mereset password.
-                    </p>
+            <div class="col-md-6 col-lg-4">
+                <div class="forgot-password-card">
 
-                    {{-- Rate Limit Warning --}}
-                    <div class="rate-limit-info" id="rateLimitWarning">
-                        <i class="fas fa-clock"></i>
-                        <span id="rateLimitMessage"></span>
+                    {{-- Header --}}
+                    <div class="card-header">
+                        <h1 class="page-title">Forgot Password</h1>
+                        <p class="page-subtitle">Enter your email to reset your password</p>
                     </div>
 
                     {{-- Success Message --}}
                     @if (session('status'))
-                        <div class="alert alert-success">
-                            <i class="fas fa-check-circle me-2"></i>
+                        <div class="message success">
                             {{ session('status') }}
                         </div>
                     @endif
 
                     {{-- Error Messages --}}
                     @if ($errors->any())
-                        <div class="alert alert-danger">
-                            <i class="fas fa-exclamation-triangle me-2"></i>
-                            <ul class="mb-0 list-unstyled">
-                                @foreach ($errors->all() as $error)
-                                    <li>{{ $error }}</li>
-                                @endforeach
-                            </ul>
+                        <div class="message error">
+                            @foreach ($errors->all() as $error)
+                                {{ $error }}
+                            @endforeach
                         </div>
                     @endif
 
-                    <form method="POST" action="{{ route('password.email') }}" id="forgotPasswordForm"
-                          x-data="forgotPasswordHandler()" @submit.prevent="handleSubmit">
+                    {{-- Form --}}
+                    <form method="POST" action="{{ route('password.email') }}" class="forgot-form">
                         @csrf
 
-                        <div class="form-group">
+                        <div class="form-field">
+                            <label for="email" class="field-label">Email Address</label>
                             <input type="email"
-                                   class="form-control-auth @error('email') is-invalid @enderror"
+                                   id="email"
                                    name="email"
-                                   placeholder="Email Address"
+                                   class="field-input @error('email') error @enderror"
                                    value="{{ old('email') }}"
                                    required
                                    autocomplete="email"
-                                   autofocus
-                                   x-model="email"
-                                   @input="checkRateLimit"
-                                   @blur="validateEmail">
+                                   autofocus>
                         </div>
 
-                        <button type="submit"
-                                class="btn-auth-primary"
-                                :disabled="isSubmitting || !canSubmit">
-                            <template x-if="isSubmitting">
-                                <span class="d-flex align-items-center justify-content-center">
-                                    <span class="loading-spinner"></span>
-                                    Mengirim Email...
-                                </span>
-                            </template>
-                            <template x-if="!isSubmitting">
-                                <span class="d-flex align-items-center justify-content-center">
-                                    <i class="fas fa-envelope me-2"></i>
-                                    Kirim Reset Link
-                                </span>
-                            </template>
+                        <button type="submit" class="submit-btn">
+                            Send Reset Link
                         </button>
-
-                        <div class="auth-links mt-4 text-center">
-                            <p class="mb-2">
-                                <a href="{{ route('login') }}" class="auth-link">
-                                    <i class="fas fa-arrow-left me-1"></i>
-                                    Kembali ke Login
-                                </a>
-                            </p>
-                            <p class="mb-0">
-                                Belum punya akun?
-                                <a href="{{ route('register') }}" class="auth-link">Daftar di sini</a>
-                            </p>
-                        </div>
                     </form>
 
-                    <div class="security-notice">
-                        <i class="fas fa-shield-alt"></i>
-                        <strong>Catatan Keamanan:</strong><br>
-                        • Link reset hanya berlaku 1 jam<br>
-                        • Maksimal 5 percobaan per jam<br>
-                        • Periksa folder spam jika email tidak masuk
+                    {{-- Footer Links --}}
+                    <div class="card-footer">
+                        <a href="{{ route('login') }}" class="back-link">← Back to Login</a>
                     </div>
+
                 </div>
             </div>
         </div>
     </div>
-
-    {{-- Floating shapes --}}
-    <div class="floating-shapes">
-        <div class="shape"></div>
-        <div class="shape"></div>
-        <div class="shape"></div>
-    </div>
 </div>
 @endsection
 
-@push('scripts')
-<script src="{{ asset('js/auth/forgot-password.js') }}"></script>
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        initializeForgotPasswordForm({
-            email: '{{ old('email') }}',
-            csrfToken: '{{ csrf_token() }}',
-            rateLimitUrl: '{{ route('password.rate-limit-status') }}'
-        });
-    });
-</script>
-@endpush
