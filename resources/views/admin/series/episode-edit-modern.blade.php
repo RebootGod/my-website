@@ -4,16 +4,8 @@
 
 @push('styles')
 {{-- Following workinginstruction.md - separate CSS file for easy debugging --}}
-@if(file_exists(public_path('css/admin/episode-edit-modern.css')))
-<link rel="stylesheet" href="{{ asset('css/admin/episode-edit-modern.css') }}?v={{ filemtime(public_path('css/admin/episode-edit-modern.css')) }}">
-@else
-<link rel="stylesheet" href="{{ asset('css/admin/episode-edit-modern.css') }}?v={{ time() }}">
-@endif
-@if(file_exists(public_path('css/admin/episode-draft-manager.css')))
-<link rel="stylesheet" href="{{ asset('css/admin/episode-draft-manager.css') }}?v={{ filemtime(public_path('css/admin/episode-draft-manager.css')) }}">
-@else
-<link rel="stylesheet" href="{{ asset('css/admin/episode-draft-manager.css') }}?v={{ time() }}">
-@endif
+<link rel="stylesheet" href="{{ safe_asset_version('css/admin/episode-edit-modern.css') }}">
+<link rel="stylesheet" href="{{ safe_asset_version('css/admin/episode-draft-manager.css') }}">
 @endpush
 
 @section('content')
@@ -260,14 +252,6 @@
 
 @push('scripts')
 {{-- Following workinginstruction.md - separate JS files for easy debugging --}}
-@if(file_exists(public_path('js/admin/episode-edit-modern.js')))
-<script src="{{ asset('js/admin/episode-edit-modern.js') }}?v={{ filemtime(public_path('js/admin/episode-edit-modern.js')) }}"></script>
-@else
-<script src="{{ asset('js/admin/episode-edit-modern.js') }}?v={{ time() }}"></script>
-@endif
-@if(file_exists(public_path('js/admin/episode-draft-manager.js')))
-<script src="{{ asset('js/admin/episode-draft-manager.js') }}?v={{ filemtime(public_path('js/admin/episode-draft-manager.js')) }}"></script>
-@else
-<script src="{{ asset('js/admin/episode-draft-manager.js') }}?v={{ time() }}"></script>
-@endif
+<script src="{{ safe_asset_version('js/admin/episode-edit-modern.js') }}"></script>
+<script src="{{ safe_asset_version('js/admin/episode-draft-manager.js') }}"></script>
 @endpush

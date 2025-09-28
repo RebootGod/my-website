@@ -8,11 +8,7 @@
 @section('title', 'Edit User - ' . $user->username)
 
 @push('styles')
-@if(file_exists(public_path('css/admin/forms.css')))
-<link rel="stylesheet" href="{{ asset('css/admin/forms.css') }}?v={{ filemtime(public_path('css/admin/forms.css')) }}">
-@else
-<link rel="stylesheet" href="{{ asset('css/admin/forms.css') }}?v={{ time() }}">
-@endif
+<link rel="stylesheet" href="{{ safe_asset_version('css/admin/forms.css') }}">
 @endpush
 
 @section('content')
@@ -299,11 +295,7 @@
 </div>
 
 @push('scripts')
-@if(file_exists(public_path('js/admin/forms.js')))
-<script src="{{ asset('js/admin/forms.js') }}?v={{ filemtime(public_path('js/admin/forms.js')) }}"></script>
-@else
-<script src="{{ asset('js/admin/forms.js') }}?v={{ time() }}"></script>
-@endif
+<script src="{{ safe_asset_version('js/admin/forms.js') }}"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         initializeAdminForms({
