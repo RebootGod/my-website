@@ -48,6 +48,11 @@ Thumbs.db
 # Logs
 *.log
 /storage/logs/*
+
+# Security documentation (sensitive internal docs)
+security8tahap.md
+security*.md
+audit*.md
 !/storage/logs/.gitkeep
 
 # Authentication
