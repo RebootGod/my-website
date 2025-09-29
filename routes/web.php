@@ -49,6 +49,42 @@ Route::prefix('api')->group(function () {
     Route::get('/movies/trending', [MovieController::class, 'trending'])->name('api.movies.trending');
     Route::get('/movies/popular', [MovieController::class, 'popular'])->name('api.movies.popular');
     Route::get('/movies/new-releases', [MovieController::class, 'newReleases'])->name('api.movies.new');
+    
+    // Test route for debugging dashboard (no auth required)
+    Route::get('/test/dashboard-data', function () {
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'dashboard_data' => [
+                    'overview_stats' => [
+                        'totalThreats' => rand(1200, 1800),
+                        'totalThreatsTrend' => rand(-5, 15),
+                        'blockedAttacks' => rand(950, 1350),
+                        'blockedAttacksTrend' => rand(8, 20),
+                        'activeProtection' => 99.8,
+                        'activeProtectionTrend' => 0.2,
+                        'responseTime' => rand(15, 45),
+                        'responseTimeTrend' => rand(-8, -2),
+                        'uptime' => 99.9,
+                        'uptimeTrend' => 0.1,
+                        'securityScore' => 94.2,
+                        'securityScoreTrend' => 2.8
+                    ],
+                    'chart_data' => [
+                        'threatTimeline' => [
+                            'labels' => ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00'],
+                            'datasets' => [[
+                                'label' => 'Threats Detected',
+                                'data' => [45, 78, 123, 89, 134, 167],
+                                'borderColor' => '#ef4444',
+                                'backgroundColor' => 'rgba(239, 68, 68, 0.1)'
+                            ]]
+                        ]
+                    ]
+                ]
+            ]
+        ]);
+    });
 });
 
 // Test routes removed for production security

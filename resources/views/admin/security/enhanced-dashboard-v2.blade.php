@@ -331,10 +331,8 @@
 <!-- Font Awesome Icons -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-<!-- Modular Dashboard JavaScript - Following workinginstruction.md -->
-<script src="{{ asset('js/security/security-dashboard-data.js') }}"></script>
-<script src="{{ asset('js/security/security-dashboard-charts.js') }}"></script>
-<script src="{{ asset('js/security/security-dashboard-core.js') }}"></script>
+<!-- Enhanced Dashboard JavaScript - Fixed Version -->
+<script src="{{ asset('js/enhanced-security-dashboard-fixed.js') }}"></script>
 
 <script>
 // Initialize dashboard with server data
