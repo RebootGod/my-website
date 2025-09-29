@@ -1,0 +1,434 @@
+/**
+ * ========================================
+ * SECURITY DASHBOARD CARDS CSS
+ * Card-specific styling for security dashboard components
+ * Following workinginstruction.md: Modular CSS for reusability
+ * ========================================
+ */
+
+/* Mobile Carrier Protection Banner */
+.carrier-protection-banner {
+    background: linear-gradient(135deg, #16a085 0%, #f4d03f 100%);
+    color: white;
+    padding: 1.5rem;
+    border-radius: 10px;
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.banner-icon {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 0.75rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.banner-content {
+    flex: 1;
+}
+
+.banner-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0 0 0.25rem 0;
+}
+
+.banner-text {
+    font-size: 0.9rem;
+    opacity: 0.9;
+    margin: 0;
+}
+
+/* Metrics Cards */
+.metrics-card {
+    grid-column: span 2;
+}
+
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.metric-item {
+    text-align: center;
+    padding: 1rem;
+    background: #f8fafc;
+    border-radius: 8px;
+    border: 2px solid #e5e7eb;
+    transition: all 0.3s ease;
+}
+
+.metric-item:hover {
+    border-color: #667eea;
+    background: #f0f4ff;
+}
+
+.metric-number {
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0;
+    color: #1f2937;
+}
+
+.metric-label {
+    font-size: 0.9rem;
+    color: #6b7280;
+    margin: 0.25rem 0 0 0;
+}
+
+.metric-change {
+    font-size: 0.8rem;
+    margin: 0.25rem 0 0 0;
+    font-weight: 500;
+}
+
+.metric-change.positive {
+    color: #22c55e;
+}
+
+.metric-change.negative {
+    color: #ef4444;
+}
+
+/* Protection Status Card */
+.protection-status {
+    background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+    color: white;
+}
+
+.protection-status .card-title {
+    color: white;
+}
+
+.protection-features {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.protection-feature {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+}
+
+.feature-icon {
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+}
+
+.feature-content {
+    flex: 1;
+}
+
+.feature-name {
+    font-weight: 600;
+    margin: 0 0 0.25rem 0;
+}
+
+.feature-description {
+    font-size: 0.9rem;
+    opacity: 0.9;
+    margin: 0;
+}
+
+.feature-status {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 0.25rem 0.75rem;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+/* Geographic Analysis Card */
+.geographic-card .country-list {
+    max-height: 300px;
+    overflow-y: auto;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+}
+
+.country-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.country-item:last-child {
+    border-bottom: none;
+}
+
+.country-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.country-flag {
+    width: 24px;
+    height: 16px;
+    background: #e5e7eb;
+    border-radius: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+}
+
+.country-stats {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.threat-level {
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.threat-level.low {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.threat-level.medium {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.threat-level.high {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+/* Recent Events Card */
+.events-card .events-list {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.event-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1rem;
+    border-bottom: 1px solid #f3f4f6;
+    transition: background-color 0.2s ease;
+}
+
+.event-item:hover {
+    background: #f8fafc;
+}
+
+.event-item:last-child {
+    border-bottom: none;
+}
+
+.event-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+}
+
+.event-icon.warning {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.event-icon.error {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.event-icon.info {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.event-content {
+    flex: 1;
+}
+
+.event-title {
+    font-weight: 600;
+    margin: 0 0 0.25rem 0;
+    color: #1f2937;
+}
+
+.event-description {
+    font-size: 0.9rem;
+    color: #6b7280;
+    margin: 0 0 0.5rem 0;
+}
+
+.event-meta {
+    display: flex;
+    gap: 1rem;
+    font-size: 0.8rem;
+    color: #9ca3af;
+}
+
+/* AI Recommendations Card */
+.ai-recommendations-card {
+    border-left: 4px solid #8b5cf6;
+}
+
+.recommendations-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.recommendation-item {
+    padding: 1rem;
+    background: #f8fafc;
+    border-radius: 8px;
+    border-left: 3px solid #8b5cf6;
+}
+
+.recommendation-priority {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+
+.priority-high {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.priority-medium {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.priority-low {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.recommendation-title {
+    font-weight: 600;
+    margin: 0 0 0.5rem 0;
+    color: #1f2937;
+}
+
+.recommendation-description {
+    font-size: 0.9rem;
+    color: #6b7280;
+    margin: 0 0 0.75rem 0;
+}
+
+.recommendation-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.action-btn {
+    background: #667eea;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.action-btn:hover {
+    background: #5b6bc9;
+}
+
+.action-btn.secondary {
+    background: #6b7280;
+}
+
+.action-btn.secondary:hover {
+    background: #4b5563;
+}
+
+/* Performance Metrics Card */
+.performance-metrics {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+}
+
+.performance-item {
+    text-align: center;
+    padding: 1rem;
+    background: #f8fafc;
+    border-radius: 8px;
+}
+
+.performance-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0 0 0.25rem 0;
+}
+
+.performance-label {
+    font-size: 0.9rem;
+    color: #6b7280;
+    margin: 0;
+}
+
+.performance-trend {
+    font-size: 0.8rem;
+    margin: 0.25rem 0 0 0;
+}
+
+/* Responsive Adjustments for Cards */
+@media (max-width: 768px) {
+    .metrics-card {
+        grid-column: span 1;
+    }
+    
+    .metrics-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.75rem;
+    }
+    
+    .carrier-protection-banner {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .performance-metrics {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .country-stats {
+        flex-direction: column;
+        gap: 0.5rem;
+        align-items: flex-end;
+    }
+}

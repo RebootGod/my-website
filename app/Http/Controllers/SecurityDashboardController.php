@@ -43,7 +43,7 @@ class SecurityDashboardController extends Controller
             'compliance_status' => $this->getComplianceStatus(),
         ];
 
-        return view('admin.security.enhanced-dashboard', $data);
+        return view('admin.security.enhanced-dashboard-v2', $data);
     }
 
     /**
