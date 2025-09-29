@@ -554,7 +554,7 @@ class SecurityEventService
                 return [
                     'id' => $activity->id,
                     'type' => $activity->activity_type,
-                    'description' => $activity->details ?? 'Security event detected',
+                    'description' => $activity->description ?? 'Security event detected',
                     'ip_address' => $activity->ip_address,
                     'user_agent' => $activity->user_agent,
                     'timestamp' => $activity->activity_at,
@@ -602,9 +602,9 @@ class SecurityEventService
             ])
             ->where('activity_at', '>=', $startTime)
             ->where(function($query) {
-                $query->where('details', 'like', '%blocked%')
-                      ->orWhere('details', 'like', '%prevented%')
-                      ->orWhere('details', 'like', '%mitigated%');
+                $query->where('description', 'like', '%blocked%')
+                      ->orWhere('description', 'like', '%prevented%')
+                      ->orWhere('description', 'like', '%mitigated%');
             })
             ->count();
     }
@@ -683,8 +683,8 @@ class SecurityEventService
         
         $patterns = [];
         foreach ($injectionEvents as $event) {
-            $details = json_decode($event->details, true) ?? [];
-            $pattern = $details['injection_type'] ?? 'unknown';
+            $metadata = $event->metadata ?? [];
+            $pattern = $metadata['injection_type'] ?? 'unknown';
             $patterns[$pattern] = ($patterns[$pattern] ?? 0) + 1;
         }
         
