@@ -49,42 +49,6 @@ Route::prefix('api')->group(function () {
     Route::get('/movies/trending', [MovieController::class, 'trending'])->name('api.movies.trending');
     Route::get('/movies/popular', [MovieController::class, 'popular'])->name('api.movies.popular');
     Route::get('/movies/new-releases', [MovieController::class, 'newReleases'])->name('api.movies.new');
-    
-    // Test route for debugging dashboard (no auth required)
-    Route::get('/test/dashboard-data', function () {
-        return response()->json([
-            'success' => true,
-            'data' => [
-                'dashboard_data' => [
-                    'overview_stats' => [
-                        'totalThreats' => rand(1200, 1800),
-                        'totalThreatsTrend' => rand(-5, 15),
-                        'blockedAttacks' => rand(950, 1350),
-                        'blockedAttacksTrend' => rand(8, 20),
-                        'activeProtection' => 99.8,
-                        'activeProtectionTrend' => 0.2,
-                        'responseTime' => rand(15, 45),
-                        'responseTimeTrend' => rand(-8, -2),
-                        'uptime' => 99.9,
-                        'uptimeTrend' => 0.1,
-                        'securityScore' => 94.2,
-                        'securityScoreTrend' => 2.8
-                    ],
-                    'chart_data' => [
-                        'threatTimeline' => [
-                            'labels' => ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00'],
-                            'datasets' => [[
-                                'label' => 'Threats Detected',
-                                'data' => [45, 78, 123, 89, 134, 167],
-                                'borderColor' => '#ef4444',
-                                'backgroundColor' => 'rgba(239, 68, 68, 0.1)'
-                            ]]
-                        ]
-                    ]
-                ]
-            ]
-        ]);
-    });
 });
 
 // Test routes removed for production security
@@ -247,37 +211,7 @@ Route::middleware(['auth', 'admin', CheckPermission::class . ':access_admin_pane
     Route::get('/analytics/export', [AnalyticsController::class, 'export'])->name('analytics.export');
     Route::get('/analytics/realtime', [AnalyticsController::class, 'realtime'])->name('analytics.realtime');
     
-    // Security Dashboard & Testing - OWASP Compliance (Enhanced Stage 5)
-    Route::prefix('security')->name('security.')->group(function () {
-        // Enhanced Dashboard Routes (Stage 5)
-        Route::get('/dashboard', [\App\Http\Controllers\SecurityDashboardController::class, 'index'])->name('dashboard');
-        Route::get('/dashboard-data', [\App\Http\Controllers\SecurityDashboardController::class, 'getDashboardData'])->name('dashboard-data');
-        Route::get('/realtime-updates', [\App\Http\Controllers\SecurityDashboardController::class, 'getRealtimeUpdates'])->name('realtime-updates');
-        Route::get('/cloudflare-config', [\App\Http\Controllers\SecurityDashboardController::class, 'getCloudflareConfigSuggestions'])->name('cloudflare-config');
-        
-        // API Routes for Enhanced Dashboard V2
-        Route::prefix('api')->group(function () {
-            Route::get('/metrics', [\App\Http\Controllers\SecurityDashboardController::class, 'getSecurityMetricsAPI'])->name('api.metrics');
-            Route::get('/protection-status', [\App\Http\Controllers\SecurityDashboardController::class, 'getProtectionStatusAPI'])->name('api.protection-status');
-            Route::get('/recent-events', [\App\Http\Controllers\SecurityDashboardController::class, 'getRecentEventsAPI'])->name('api.recent-events');
-            Route::get('/geographic-data', [\App\Http\Controllers\SecurityDashboardController::class, 'getGeographicDataAPI'])->name('api.geographic-data');
-            Route::get('/ai-recommendations', [\App\Http\Controllers\SecurityDashboardController::class, 'getAIRecommendationsAPI'])->name('api.ai-recommendations');
-            Route::get('/chart-data', [\App\Http\Controllers\SecurityDashboardController::class, 'getChartDataAPI'])->name('api.chart-data');
-            Route::get('/performance-data', [\App\Http\Controllers\SecurityDashboardController::class, 'getPerformanceDataAPI'])->name('api.performance-data');
-            Route::get('/cloudflare-stats', [\App\Http\Controllers\SecurityDashboardController::class, 'getCloudflareStatsAPI'])->name('api.cloudflare-stats');
-        });
-        
-        // Legacy Security Routes (Compatibility)
-        Route::post('/tests/run', [\App\Http\Controllers\SecurityDashboardController::class, 'runTests'])->name('tests.run');
-        Route::post('/report/generate', [\App\Http\Controllers\SecurityDashboardController::class, 'generateReport'])->name('report.generate');
-        Route::get('/events', [\App\Http\Controllers\SecurityDashboardController::class, 'getSecurityEvents'])->name('events');
-        Route::get('/metrics', [\App\Http\Controllers\SecurityDashboardController::class, 'getMetrics'])->name('metrics');
-        Route::get('/threats', [\App\Http\Controllers\SecurityDashboardController::class, 'getThreatData'])->name('threats');
-        
-        // Export Routes for Enhanced Dashboard
-        Route::get('/export-data', [\App\Http\Controllers\SecurityDashboardController::class, 'exportData'])->name('export-data');
-    });
-    
+
     // TMDB Integration - New Version (Movies)
     Route::prefix('tmdb-new')->name('tmdb-new.')->group(function () {
         Route::get('/', [NewTMDBController::class, 'index'])->name('index');
