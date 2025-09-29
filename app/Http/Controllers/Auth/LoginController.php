@@ -15,7 +15,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\RateLimiter;
-use App\Services\SecurityEventService;
 
 class LoginController extends Controller
 {
@@ -41,12 +40,11 @@ class LoginController extends Controller
 
         if (!$executed) {
             // SECURITY: Log rate limit hit
-            app(SecurityEventService::class)->logSecurityEvent(
-                SecurityEventService::EVENT_RATE_LIMIT_HIT,
-                SecurityEventService::SEVERITY_MEDIUM,
-                "Rate limit exceeded for IP during login attempts",
-                ['rate_limit_key' => $ipKey, 'attempts' => 10]
-            );
+            \Log::warning('Login rate limit exceeded for IP', [
+                'ip' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+                'attempts' => 10
+            ]);
             
             $seconds = RateLimiter::availableIn($ipKey);
             return back()->withErrors([
@@ -65,27 +63,27 @@ class LoginController extends Controller
             'password.max' => 'Password maksimal 128 karakter.',
         ]);
 
+        // Sanitize input data to prevent security issues
+        $sanitizedData = [
+            'username' => strip_tags(trim($request->username)),
+            'password' => $request->password, // Don't sanitize password as it may affect authentication
+        ];
+
         // SECURITY: Username-based rate limiting (5 attempts per username per hour)
         $usernameAttempts = RateLimiter::tooManyAttempts($usernameKey, 5);
         if ($usernameAttempts) {
             // SECURITY: Log brute force attempt
-            app(SecurityEventService::class)->logBruteForceAttempt(
-                $sanitizedData['username'],
-                $request->ip(),
-                'Username rate limit exceeded'
-            );
+            \Log::warning('Brute force attempt detected', [
+                'username' => $sanitizedData['username'],
+                'ip' => $request->ip(),
+                'user_agent' => $request->userAgent()
+            ]);
             
             $seconds = RateLimiter::availableIn($usernameKey);
             return back()->withErrors([
                 'username' => 'Terlalu banyak percobaan untuk username ini. Coba lagi dalam ' . ceil($seconds / 60) . ' menit.'
             ])->withInput($request->only('username'));
         }
-
-        // Sanitize input data to prevent security issues
-        $sanitizedData = [
-            'username' => strip_tags(trim($request->username)),
-            'password' => $request->password, // Don't sanitize password as it may affect authentication
-        ];
 
         $credentials = [
             'username' => $sanitizedData['username'],
@@ -234,30 +232,52 @@ class LoginController extends Controller
         
         // Check for IP address change
         if ($user->last_login_ip && $user->last_login_ip !== $currentIP) {
-            app(SecurityEventService::class)->logSuspiciousLogin($user, 'IP address change');
+            \Log::info('IP address change detected', [
+                'user_id' => $user->id,
+                'username' => $user->username,
+                'old_ip' => $user->last_login_ip,
+                'new_ip' => $currentIP
+            ]);
         }
         
         // Check for unusual time patterns (login outside normal hours)
         $currentHour = now()->hour;
         if ($currentHour < 6 || $currentHour > 23) {
-            app(SecurityEventService::class)->logSuspiciousLogin($user, 'Unusual login time (outside 6AM-11PM)');
+            \Log::info('Unusual login time detected', [
+                'user_id' => $user->id,
+                'username' => $user->username,
+                'login_hour' => $currentHour
+            ]);
         }
         
         // Check for rapid successive logins (potential account sharing)
         if ($user->last_login_at && $user->last_login_at->diffInMinutes(now()) < 2) {
-            app(SecurityEventService::class)->logSuspiciousLogin($user, 'Rapid successive login detected');
+            \Log::warning('Rapid successive login detected', [
+                'user_id' => $user->id,
+                'username' => $user->username,
+                'time_diff' => $user->last_login_at->diffInMinutes(now())
+            ]);
         }
         
         // Check for suspicious user agent patterns
         if (empty($currentUserAgent) || strlen($currentUserAgent) < 10) {
-            app(SecurityEventService::class)->logSuspiciousLogin($user, 'Suspicious or empty user agent');
+            \Log::warning('Suspicious user agent detected', [
+                'user_id' => $user->id,
+                'username' => $user->username,
+                'user_agent' => $currentUserAgent
+            ]);
         }
         
         // Check for bot-like user agents
         $botPatterns = ['bot', 'crawler', 'spider', 'scraper', 'curl', 'wget', 'python', 'java'];
         foreach ($botPatterns as $pattern) {
             if (stripos($currentUserAgent, $pattern) !== false) {
-                app(SecurityEventService::class)->logSuspiciousLogin($user, "Bot-like user agent detected: {$pattern}");
+                \Log::warning('Bot-like user agent detected', [
+                    'user_id' => $user->id,
+                    'username' => $user->username,
+                    'user_agent' => $currentUserAgent,
+                    'pattern' => $pattern
+                ]);
                 break;
             }
         }
