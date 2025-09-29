@@ -169,13 +169,14 @@ class SecurityPatternService
         
         // Check for admin route access without proper role
         $isAdminRoute = str_contains($request->getPathInfo(), '/admin');
-        $hasAdminRole = $user->hasRole('admin') || $user->hasRole('super_admin');
+        $hasAdminRole = $user->isAdmin() || $user->isSuperAdmin();
         
         if ($isAdminRoute && !$hasAdminRole) {
             $detected = true;
             $this->trackPrivilegeAction($user->id, 'unauthorized_admin_access', [
                 'route' => $request->getPathInfo(),
-                'user_roles' => $user->roles->pluck('name')->toArray(),
+                'user_role' => $user->role,
+                'role_name' => is_object($user->role) ? $user->role->name : $user->role,
             ]);
         }
         
@@ -186,7 +187,9 @@ class SecurityPatternService
             'severity' => $detected ? 'critical' : 'low',
             'details' => [
                 'user_id' => $user->id,
-                'current_roles' => $user->roles->pluck('name')->toArray(),
+                'current_role' => is_object($user->role) ? $user->role->name : $user->role,
+                'is_admin' => $user->isAdmin(),
+                'is_super_admin' => $user->isSuperAdmin(),
                 'suspicious_actions' => $suspiciousActions->toArray(),
                 'admin_route_attempt' => $isAdminRoute && !$hasAdminRole,
             ],
