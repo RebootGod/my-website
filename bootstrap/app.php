@@ -18,16 +18,11 @@ return Application::configure(basePath: dirname(__DIR__))
             'check.permission' => \App\Http\Middleware\CheckPermission::class,
             'password.rehash' => \App\Http\Middleware\PasswordRehashMiddleware::class,
             'audit' => \App\Http\Middleware\AuditMiddleware::class,
-            'security.headers' => \App\Http\Middleware\SecurityHeadersMiddleware::class,
             'sanitize.input' => \App\Http\Middleware\SanitizeInputMiddleware::class,
-            'security.monitor' => \App\Http\Middleware\SecurityEventMiddleware::class,
         ]);
 
         // Register global middleware
-        $middleware->append([
-            \App\Http\Middleware\SecurityHeadersMiddleware::class,
-            \App\Http\Middleware\SecurityEventMiddleware::class, // SECURITY: Monitor all requests
-        ]);
+        // $middleware->append([]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         // SECURITY: Don't report authentication errors to avoid log spam
