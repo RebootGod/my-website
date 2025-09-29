@@ -461,4 +461,359 @@ class SecurityEventService
         
         return max(0, $baseScore - ($recentEvents * 5));
     }
+
+    /**
+     * Get event count by type and time range
+     * 
+     * @param string $eventType
+     * @param Carbon $startTime
+     * @return int
+     */
+    public function getEventCount(string $eventType, Carbon $startTime): int
+    {
+        return UserActivity::where('activity_type', $eventType)
+            ->where('activity_at', '>=', $startTime)
+            ->count();
+    }
+
+    /**
+     * Get active threat count
+     * 
+     * @return int
+     */
+    public function getActiveThreatCount(): int
+    {
+        $threatTypes = [
+            self::EVENT_BRUTE_FORCE_ATTEMPT,
+            self::EVENT_INJECTION_ATTEMPT,
+            self::EVENT_XSS_ATTEMPT,
+            self::EVENT_UNAUTHORIZED_ACCESS,
+            self::EVENT_SUSPICIOUS_LOGIN
+        ];
+        
+        return UserActivity::whereIn('activity_type', $threatTypes)
+            ->where('activity_at', '>=', now()->subHours(24))
+            ->count();
+    }
+
+    /**
+     * Get high risk IPs
+     * 
+     * @return array
+     */
+    public function getHighRiskIPs(): array
+    {
+        // Get IPs with high threat scores from cache
+        $highRiskIPs = Cache::get('high_risk_ips', []);
+        
+        // Get recent suspicious IPs from user activities
+        $recentSuspiciousIPs = UserActivity::whereIn('activity_type', [
+                self::EVENT_BRUTE_FORCE_ATTEMPT,
+                self::EVENT_INJECTION_ATTEMPT,
+                self::EVENT_UNAUTHORIZED_ACCESS
+            ])
+            ->where('activity_at', '>=', now()->subHours(24))
+            ->whereNotNull('ip_address')
+            ->groupBy('ip_address')
+            ->havingRaw('COUNT(*) >= 5')
+            ->pluck('ip_address')
+            ->toArray();
+        
+        return array_unique(array_merge($highRiskIPs, $recentSuspiciousIPs));
+    }
+
+    /**
+     * Get security events with filters
+     * 
+     * @param array $filters
+     * @return \Illuminate\Support\Collection
+     */
+    public function getSecurityEvents(array $filters = [])
+    {
+        $query = UserActivity::whereIn('activity_type', [
+            self::EVENT_BRUTE_FORCE_ATTEMPT,
+            self::EVENT_SUSPICIOUS_LOGIN,
+            self::EVENT_RATE_LIMIT_HIT,
+            self::EVENT_INJECTION_ATTEMPT,
+            self::EVENT_XSS_ATTEMPT,
+            self::EVENT_UNAUTHORIZED_ACCESS,
+            self::EVENT_ADMIN_ACCESS
+        ]);
+        
+        if (isset($filters['limit'])) {
+            $query->limit($filters['limit']);
+        }
+        
+        if (isset($filters['since'])) {
+            $query->where('activity_at', '>=', $filters['since']);
+        }
+        
+        return $query->orderBy('activity_at', 'desc')
+            ->get()
+            ->map(function ($activity) {
+                return [
+                    'id' => $activity->id,
+                    'type' => $activity->activity_type,
+                    'description' => $activity->details ?? 'Security event detected',
+                    'ip_address' => $activity->ip_address,
+                    'user_agent' => $activity->user_agent,
+                    'timestamp' => $activity->activity_at,
+                    'severity' => $this->getSeverityFromEventType($activity->activity_type),
+                    'user_id' => $activity->user_id
+                ];
+            });
+    }
+
+    /**
+     * Get threat count for time range
+     * 
+     * @param Carbon $startTime
+     * @return int
+     */
+    public function getThreatCount(Carbon $startTime): int
+    {
+        $threatTypes = [
+            self::EVENT_BRUTE_FORCE_ATTEMPT,
+            self::EVENT_INJECTION_ATTEMPT,
+            self::EVENT_XSS_ATTEMPT,
+            self::EVENT_UNAUTHORIZED_ACCESS,
+            self::EVENT_SUSPICIOUS_LOGIN,
+            self::EVENT_SESSION_HIJACKING
+        ];
+        
+        return UserActivity::whereIn('activity_type', $threatTypes)
+            ->where('activity_at', '>=', $startTime)
+            ->count();
+    }
+
+    /**
+     * Get blocked attack count
+     * 
+     * @param Carbon $startTime
+     * @return int
+     */
+    public function getBlockedAttackCount(Carbon $startTime): int
+    {
+        // Count blocked attacks (assuming they're logged with specific details)
+        return UserActivity::whereIn('activity_type', [
+                self::EVENT_BRUTE_FORCE_ATTEMPT,
+                self::EVENT_INJECTION_ATTEMPT,
+                self::EVENT_XSS_ATTEMPT
+            ])
+            ->where('activity_at', '>=', $startTime)
+            ->where(function($query) {
+                $query->where('details', 'like', '%blocked%')
+                      ->orWhere('details', 'like', '%prevented%')
+                      ->orWhere('details', 'like', '%mitigated%');
+            })
+            ->count();
+    }
+
+    /**
+     * Get threat trend analysis
+     * 
+     * @return array
+     */
+    public function getThreatTrend(): array
+    {
+        $currentWeek = $this->getThreatCount(now()->subWeek());
+        $previousWeek = UserActivity::whereIn('activity_type', [
+                self::EVENT_BRUTE_FORCE_ATTEMPT,
+                self::EVENT_INJECTION_ATTEMPT,
+                self::EVENT_XSS_ATTEMPT,
+                self::EVENT_UNAUTHORIZED_ACCESS
+            ])
+            ->whereBetween('activity_at', [now()->subWeeks(2), now()->subWeek()])
+            ->count();
+        
+        $percentageChange = $previousWeek > 0 
+            ? (($currentWeek - $previousWeek) / $previousWeek) * 100 
+            : 0;
+        
+        return [
+            'current_week' => $currentWeek,
+            'previous_week' => $previousWeek,
+            'percentage_change' => round($percentageChange, 2),
+            'trend' => $percentageChange > 10 ? 'increasing' : 
+                      ($percentageChange < -10 ? 'decreasing' : 'stable')
+        ];
+    }
+
+    /**
+     * Get top attack types for time range
+     * 
+     * @param Carbon $startTime
+     * @return array
+     */
+    public function getTopAttackTypes(Carbon $startTime): array
+    {
+        return UserActivity::whereIn('activity_type', [
+                self::EVENT_BRUTE_FORCE_ATTEMPT,
+                self::EVENT_INJECTION_ATTEMPT,
+                self::EVENT_XSS_ATTEMPT,
+                self::EVENT_UNAUTHORIZED_ACCESS,
+                self::EVENT_SUSPICIOUS_LOGIN
+            ])
+            ->where('activity_at', '>=', $startTime)
+            ->groupBy('activity_type')
+            ->selectRaw('activity_type, COUNT(*) as count')
+            ->orderByDesc('count')
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'type' => $this->getHumanReadableEventType($item->activity_type),
+                    'count' => $item->count,
+                    'severity' => $this->getSeverityFromEventType($item->activity_type)
+                ];
+            })
+            ->toArray();
+    }
+
+    /**
+     * Get injection attack patterns
+     * 
+     * @param Carbon $startTime
+     * @return array
+     */
+    public function getInjectionPatterns(Carbon $startTime): array
+    {
+        $injectionEvents = UserActivity::where('activity_type', self::EVENT_INJECTION_ATTEMPT)
+            ->where('activity_at', '>=', $startTime)
+            ->get();
+        
+        $patterns = [];
+        foreach ($injectionEvents as $event) {
+            $details = json_decode($event->details, true) ?? [];
+            $pattern = $details['injection_type'] ?? 'unknown';
+            $patterns[$pattern] = ($patterns[$pattern] ?? 0) + 1;
+        }
+        
+        return collect($patterns)
+            ->sortDesc()
+            ->map(function ($count, $pattern) {
+                return [
+                    'pattern' => $pattern,
+                    'count' => $count,
+                    'risk_level' => $count > 10 ? 'high' : ($count > 5 ? 'medium' : 'low')
+                ];
+            })
+            ->values()
+            ->toArray();
+    }
+
+    /**
+     * Get brute force attack patterns
+     * 
+     * @param Carbon $startTime
+     * @return array
+     */
+    public function getBruteForcePatterns(Carbon $startTime): array
+    {
+        return UserActivity::where('activity_type', self::EVENT_BRUTE_FORCE_ATTEMPT)
+            ->where('activity_at', '>=', $startTime)
+            ->groupBy('ip_address')
+            ->selectRaw('ip_address, COUNT(*) as attempts, MAX(activity_at) as last_attempt')
+            ->havingRaw('COUNT(*) >= 3')
+            ->orderByDesc('attempts')
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'ip_address' => $item->ip_address,
+                    'attempts' => $item->attempts,
+                    'last_attempt' => $item->last_attempt,
+                    'risk_level' => $item->attempts > 20 ? 'critical' : 
+                                   ($item->attempts > 10 ? 'high' : 'medium'),
+                    'country' => $this->getCountryFromIP($item->ip_address)
+                ];
+            })
+            ->toArray();
+    }
+
+    /**
+     * Get geographic threat distribution
+     * 
+     * @param Carbon $startTime
+     * @return array
+     */
+    public function getGeographicThreats(Carbon $startTime): array
+    {
+        $threatEvents = UserActivity::whereIn('activity_type', [
+                self::EVENT_BRUTE_FORCE_ATTEMPT,
+                self::EVENT_INJECTION_ATTEMPT,
+                self::EVENT_UNAUTHORIZED_ACCESS
+            ])
+            ->where('activity_at', '>=', $startTime)
+            ->whereNotNull('ip_address')
+            ->get();
+        
+        $countries = [];
+        foreach ($threatEvents as $event) {
+            $country = $this->getCountryFromIP($event->ip_address) ?? 'Unknown';
+            $countries[$country] = ($countries[$country] ?? 0) + 1;
+        }
+        
+        return collect($countries)
+            ->sortDesc()
+            ->map(function ($count, $country) {
+                return [
+                    'country' => $country,
+                    'threat_count' => $count,
+                    'risk_level' => $count > 50 ? 'high' : ($count > 20 ? 'medium' : 'low')
+                ];
+            })
+            ->values()
+            ->toArray();
+    }
+
+    /**
+     * Get severity from event type
+     * 
+     * @param string $eventType
+     * @return string
+     */
+    private function getSeverityFromEventType(string $eventType): string
+    {
+        $severityMap = [
+            self::EVENT_BRUTE_FORCE_ATTEMPT => self::SEVERITY_HIGH,
+            self::EVENT_SUSPICIOUS_LOGIN => self::SEVERITY_MEDIUM,
+            self::EVENT_RATE_LIMIT_HIT => self::SEVERITY_LOW,
+            self::EVENT_INJECTION_ATTEMPT => self::SEVERITY_CRITICAL,
+            self::EVENT_XSS_ATTEMPT => self::SEVERITY_HIGH,
+            self::EVENT_UNAUTHORIZED_ACCESS => self::SEVERITY_HIGH,
+            self::EVENT_PASSWORD_RESET_ABUSE => self::SEVERITY_MEDIUM,
+            self::EVENT_SESSION_HIJACKING => self::SEVERITY_CRITICAL,
+            self::EVENT_ADMIN_ACCESS => self::SEVERITY_MEDIUM,
+            self::EVENT_PRIVILEGE_ESCALATION => self::SEVERITY_CRITICAL,
+            self::EVENT_DATA_EXFILTRATION => self::SEVERITY_CRITICAL,
+            self::EVENT_SUSPICIOUS_USER_AGENT => self::SEVERITY_LOW,
+        ];
+        
+        return $severityMap[$eventType] ?? self::SEVERITY_MEDIUM;
+    }
+
+    /**
+     * Get human readable event type
+     * 
+     * @param string $eventType
+     * @return string
+     */
+    private function getHumanReadableEventType(string $eventType): string
+    {
+        $typeMap = [
+            self::EVENT_BRUTE_FORCE_ATTEMPT => 'Brute Force Attack',
+            self::EVENT_SUSPICIOUS_LOGIN => 'Suspicious Login',
+            self::EVENT_RATE_LIMIT_HIT => 'Rate Limit Exceeded',
+            self::EVENT_INJECTION_ATTEMPT => 'SQL/NoSQL Injection',
+            self::EVENT_XSS_ATTEMPT => 'Cross-Site Scripting',
+            self::EVENT_UNAUTHORIZED_ACCESS => 'Unauthorized Access',
+            self::EVENT_PASSWORD_RESET_ABUSE => 'Password Reset Abuse',
+            self::EVENT_SESSION_HIJACKING => 'Session Hijacking',
+            self::EVENT_ADMIN_ACCESS => 'Admin Panel Access',
+            self::EVENT_PRIVILEGE_ESCALATION => 'Privilege Escalation',
+            self::EVENT_DATA_EXFILTRATION => 'Data Exfiltration',
+            self::EVENT_SUSPICIOUS_USER_AGENT => 'Suspicious User Agent',
+        ];
+        
+        return $typeMap[$eventType] ?? ucwords(str_replace('_', ' ', $eventType));
+    }
 }
