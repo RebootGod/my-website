@@ -8,17 +8,22 @@
 
 /* Dashboard Container & Layout */
 .enhanced-security-dashboard {
-    min-height: 100vh;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    border-radius: 12px;
+    margin: 0;
+    overflow: hidden;
+    max-width: 100%;
+    position: relative;
 }
 
 .dashboard-header {
     background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(20px);
     border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-    padding: 1.5rem 0;
-    margin-bottom: 2rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 12px 12px 0 0;
 }
 
 .dashboard-title {
@@ -589,4 +594,70 @@
 .secondary-button:hover {
     background: #667eea;
     color: white;
+}
+
+/* Layout Fixes - Prevent infinite scroll and overflow issues */
+html, body {
+    overflow-x: hidden !important;
+}
+
+.admin-main {
+    overflow-x: hidden !important;
+}
+
+.admin-content {
+    max-width: 100% !important;
+    overflow-x: hidden !important;
+}
+
+/* Dashboard specific layout constraints */
+.enhanced-security-dashboard {
+    width: 100% !important;
+    max-width: 100% !important;
+}
+
+.dashboard-content {
+    max-width: 100% !important;
+    overflow-x: hidden !important;
+}
+
+/* Fix for container fluid bootstrap classes */
+.container-fluid {
+    max-width: 100% !important;
+    padding-right: 15px !important;
+    padding-left: 15px !important;
+}
+
+/* Ensure all chart containers don't cause overflow */
+.chart-container, .chart-wrapper {
+    max-width: 100% !important;
+    overflow: hidden !important;
+}
+
+/* Fix for cards and grid layouts */
+.row {
+    margin-right: 0 !important;
+    margin-left: 0 !important;
+}
+
+.col, .col-* {
+    padding-right: 0.75rem !important;
+    padding-left: 0.75rem !important;
+}
+
+/* Responsive fixes */
+@media (max-width: 768px) {
+    .enhanced-security-dashboard {
+        padding: 0.5rem !important;
+        margin: 0 !important;
+    }
+    
+    .dashboard-header {
+        padding: 0.5rem !important;
+        margin-bottom: 0.5rem !important;
+    }
+    
+    .metric-card, .chart-card, .table-card {
+        margin-bottom: 1rem !important;
+    }
 }
