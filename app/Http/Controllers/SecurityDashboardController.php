@@ -8,6 +8,9 @@ use App\Services\SecurityTestingService;
 use App\Services\SecurityEventService;
 use App\Services\SecurityDashboardService;
 use App\Services\CloudflareDashboardService;
+use App\Http\Controllers\Api\SecurityMetricsApiController;
+use App\Http\Controllers\Api\SecurityEventsApiController;
+use App\Http\Controllers\Api\SecurityChartsApiController;
 
 class SecurityDashboardController extends Controller
 {
@@ -403,5 +406,58 @@ class SecurityDashboardController extends Controller
             'A10' => $this->securityTestingService->testSsrfProtection(),
             default => throw new \InvalidArgumentException('Invalid category')
         };
+    }
+
+    /**
+     * API Methods for Enhanced Dashboard V2
+     * Following workinginstruction.md: Using separate API controllers for professional structure
+     */
+
+    public function getSecurityMetricsAPI(Request $request)
+    {
+        $controller = new SecurityMetricsApiController($this->dashboardService, $this->securityEventService);
+        return $controller->getSecurityMetrics($request);
+    }
+
+    public function getProtectionStatusAPI(Request $request)
+    {
+        $controller = new SecurityMetricsApiController($this->dashboardService, $this->securityEventService);
+        return $controller->getProtectionStatus($request);
+    }
+
+    public function getRecentEventsAPI(Request $request)
+    {
+        $controller = new SecurityEventsApiController($this->securityEventService, $this->dashboardService);
+        return $controller->getRecentEvents($request);
+    }
+
+    public function getGeographicDataAPI(Request $request)
+    {
+        $controller = new SecurityEventsApiController($this->securityEventService, $this->dashboardService);
+        return $controller->getGeographicData($request);
+    }
+
+    public function getAIRecommendationsAPI(Request $request)
+    {
+        $controller = new SecurityEventsApiController($this->securityEventService, $this->dashboardService);
+        return $controller->getAIRecommendations($request);
+    }
+
+    public function getChartDataAPI(Request $request)
+    {
+        $controller = new SecurityChartsApiController($this->dashboardService, $this->cloudflareDashboardService);
+        return $controller->getChartData($request);
+    }
+
+    public function getPerformanceDataAPI(Request $request)
+    {
+        $controller = new SecurityChartsApiController($this->dashboardService, $this->cloudflareDashboardService);
+        return $controller->getPerformanceData($request);
+    }
+
+    public function getCloudflareStatsAPI(Request $request)
+    {
+        $controller = new SecurityChartsApiController($this->dashboardService, $this->cloudflareDashboardService);
+        return $controller->getCloudflareStats($request);
     }
 }

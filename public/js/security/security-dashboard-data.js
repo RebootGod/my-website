@@ -12,14 +12,14 @@ class SecurityDashboardData {
         this.cache = new Map();
         this.cacheTimeout = 5 * 60 * 1000; // 5 minutes
         this.apiEndpoints = {
-            metrics: '/admin/api/security/metrics',
-            protectionStatus: '/admin/api/security/protection-status',
-            recentEvents: '/admin/api/security/recent-events',
-            geographicData: '/admin/api/security/geographic-data',
-            aiRecommendations: '/admin/api/security/ai-recommendations',
-            chartData: '/admin/api/security/chart-data',
-            performanceData: '/admin/api/security/performance-data',
-            cloudflareStats: '/admin/api/security/cloudflare-stats'
+            metrics: '/admin/security/api/metrics',
+            protectionStatus: '/admin/security/api/protection-status',
+            recentEvents: '/admin/security/api/recent-events',
+            geographicData: '/admin/security/api/geographic-data',
+            aiRecommendations: '/admin/security/api/ai-recommendations',
+            chartData: '/admin/security/api/chart-data',
+            performanceData: '/admin/security/api/performance-data',
+            cloudflareStats: '/admin/security/api/cloudflare-stats'
         };
         this.requestQueue = [];
         this.isProcessingQueue = false;

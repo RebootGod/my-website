@@ -219,6 +219,18 @@ Route::middleware(['auth', 'admin', CheckPermission::class . ':access_admin_pane
         Route::get('/realtime-updates', [\App\Http\Controllers\SecurityDashboardController::class, 'getRealtimeUpdates'])->name('realtime-updates');
         Route::get('/cloudflare-config', [\App\Http\Controllers\SecurityDashboardController::class, 'getCloudflareConfigSuggestions'])->name('cloudflare-config');
         
+        // API Routes for Enhanced Dashboard V2
+        Route::prefix('api')->group(function () {
+            Route::get('/metrics', [\App\Http\Controllers\SecurityDashboardController::class, 'getSecurityMetricsAPI'])->name('api.metrics');
+            Route::get('/protection-status', [\App\Http\Controllers\SecurityDashboardController::class, 'getProtectionStatusAPI'])->name('api.protection-status');
+            Route::get('/recent-events', [\App\Http\Controllers\SecurityDashboardController::class, 'getRecentEventsAPI'])->name('api.recent-events');
+            Route::get('/geographic-data', [\App\Http\Controllers\SecurityDashboardController::class, 'getGeographicDataAPI'])->name('api.geographic-data');
+            Route::get('/ai-recommendations', [\App\Http\Controllers\SecurityDashboardController::class, 'getAIRecommendationsAPI'])->name('api.ai-recommendations');
+            Route::get('/chart-data', [\App\Http\Controllers\SecurityDashboardController::class, 'getChartDataAPI'])->name('api.chart-data');
+            Route::get('/performance-data', [\App\Http\Controllers\SecurityDashboardController::class, 'getPerformanceDataAPI'])->name('api.performance-data');
+            Route::get('/cloudflare-stats', [\App\Http\Controllers\SecurityDashboardController::class, 'getCloudflareStatsAPI'])->name('api.cloudflare-stats');
+        });
+        
         // Legacy Security Routes (Compatibility)
         Route::post('/tests/run', [\App\Http\Controllers\SecurityDashboardController::class, 'runTests'])->name('tests.run');
         Route::post('/report/generate', [\App\Http\Controllers\SecurityDashboardController::class, 'generateReport'])->name('report.generate');

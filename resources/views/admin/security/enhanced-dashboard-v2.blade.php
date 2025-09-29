@@ -129,7 +129,9 @@
                 </div>
             </div>
             <div class="card-body">
-                <canvas id="threatsChart" class="dashboard-chart"></canvas>
+                <div class="chart-container" id="threatTimelineChart">
+                    <canvas></canvas>
+                </div>
             </div>
         </div>
 
@@ -144,7 +146,9 @@
                 </div>
             </div>
             <div class="card-body">
-                <canvas id="geographicChart" class="dashboard-chart"></canvas>
+                <div class="chart-container" id="geoDistributionChart">
+                    <canvas></canvas>
+                </div>
             </div>
         </div>
 
@@ -188,7 +192,7 @@
                 </div>
             </div>
             <div class="card-body">
-                <div class="events-list">
+                <div class="events-list" id="recentEventsList">
                     @forelse($dashboardData['security_events']['recent_events'] ?? [] as $event)
                     <div class="event-item">
                         <div class="event-icon event-{{ $event['severity'] ?? 'medium' }}">
@@ -221,23 +225,61 @@
                 <h3 class="card-title">Performance Metrics</h3>
             </div>
             <div class="card-body">
-                <div class="performance-grid">
-                    <div class="performance-metric">
-                        <div class="metric-label">Response Time</div>
-                        <div class="metric-value">{{ $dashboardData['performance_metrics']['response_times']['overall_performance']['security_overhead'] ?? 5 }}ms</div>
+                <div class="chart-container" id="performanceChart">
+                    <canvas></canvas>
+                </div>
+            </div>
+        </div>
+
+        {{-- Response Time Chart --}}
+        <div class="dashboard-card chart-card">
+            <div class="card-header">
+                <h3 class="card-title">Response Time Analysis</h3>
+                <div class="card-actions">
+                    <button class="btn-icon" onclick="exportChart('response')">
+                        <i class="fas fa-download"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="chart-container" id="responseTimeChart">
+                    <canvas></canvas>
+                </div>
+            </div>
+        </div>
+
+        {{-- Event Distribution Chart --}}
+        <div class="dashboard-card chart-card">
+            <div class="card-header">
+                <h3 class="card-title">Event Distribution</h3>
+                <div class="card-actions">
+                    <button class="btn-icon" onclick="exportChart('events')">
+                        <i class="fas fa-download"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="chart-container" id="eventDistributionChart">
+                    <canvas></canvas>
+                </div>
+            </div>
+        </div>
+
+        {{-- Attack Pattern Chart --}}
+        <div class="dashboard-card chart-card">
+            <div class="card-header">
+                <h3 class="card-title">Attack Patterns</h3>
+                <div class="card-actions">
+                    <div class="timeline-controls">
+                        <button class="timeline-btn active" data-period="24h">24h</button>
+                        <button class="timeline-btn" data-period="7d">7d</button>
+                        <button class="timeline-btn" data-period="30d">30d</button>
                     </div>
-                    <div class="performance-metric">
-                        <div class="metric-label">Cache Hit Rate</div>
-                        <div class="metric-value">{{ $dashboardData['performance_metrics']['cache_efficiency']['threat_intelligence_cache']['hit_rate'] ?? 90 }}%</div>
-                    </div>
-                    <div class="performance-metric">
-                        <div class="metric-label">Detection Accuracy</div>
-                        <div class="metric-value">{{ $dashboardData['performance_metrics']['detection_accuracy']['overall_accuracy'] ?? 95 }}%</div>
-                    </div>
-                    <div class="performance-metric">
-                        <div class="metric-label">False Positives</div>
-                        <div class="metric-value">{{ $dashboardData['performance_metrics']['false_positive_rates']['overall_rates']['current_rate'] ?? 2 }}%</div>
-                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="chart-container" id="attackPatternChart">
+                    <canvas></canvas>
                 </div>
             </div>
         </div>
@@ -252,7 +294,7 @@
                 </div>
             </div>
             <div class="card-body">
-                <div class="recommendations-list">
+                <div class="recommendations-list" id="recommendationsList">
                     @forelse($dashboardData['recommendations'] ?? [] as $recommendation)
                     <div class="recommendation-item priority-{{ $recommendation['priority'] ?? 'medium' }}">
                         <div class="recommendation-icon">
