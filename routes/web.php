@@ -211,14 +211,23 @@ Route::middleware(['auth', 'admin', CheckPermission::class . ':access_admin_pane
     Route::get('/analytics/export', [AnalyticsController::class, 'export'])->name('analytics.export');
     Route::get('/analytics/realtime', [AnalyticsController::class, 'realtime'])->name('analytics.realtime');
     
-    // Security Dashboard & Testing - OWASP Compliance
+    // Security Dashboard & Testing - OWASP Compliance (Enhanced Stage 5)
     Route::prefix('security')->name('security.')->group(function () {
+        // Enhanced Dashboard Routes (Stage 5)
         Route::get('/dashboard', [\App\Http\Controllers\SecurityDashboardController::class, 'index'])->name('dashboard');
+        Route::get('/dashboard-data', [\App\Http\Controllers\SecurityDashboardController::class, 'getDashboardData'])->name('dashboard-data');
+        Route::get('/realtime-updates', [\App\Http\Controllers\SecurityDashboardController::class, 'getRealtimeUpdates'])->name('realtime-updates');
+        Route::get('/cloudflare-config', [\App\Http\Controllers\SecurityDashboardController::class, 'getCloudflareConfigSuggestions'])->name('cloudflare-config');
+        
+        // Legacy Security Routes (Compatibility)
         Route::post('/tests/run', [\App\Http\Controllers\SecurityDashboardController::class, 'runTests'])->name('tests.run');
         Route::post('/report/generate', [\App\Http\Controllers\SecurityDashboardController::class, 'generateReport'])->name('report.generate');
         Route::get('/events', [\App\Http\Controllers\SecurityDashboardController::class, 'getSecurityEvents'])->name('events');
         Route::get('/metrics', [\App\Http\Controllers\SecurityDashboardController::class, 'getMetrics'])->name('metrics');
         Route::get('/threats', [\App\Http\Controllers\SecurityDashboardController::class, 'getThreatData'])->name('threats');
+        
+        // Export Routes for Enhanced Dashboard
+        Route::get('/export-data', [\App\Http\Controllers\SecurityDashboardController::class, 'exportData'])->name('export-data');
     });
     
     // TMDB Integration - New Version (Movies)

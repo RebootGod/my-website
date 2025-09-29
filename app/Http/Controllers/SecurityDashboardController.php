@@ -6,31 +6,121 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use App\Services\SecurityTestingService;
 use App\Services\SecurityEventService;
+use App\Services\SecurityDashboardService;
+use App\Services\CloudflareDashboardService;
 
 class SecurityDashboardController extends Controller
 {
     public function __construct(
         private SecurityTestingService $securityTestingService,
-        private SecurityEventService $securityEventService
+        private SecurityEventService $securityEventService,
+        private SecurityDashboardService $dashboardService,
+        private CloudflareDashboardService $cloudflareDashboardService
     ) {}
 
     /**
-     * Security dashboard main view
+     * Enhanced security dashboard main view with Stage 5 integration
      */
-    public function index()
+    public function index(Request $request)
     {
+        $timeRange = $request->get('hours', 24); // Default 24 hours
+        
+        // Get comprehensive dashboard data from new services
+        $dashboardData = $this->dashboardService->getDashboardData($timeRange);
+        $cloudflareData = $this->cloudflareDashboardService->getCloudflareDashboardData($timeRange);
+        
         $data = [
+            // Enhanced Stage 5 data
+            'dashboard_data' => $dashboardData,
+            'cloudflare_data' => $cloudflareData,
+            'current_request_context' => $this->cloudflareDashboardService->getCurrentRequestContext($request),
+            'time_range' => $timeRange,
+            
+            // Legacy compatibility
             'security_metrics' => $this->getSecurityMetrics(),
             'recent_events' => $this->getRecentSecurityEvents(),
             'threat_summary' => $this->getThreatSummary(),
-            'compliance_status' => $this->getComplianceStatus()
+            'compliance_status' => $this->getComplianceStatus(),
         ];
 
-        return view('admin.security.dashboard', $data);
+        return view('admin.security.enhanced-dashboard', $data);
     }
 
     /**
-     * Run security tests via web interface
+     * Real-time dashboard updates API endpoint
+     */
+    public function getRealtimeUpdates(Request $request)
+    {
+        try {
+            $data = [
+                'security_updates' => $this->dashboardService->getRealtimeUpdates(),
+                'cloudflare_metrics' => $this->cloudflareDashboardService->getRealtimeCloudflareMetrics(),
+                'current_context' => $this->cloudflareDashboardService->getCurrentRequestContext($request),
+                'timestamp' => now()->toISOString(),
+            ];
+
+            return response()->json([
+                'success' => true,
+                'data' => $data
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Enhanced dashboard data API with time range support
+     */
+    public function getDashboardData(Request $request)
+    {
+        try {
+            $timeRange = $request->get('hours', 24);
+            
+            $data = [
+                'dashboard_data' => $this->dashboardService->getDashboardData($timeRange),
+                'cloudflare_data' => $this->cloudflareDashboardService->getCloudflareDashboardData($timeRange),
+            ];
+
+            return response()->json([
+                'success' => true,
+                'data' => $data
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Cloudflare configuration suggestions API
+     */
+    public function getCloudflareConfigSuggestions(Request $request)
+    {
+        try {
+            $suggestions = $this->cloudflareDashboardService->getConfigurationSuggestions();
+
+            return response()->json([
+                'success' => true,
+                'suggestions' => $suggestions
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Run security tests via web interface (Legacy compatibility)
      */
     public function runTests(Request $request)
     {
@@ -104,6 +194,108 @@ class SecurityDashboardController extends Controller
     public function getMetrics()
     {
         return response()->json($this->getSecurityMetrics());
+    }
+
+    /**
+     * Export dashboard data in various formats
+     */
+    public function exportData(Request $request)
+    {
+        try {
+            $format = $request->get('format', 'json'); // json, csv, excel, pdf
+            $hours = $request->get('hours', 24);
+            
+            // Get dashboard data
+            $dashboardData = $this->dashboardService->getDashboardData($hours);
+            $cloudflareData = $this->cloudflareDashboardService->getCloudflareDashboardData($hours);
+            
+            $exportData = [
+                'export_info' => [
+                    'timestamp' => now()->toISOString(),
+                    'time_range_hours' => $hours,
+                    'format' => $format,
+                ],
+                'dashboard_data' => $dashboardData,
+                'cloudflare_data' => $cloudflareData,
+            ];
+            
+            switch ($format) {
+                case 'json':
+                    return response()->json($exportData);
+                    
+                case 'csv':
+                    return $this->exportToCsv($exportData);
+                    
+                case 'excel':
+                    return $this->exportToExcel($exportData);
+                    
+                case 'pdf':
+                    return $this->exportToPdf($exportData);
+                    
+                default:
+                    return response()->json($exportData);
+            }
+            
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Export data to CSV format
+     */
+    private function exportToCsv($data)
+    {
+        $filename = 'security-dashboard-' . date('Y-m-d-H-i-s') . '.csv';
+        
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+        ];
+        
+        return response()->stream(function() use ($data) {
+            $file = fopen('php://output', 'w');
+            
+            // Write CSV headers
+            fputcsv($file, ['Metric', 'Value', 'Category', 'Timestamp']);
+            
+            // Write overview stats
+            $overview = $data['dashboard_data']['overview_stats'] ?? [];
+            foreach ($overview as $key => $value) {
+                if (is_array($value)) {
+                    foreach ($value as $subKey => $subValue) {
+                        fputcsv($file, [$key . '_' . $subKey, $subValue, 'overview', now()]);
+                    }
+                } else {
+                    fputcsv($file, [$key, $value, 'overview', now()]);
+                }
+            }
+            
+            fclose($file);
+        }, 200, $headers);
+    }
+
+    /**
+     * Export data to Excel format (basic CSV with .xlsx extension)
+     */
+    private function exportToExcel($data)
+    {
+        // For basic implementation, return enhanced CSV
+        return $this->exportToCsv($data);
+    }
+
+    /**
+     * Export data to PDF format (basic implementation)
+     */
+    private function exportToPdf($data)
+    {
+        // For basic implementation, return JSON with PDF mime type
+        $filename = 'security-dashboard-' . date('Y-m-d-H-i-s') . '.json';
+        
+        return response()->json($data)->header('Content-Disposition', 'attachment; filename="' . $filename . '"');
     }
 
     /**

@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\User;
 use App\Models\UserActivity;
+use App\Services\ReducedIPTrackingSecurityService;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\RateLimiter;
@@ -219,9 +220,28 @@ class SecurityEventService
     }
     
     /**
-     * Track and analyze IP reputation
+     * Track and analyze IP reputation with reduced emphasis
+     * Modified to use ReducedIPTrackingSecurityService for better mobile carrier handling
      */
-    private function trackSuspiciousIP(string $ipAddress, string $eventType, string $severity): void
+    public function trackSuspiciousIP(string $ipAddress, string $eventType, string $severity): void
+    {
+        // Use reduced IP tracking service if available
+        $reducedIPService = app(ReducedIPTrackingSecurityService::class);
+        $request = request();
+        
+        if ($reducedIPService && $request) {
+            $reducedIPService->trackSuspiciousIPIntelligently($ipAddress, $eventType, $severity, $request);
+            return;
+        }
+        
+        // Fallback to original method for compatibility
+        $this->trackSuspiciousIPLegacy($ipAddress, $eventType, $severity);
+    }
+    
+    /**
+     * Legacy IP tracking method (original implementation)
+     */
+    private function trackSuspiciousIPLegacy(string $ipAddress, string $eventType, string $severity): void
     {
         $cacheKey = "suspicious_ip:{$ipAddress}";
         $data = Cache::get($cacheKey, [
@@ -237,23 +257,45 @@ class SecurityEventService
             'timestamp' => now()->toISOString(),
         ];
         
-        // Calculate threat score
-        $data['score'] += $this->calculateThreatScore($eventType, $severity);
+        // Calculate threat score (reduced for compatibility)
+        $data['score'] += $this->calculateThreatScoreLegacy($eventType, $severity);
         $data['last_seen'] = now()->toISOString();
         
         // Cache for 24 hours
         Cache::put($cacheKey, $data, now()->addHours(24));
         
-        // Auto-block highly suspicious IPs
-        if ($data['score'] >= 100) {
+        // Auto-block highly suspicious IPs (increased threshold)
+        if ($data['score'] >= 150) { // Increased from 100 to reduce false positives
             $this->flagHighRiskIP($ipAddress, $data);
         }
     }
     
     /**
      * Calculate threat score based on event type and severity
+     * Uses enhanced service if available, fallback to legacy
      */
     private function calculateThreatScore(string $eventType, string $severity): int
+    {
+        try {
+            $reducedIPService = app(ReducedIPTrackingSecurityService::class);
+            $request = request();
+            
+            if ($reducedIPService && $request) {
+                return $reducedIPService->calculateReducedIPThreatScore($eventType, $severity, $request);
+            }
+        } catch (\Exception $e) {
+            Log::channel('security')->debug('Fallback to legacy threat scoring', [
+                'error' => $e->getMessage()
+            ]);
+        }
+        
+        return $this->calculateThreatScoreLegacy($eventType, $severity);
+    }
+    
+    /**
+     * Legacy threat score calculation (original implementation)
+     */
+    private function calculateThreatScoreLegacy(string $eventType, string $severity): int
     {
         $baseScores = [
             self::EVENT_INJECTION_ATTEMPT => 25,
@@ -273,7 +315,8 @@ class SecurityEventService
         $baseScore = $baseScores[$eventType] ?? 5;
         $multiplier = $severityMultipliers[$severity] ?? 1;
         
-        return $baseScore * $multiplier;
+        // Reduced scoring for legacy mode (divide by 2 to be less aggressive)
+        return intval(($baseScore * $multiplier) / 2);
     }
     
     /**
