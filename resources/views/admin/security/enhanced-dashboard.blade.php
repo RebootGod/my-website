@@ -2,10 +2,13 @@
 
 @section('title', 'Enhanced Security Dashboard - Stage 5')
 
-@section('additional_css')
+@push('styles')
 <link rel="stylesheet" href="{{ asset('css/enhanced-security-dashboard.css') }}">
+@endpush
+
+@push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-@endsection
+@endpush
 
 @section('content')
 {{-- Enhanced Security Dashboard - Following workinginstruction.md --}}
@@ -450,7 +453,7 @@
 </div>
 @endsection
 
-@section('additional_js')
+@push('scripts')
 <script src="{{ asset('js/enhanced-security-dashboard.js') }}"></script>
 <script>
     // Pass server-side data to JavaScript
@@ -477,4 +480,4 @@
         }
     }
 </script>
-@endsection
+@endpush
