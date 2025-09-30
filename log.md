@@ -1,5 +1,48 @@
 ## 2025-09-30 - DOWNLOAD FEATURE IMPLEMENTATION
 
+### BUGFIX V3: Episode Edit Modern View - Invalid HTML ✅
+**Issue**: JavaScript error "Cannot read properties of null (reading 'querySelector')"
+**Console Error**:
+```
+episode-edit-modern.js:473 Uncaught TypeError: Cannot read properties of null (reading 'querySelector')
+    at ModernEpisodeEditor.formatRuntime
+```
+
+**Root Cause Analysis**:
+1. ❌ Duplicate nested `<form>` tags (line 53 and line 64)
+2. ❌ Invalid HTML structure causing DOM querySelector to fail
+3. ❌ `input.closest('.form-group')` returns null because form structure broken
+
+**Technical Issue**:
+```html
+<!-- BEFORE (BROKEN): -->
+<form id="episode-edit-form" ...>
+    @csrf
+    @method('PUT')
+    <input type="hidden" name="series_id" value="{{ $series->id }}">
+
+    <form id="episode-edit-form" ...>  <!-- ❌ NESTED DUPLICATE FORM -->
+        @csrf
+        @method('PUT')
+        <input type="hidden" name="series_id" value="{{ $series->id }}">
+
+        <div class="grid">...</div>
+<!-- Only 1 closing </form> tag for 2 opening tags! -->
+```
+
+**Solution Applied**:
+1. ✅ Removed duplicate nested form opening tag (line 64-72)
+2. ✅ Added null check in `formatRuntime()` method
+3. ✅ Fixed HTML structure validation
+
+**Files Modified**:
+- `resources/views/admin/series/episode-edit-modern.blade.php` - Removed duplicate form tag
+- `public/js/admin/episode-edit-modern.js` - Added null safety checks
+
+**Result**: ✅ No more JavaScript errors, form structure valid
+
+---
+
 ### BUGFIX V2: Draft Manager Checkbox & Form Serialization ✅
 **Issue**: Download URL disappears after restore draft and save
 **Root Cause Analysis**:

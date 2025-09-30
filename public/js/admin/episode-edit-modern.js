@@ -469,10 +469,13 @@ class ModernEpisodeEditor {
                 formatted += `${hours}h `;
             }
             formatted += `${remainingMinutes}min`;
-            
-            const helpText = input.closest('.form-group').querySelector('.field-help');
-            if (helpText) {
-                helpText.innerHTML = `<i class="fas fa-clock icon"></i>Duration: ${formatted}`;
+
+            const formGroup = input.closest('.form-group');
+            if (formGroup) {
+                const helpText = formGroup.querySelector('.field-help');
+                if (helpText) {
+                    helpText.innerHTML = `<i class="fas fa-clock icon"></i>Duration: ${formatted}`;
+                }
             }
         }
     }

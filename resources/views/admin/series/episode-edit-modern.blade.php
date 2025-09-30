@@ -50,26 +50,16 @@
         </div>
     </div>
 
-    <form id="episode-edit-form" 
-          action="{{ route('admin.series.episodes.update', [$series, $episode]) }}" 
-          method="POST" 
+    <form id="episode-edit-form"
+          action="{{ route('admin.series.episodes.update', [$series, $episode]) }}"
+          method="POST"
           class="bg-gray-800 rounded-lg p-6"
           data-episode-id="{{ $episode->id }}"
           data-redirect-url="{{ route('admin.series.show', $series) }}">
         @csrf
         @method('PUT')
-        
-        <input type="hidden" name="series_id" value="{{ $series->id }}">
 
-            <form id="episode-edit-form" 
-                  action="{{ route('admin.series.episodes.update', [$series, $episode]) }}" 
-                  method="POST" 
-                  data-episode-id="{{ $episode->id }}"
-                  data-redirect-url="{{ route('admin.series.show', $series) }}">
-                @csrf
-                @method('PUT')
-                
-                <input type="hidden" name="series_id" value="{{ $series->id }}">
+        <input type="hidden" name="series_id" value="{{ $series->id }}">
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             {{-- Season Selection --}}
