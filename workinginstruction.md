@@ -1,6 +1,7 @@
 # Rule and Instruction need to follow
 
 - Gak ada Local Environment, hanya ada Production Environment
+- URL production di https://noobz.space
 - Production Server di manage menggunakan Laravel Forge
 - Pada saat fixing atau develop fitur, selalu lakukan deep checking & validation pada apa yang dikerjakan
 - Selalu lakukan deep checking & validation, agar tidak terjadi error

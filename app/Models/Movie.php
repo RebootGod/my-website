@@ -23,6 +23,7 @@ class Movie extends Model
         'slug',
         'description',
         'embed_url',
+        'download_url',
         'poster_path',
         'backdrop_path',
         'year',

@@ -79,6 +79,11 @@
                         <a href="{{ route('series.show', $series) }}" class="btn btn-outline-light">
                             ← Series Details
                         </a>
+                        @if($episode->download_url)
+                        <a href="{{ $episode->download_url }}" target="_blank" class="btn btn-success" download>
+                            ⬇️ Download Episode
+                        </a>
+                        @endif
                         <button onclick="reloadPlayer()" class="btn">
                             🔄 Reload Player
                         </button>

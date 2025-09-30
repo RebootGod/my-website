@@ -22,6 +22,7 @@ class SeriesEpisode extends Model
         'vote_average',
         'vote_count',
         'embed_url',
+        'download_url',
         'is_active'
     ];
 

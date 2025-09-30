@@ -582,6 +582,7 @@ class AdminSeriesController extends Controller
             'overview' => 'required|string',
             'runtime' => 'required|integer|min:1',
             'embed_url' => 'required|url',
+            'download_url' => 'nullable|url|max:1000',
             'still_path' => 'nullable|url',
             'is_active' => 'boolean'
         ]);
@@ -617,6 +618,7 @@ class AdminSeriesController extends Controller
                 'overview' => $request->overview,
                 'runtime' => $request->runtime,
                 'embed_url' => $request->embed_url,
+                'download_url' => $request->download_url,
                 'still_path' => $request->still_path,
                 'is_active' => $request->boolean('is_active', true)
             ]);

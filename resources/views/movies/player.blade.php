@@ -91,6 +91,11 @@
                         <a href="{{ route('movies.show', $movie->slug) }}" class="btn btn-outline-light">
                             ← Movie Details
                         </a>
+                        @if($movie->download_url)
+                        <a href="{{ $movie->download_url }}" target="_blank" class="btn btn-success" download>
+                            ⬇️ Download Movie
+                        </a>
+                        @endif
                         <button onclick="addToWatchlist()" class="btn">
                             ❤️ Add to Watchlist
                         </button>

@@ -58,9 +58,9 @@
             {{-- Embed URL --}}
             <div class="md:col-span-2">
                 <label class="block text-sm font-medium text-gray-400 mb-2">Embed URL *</label>
-                <input 
-                    type="url" 
-                    name="embed_url" 
+                <input
+                    type="url"
+                    name="embed_url"
                     value="{{ old('embed_url', $movie->embed_url ? (function() use ($movie) {
                         try {
                             return decrypt($movie->embed_url);
@@ -73,6 +73,21 @@
                     required
                 >
                 @error('embed_url')
+                    <p class="text-red-400 text-sm mt-1">{{ $message }}</p>
+                @enderror
+            </div>
+
+            {{-- Download URL --}}
+            <div class="md:col-span-2">
+                <label class="block text-sm font-medium text-gray-400 mb-2">Download URL</label>
+                <input
+                    type="url"
+                    name="download_url"
+                    value="{{ old('download_url', $movie->download_url) }}"
+                    placeholder="https://example.com/download/movie.mp4"
+                    class="w-full px-4 py-2 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400"
+                >
+                @error('download_url')
                     <p class="text-red-400 text-sm mt-1">{{ $message }}</p>
                 @enderror
             </div>
