@@ -565,27 +565,33 @@ class ModernEpisodeEditor {
     showFieldError(input, message) {
         input.classList.add('error');
         input.classList.remove('success');
-        
+
         this.clearFieldMessages(input);
-        
+
         const errorDiv = document.createElement('div');
         errorDiv.className = 'field-error';
         errorDiv.innerHTML = `<i class="fas fa-exclamation-triangle"></i>${message}`;
-        
-        input.closest('.form-group').appendChild(errorDiv);
+
+        const container = input.closest('.form-group') || input.closest('div') || input.parentElement;
+        if (container) {
+            container.appendChild(errorDiv);
+        }
     }
 
     showFieldSuccess(input) {
         input.classList.add('success');
         input.classList.remove('error');
-        
+
         this.clearFieldMessages(input);
-        
+
         const successDiv = document.createElement('div');
         successDiv.className = 'field-success';
         successDiv.innerHTML = `<i class="fas fa-check-circle"></i>Looks good!`;
-        
-        input.closest('.form-group').appendChild(successDiv);
+
+        const container = input.closest('.form-group') || input.closest('div') || input.parentElement;
+        if (container) {
+            container.appendChild(successDiv);
+        }
     }
 
     clearFieldError(input) {
@@ -594,8 +600,11 @@ class ModernEpisodeEditor {
     }
 
     clearFieldMessages(input) {
-        const group = input.closest('.form-group');
-        group.querySelectorAll('.field-error, .field-success').forEach(el => el.remove());
+        // Try to find form-group, or use parent element, or the input itself
+        const group = input.closest('.form-group') || input.closest('div') || input.parentElement;
+        if (group) {
+            group.querySelectorAll('.field-error, .field-success').forEach(el => el.remove());
+        }
     }
 
     setButtonLoading(button, isLoading) {
