@@ -205,10 +205,8 @@
             integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" 
             crossorigin="anonymous"></script>
 
-    <!-- Alpine.js - Latest version with integrity -->
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.1/dist/cdn.min.js" 
-            integrity="sha384-0T4xar8MpJM4he8MZZJCq8U1RLo3nAK8D0q5wprmxPX7tAWqbsIF3R3FJK5V5Meo" 
-            crossorigin="anonymous"></script>
+    <!-- Alpine.js - Latest version -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.1/dist/cdn.min.js"></script>
 
     @vite('resources/js/layouts/app.js')
     @stack('scripts')
