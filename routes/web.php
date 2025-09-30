@@ -294,6 +294,7 @@ Route::middleware(['auth', 'admin', CheckPermission::class . ':access_admin_pane
             Route::post('/{series}/seasons', [\App\Http\Controllers\Admin\AdminSeriesController::class, 'storeSeason'])->name('seasons.store');
             Route::delete('/{series}/seasons/{season}', [\App\Http\Controllers\Admin\AdminSeriesController::class, 'destroySeason'])->name('seasons.destroy');
             Route::post('/{series}/episodes', [\App\Http\Controllers\Admin\AdminSeriesController::class, 'storeEpisode'])->name('episodes.store');
+            Route::post('/episodes/check-unique', [\App\Http\Controllers\Admin\AdminSeriesController::class, 'checkEpisodeUnique'])->name('episodes.check-unique');
             Route::get('/{series}/episodes/{episode}/edit', [\App\Http\Controllers\Admin\AdminSeriesController::class, 'editEpisode'])->name('episodes.edit');
             Route::put('/{series}/episodes/{episode}', [\App\Http\Controllers\Admin\AdminSeriesController::class, 'updateEpisode'])->name('episodes.update');
             Route::delete('/{series}/episodes/{episode}', [\App\Http\Controllers\Admin\AdminSeriesController::class, 'destroyEpisode'])->name('episodes.destroy');

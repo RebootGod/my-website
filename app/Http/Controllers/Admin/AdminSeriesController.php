@@ -707,4 +707,29 @@ class AdminSeriesController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * Check if episode number is unique in a season
+     */
+    public function checkEpisodeUnique(Request $request)
+    {
+        $request->validate([
+            'season_id' => 'required|exists:series_seasons,id',
+            'episode_number' => 'required|integer|min:1',
+            'exclude_id' => 'nullable|integer'
+        ]);
+
+        $query = SeriesEpisode::where('season_id', $request->season_id)
+            ->where('episode_number', $request->episode_number);
+
+        if ($request->exclude_id) {
+            $query->where('id', '!=', $request->exclude_id);
+        }
+
+        $exists = $query->exists();
+
+        return response()->json([
+            'unique' => !$exists
+        ]);
+    }
 }

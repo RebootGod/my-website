@@ -432,9 +432,9 @@ class ModernEpisodeEditor {
 
     async checkEpisodeUniqueness(seasonId, episodeNumber, input) {
         if (!seasonId || !episodeNumber) return;
-        
+
         try {
-            const response = await fetch('/admin/episodes/check-unique', {
+            const response = await fetch('/admin/series/episodes/check-unique', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
