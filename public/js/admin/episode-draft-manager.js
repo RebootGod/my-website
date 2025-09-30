@@ -37,12 +37,7 @@ class EpisodeDraftManager {
     }
     
     storeOriginalData() {
-        const formData = new FormData(this.form);
-        this.originalData = {};
-        
-        for (let [key, value] of formData.entries()) {
-            this.originalData[key] = value;
-        }
+        this.originalData = this.serializeFormData();
     }
     
     checkAndRestoreDraft() {
@@ -69,9 +64,10 @@ class EpisodeDraftManager {
     }
     
     isDraftDifferentFromCurrent(draft) {
+        const currentData = this.serializeFormData();
+
         for (let key in draft) {
-            const input = this.form.querySelector(`[name="${key}"]`);
-            if (input && input.value !== draft[key]) {
+            if (currentData[key] !== draft[key]) {
                 return true;
             }
         }
@@ -242,14 +238,9 @@ class EpisodeDraftManager {
         if (!this.hasFormChanged()) {
             return;
         }
-        
-        const formData = new FormData(this.form);
-        const draft = {};
-        
-        for (let [key, value] of formData.entries()) {
-            draft[key] = value;
-        }
-        
+
+        const draft = this.serializeFormData();
+
         try {
             localStorage.setItem(this.draftKey, JSON.stringify(draft));
             this.showDraftIndicator();
@@ -257,15 +248,36 @@ class EpisodeDraftManager {
             console.warn('Failed to save draft:', e);
         }
     }
+
+    serializeFormData() {
+        const draft = {};
+        const inputs = this.form.querySelectorAll('input, select, textarea');
+
+        inputs.forEach(input => {
+            const name = input.getAttribute('name');
+            if (!name) return;
+
+            // Skip hidden fields that are checkbox fallbacks
+            if (input.type === 'hidden' && this.form.querySelector(`input[type="checkbox"][name="${name}"]`)) {
+                return;
+            }
+
+            if (input.type === 'checkbox') {
+                draft[name] = input.checked ? '1' : '0';
+            } else if (input.type === 'radio') {
+                if (input.checked) {
+                    draft[name] = input.value;
+                }
+            } else {
+                draft[name] = input.value;
+            }
+        });
+
+        return draft;
+    }
     
     hasFormChanged() {
-        const formData = new FormData(this.form);
-        const currentData = {};
-        
-        for (let [key, value] of formData.entries()) {
-            currentData[key] = value;
-        }
-        
+        const currentData = this.serializeFormData();
         return JSON.stringify(currentData) !== JSON.stringify(this.originalData);
     }
     

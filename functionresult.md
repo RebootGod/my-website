@@ -63,30 +63,23 @@ ALTER TABLE `series_episodes` ADD `download_url` TEXT NULL AFTER `embed_url`;
 - Condition: Only shows if `$episode->download_url` exists
 - Status: ✅ OPERATIONAL
 
-#### **Draft Manager - BUGFIX**
+#### **Draft Manager - BUGFIX V2: Form Serialization**
+**Issue**: Download URL disappears after draft restore and save
+
+**Root Cause**: `FormData.entries()` returns duplicate keys for checkbox + hidden field
+
+**Solution** (`public/js/admin/episode-draft-manager.js`):
+- Created `serializeFormData()` to properly handle checkboxes
+- Skip hidden fields if corresponding checkbox exists
+- Updated all methods to use consistent serialization
+- Status: ✅ FIXED - Download URL persists through full cycle
+
+#### **Draft Manager - BUGFIX V1: Event Clearing**
 **Issue**: Draft modal appearing after successful episode update
 
-**Root Cause**:
-1. LocalStorage draft not cleared before page redirect
-2. Draft manager didn't listen for save success events
-3. Page reload triggered with stale draft data
-
 **Solution** (`public/js/admin/episode-edit.js` & `episode-draft-manager.js`):
-```javascript
-// episode-edit.js - Clear draft immediately on success
-localStorage.removeItem(`episode_edit_draft_${episodeId}`);
-window.dispatchEvent(new CustomEvent('episode-saved', {
-    detail: { episodeId: episodeId }
-}));
-
-// episode-draft-manager.js - Listen for save event
-window.addEventListener('episode-saved', (e) => {
-    if (e.detail.episodeId === this.episodeId) {
-        this.clearDraft();
-        this.storeOriginalData(); // Update baseline
-    }
-});
-```
+- Added custom `episode-saved` event dispatch
+- Draft manager listens for save events and clears localStorage
 - Status: ✅ FIXED
 
 #### **Testing Results**
@@ -97,6 +90,8 @@ window.addEventListener('episode-saved', (e) => {
 5. ✅ URL validation works (rejects invalid URLs)
 6. ✅ Draft modal no longer appears after save
 7. ✅ Form fields properly populated on edit
+8. ✅ Download URL persists after draft restore and save
+9. ✅ Checkbox state handled correctly in drafts
 
 ---
 

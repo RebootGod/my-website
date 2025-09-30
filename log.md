@@ -1,6 +1,51 @@
 ## 2025-09-30 - DOWNLOAD FEATURE IMPLEMENTATION
 
-### BUGFIX: Episode Edit Form & Draft Manager ✅
+### BUGFIX V2: Draft Manager Checkbox & Form Serialization ✅
+**Issue**: Download URL disappears after restore draft and save
+**Root Cause Analysis**:
+1. ❌ `FormData.entries()` returns MULTIPLE entries for checkbox with hidden fallback field
+2. ❌ JavaScript object only stores last value when same key appears multiple times
+3. ❌ Draft saves `is_active: "0"` from hidden field instead of checkbox state
+4. ❌ After draft restore and save, download_url not persisting correctly
+
+**Technical Deep Dive**:
+```javascript
+// BEFORE (BROKEN):
+for (let [key, value] of formData.entries()) {
+    draft[key] = value;  // ❌ Hidden field "0" overwrites checkbox "1"
+}
+
+// AFTER (FIXED):
+serializeFormData() {
+    const draft = {};
+    const inputs = this.form.querySelectorAll('input, select, textarea');
+    inputs.forEach(input => {
+        // Skip hidden fields that are checkbox fallbacks
+        if (input.type === 'hidden' && this.form.querySelector(`input[type="checkbox"][name="${input.name}"]`)) {
+            return;  // ✅ Ignore hidden field if checkbox exists
+        }
+        if (input.type === 'checkbox') {
+            draft[input.name] = input.checked ? '1' : '0';  // ✅ Proper checkbox handling
+        }
+    });
+}
+```
+
+**Solution Applied**:
+1. ✅ Created `serializeFormData()` method to properly handle checkboxes and hidden fields
+2. ✅ Updated `storeOriginalData()` to use `serializeFormData()`
+3. ✅ Updated `saveDraft()` to use `serializeFormData()`
+4. ✅ Updated `hasFormChanged()` to use `serializeFormData()` for consistency
+5. ✅ Updated `isDraftDifferentFromCurrent()` to use `serializeFormData()`
+
+**Files Modified**:
+- `public/js/admin/episode-draft-manager.js` - Complete form serialization rewrite
+
+**Result**: ✅ Download URL persists correctly through entire draft cycle (save → restore → submit → reload)
+
+---
+
+### BUGFIX V1: Episode Edit Form & Draft Manager ✅
 **Issue**: Download URL field missing in episode edit form + Draft modal appearing after successful update
 **Root Cause**:
 1. Form field `download_url` not present in `episode-edit.blade.php`
