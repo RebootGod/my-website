@@ -170,12 +170,21 @@
                         <div class="field-help">Direct link to the video player embed (YouTube, Vimeo, or custom player)</div>
                     </div>
 
+                    <!-- Download URL -->
+                    <div class="form-group">
+                        <label for="download_url" class="form-label">Download URL</label>
+                        <input type="url" name="download_url" id="download_url"
+                               class="form-input" value="{{ old('download_url', $episode->download_url) }}"
+                               placeholder="https://example.com/download/episode.mp4">
+                        <div class="field-help">Optional: Direct download link for this episode</div>
+                    </div>
+
                     <!-- Still Path -->
                     <div class="form-group">
                         <label for="still_path" class="form-label">Episode Thumbnail URL</label>
                         <div class="input-group">
-                            <input type="url" name="still_path" id="still_path" 
-                                   class="form-input" value="{{ old('still_path', $episode->still_path) }}" 
+                            <input type="url" name="still_path" id="still_path"
+                                   class="form-input" value="{{ old('still_path', $episode->still_path) }}"
                                    placeholder="https://example.com/images/episode-thumbnail.jpg">
                             <button type="button" class="btn btn-secondary" onclick="previewUrl(document.getElementById('still_path').value, 'image')">
                                 <i class="fas fa-eye"></i> Preview

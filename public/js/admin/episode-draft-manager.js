@@ -216,21 +216,26 @@ class EpisodeDraftManager {
     }
     
     setupSubmissionHandler() {
-        this.form.addEventListener('submit', () => {
-            // Clear draft when form is successfully submitted
-            this.clearDraft();
+        // Listen for custom episode-saved event
+        window.addEventListener('episode-saved', (e) => {
+            if (e.detail.episodeId === this.episodeId) {
+                this.clearDraft();
+                // Update original data to prevent false positives
+                this.storeOriginalData();
+            }
         });
-        
-        // Also listen for successful AJAX submissions
-        const originalFetch = window.fetch;
-        window.fetch = (...args) => {
-            return originalFetch(...args).then(response => {
-                if (response.ok && args[0] === this.form.action) {
-                    this.clearDraft();
-                }
-                return response;
-            });
-        };
+
+        // Also clear on beforeunload after successful save
+        let savingSuccess = false;
+        window.addEventListener('episode-saved', () => {
+            savingSuccess = true;
+        });
+
+        window.addEventListener('beforeunload', () => {
+            if (savingSuccess) {
+                this.clearDraft();
+            }
+        });
     }
     
     saveDraft() {

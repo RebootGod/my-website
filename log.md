@@ -1,5 +1,27 @@
 ## 2025-09-30 - DOWNLOAD FEATURE IMPLEMENTATION
 
+### BUGFIX: Episode Edit Form & Draft Manager ✅
+**Issue**: Download URL field missing in episode edit form + Draft modal appearing after successful update
+**Root Cause**:
+1. Form field `download_url` not present in `episode-edit.blade.php`
+2. Draft manager not properly clearing localStorage after form submission
+3. Redirect happening before draft cleanup completed
+
+**Solution Applied**:
+1. ✅ Added `download_url` field to `resources/views/admin/series/episode-edit.blade.php` (line 173-180)
+2. ✅ Enhanced draft clearing in `public/js/admin/episode-edit.js` with custom event dispatch
+3. ✅ Improved draft manager in `public/js/admin/episode-draft-manager.js` with event listener
+4. ✅ Added `beforeunload` event handler as backup draft cleanup
+
+**Files Modified**:
+- `resources/views/admin/series/episode-edit.blade.php` - Added download_url input field
+- `public/js/admin/episode-edit.js` - Enhanced draft clearing with custom events
+- `public/js/admin/episode-draft-manager.js` - Improved event handling and cleanup
+
+**Result**: Download URL now properly saves and no more draft modal after successful update
+
+---
+
 ### DOWNLOAD BUTTON FEATURE COMPLETED ✅
 🎬 **Complete Download Functionality for Movies and Series Episodes**
 - **Objective**: Add download functionality to allow users to download movies and series episodes

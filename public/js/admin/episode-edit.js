@@ -209,14 +209,19 @@ class EpisodeEditManager {
             });
             
             if (response.ok) {
-                // Clear any saved drafts
+                // Clear any saved drafts IMMEDIATELY
                 const episodeId = this.form.dataset.episodeId;
                 if (episodeId) {
                     localStorage.removeItem(`episode_edit_draft_${episodeId}`);
                 }
-                
+
+                // Also trigger a custom event for draft manager to clear
+                window.dispatchEvent(new CustomEvent('episode-saved', {
+                    detail: { episodeId: episodeId }
+                }));
+
                 this.showMessage('Episode updated successfully!', 'success');
-                
+
                 // Redirect after short delay
                 setTimeout(() => {
                     window.location.href = this.form.dataset.redirectUrl || '/admin/series';
