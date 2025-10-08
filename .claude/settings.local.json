@@ -6,7 +6,8 @@
       "Bash(find:*)",
       "Bash(php:*)",
       "Bash(rg:*)",
-      "Bash(composer run:*)"
+      "Bash(composer run:*)",
+      "Bash(git push:*)"
     ],
     "deny": [],
     "ask": []

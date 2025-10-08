@@ -1,3 +1,47 @@
+## 2025-10-08 - HOMEPAGE SORTING CHANGE TO UPDATED_AT
+
+### FEATURE UPDATE: Homepage Default Sorting Changed from created_at to updated_at ✅
+**Change Request**: Change homepage default sorting from creation date to last update date
+
+**Why This Change**:
+- Movies/Series yang baru di-update akan muncul di urutan paling atas
+- Ketika admin melakukan pembaharuan (edit poster, deskripsi, tambah source), konten akan muncul kembali di homepage
+- Lebih relevan karena menampilkan konten yang "baru diperbarui" bukan hanya "baru dibuat"
+
+**Technical Changes**:
+```php
+// BEFORE:
+case 'latest':
+default:
+    $merged = $merged->sortByDesc('created_at')->values();
+    break;
+case 'oldest':
+    $merged = $merged->sortBy('created_at')->values();
+    break;
+
+// AFTER:
+case 'latest':
+default:
+    $merged = $merged->sortByDesc('updated_at')->values();
+    break;
+case 'oldest':
+    $merged = $merged->sortBy('updated_at')->values();
+    break;
+```
+
+**Files Modified**:
+- `app/Http/Controllers/HomeController.php` - Changed sorting logic from `created_at` to `updated_at`
+
+**Impact**:
+- ✅ Default homepage sorting now based on last update time
+- ✅ Edited movies/series will appear at top of homepage
+- ✅ "Oldest" filter also uses `updated_at` for consistency
+- ✅ Other sorting options (rating, alphabetical) unchanged
+
+**Result**: ✅ Homepage now shows recently updated content first
+
+---
+
 ## 2025-09-30 - DOWNLOAD FEATURE IMPLEMENTATION
 
 ### BUGFIX V3: Episode Edit Modern View - Invalid HTML ✅

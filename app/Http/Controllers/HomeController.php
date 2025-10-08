@@ -107,7 +107,7 @@ class HomeController extends Controller
         $sortBy = $request->get('sort', 'latest');
         switch ($sortBy) {
             case 'oldest':
-                $merged = $merged->sortBy('created_at')->values();
+                $merged = $merged->sortBy('updated_at')->values();
                 break;
             case 'rating_high':
                 $merged = $merged->sortByDesc('rating')->values();
@@ -120,7 +120,7 @@ class HomeController extends Controller
                 break;
             case 'latest':
             default:
-                $merged = $merged->sortByDesc('created_at')->values();
+                $merged = $merged->sortByDesc('updated_at')->values();
                 break;
         }
 
