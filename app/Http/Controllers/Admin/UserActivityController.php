@@ -265,18 +265,24 @@ class UserActivityController extends Controller
 
             // Log to admin action logs
             \App\Models\AdminActionLog::create([
-                'user_id' => auth()->id(),
+                'admin_id' => auth()->id(),
                 'action' => 'cleanup_user_activities',
+                'action_type' => 'system',
                 'description' => "Cleaned up {$deletedCount} user activity records older than 7 days",
-                'model_type' => 'UserActivity',
-                'model_id' => null,
+                'target_type' => 'UserActivity',
+                'target_id' => null,
                 'ip_address' => request()->ip(),
                 'user_agent' => request()->userAgent(),
-                'changes' => [
+                'request_method' => request()->method(),
+                'request_url' => request()->fullUrl(),
+                'metadata' => [
                     'records_deleted' => $deletedCount,
                     'cutoff_date' => $cutoffDate->toIso8601String(),
                     'backup_file' => $filename
-                ]
+                ],
+                'severity' => 'high',
+                'is_sensitive' => true,
+                'status' => 'success'
             ]);
 
             // Full logging
