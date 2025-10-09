@@ -3,9 +3,11 @@
 namespace App\Services;
 
 use App\Models\User;
+use App\Jobs\SendPasswordResetEmailJob;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
 
@@ -130,8 +132,30 @@ class PasswordResetService
         // Increment rate limit counter
         $this->incrementRateLimit($email, $ipAddress);
 
-        // Send email notification (will be handled by notification system)
-        $user->notify(new \App\Notifications\ResetPasswordNotification($token));
+        // Send email notification via queue (non-blocking)
+        try {
+            SendPasswordResetEmailJob::dispatch($user, $token);
+            Log::info('Password reset email job dispatched', [
+                'user_id' => $user->id,
+                'email' => $email
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Failed to dispatch password reset email job', [
+                'user_id' => $user->id,
+                'email' => $email,
+                'error' => $e->getMessage()
+            ]);
+            
+            // Fallback to immediate notification if queue fails
+            try {
+                $user->notify(new \App\Notifications\ResetPasswordNotification($token));
+            } catch (\Exception $fallbackError) {
+                Log::critical('Password reset notification completely failed', [
+                    'user_id' => $user->id,
+                    'error' => $fallbackError->getMessage()
+                ]);
+            }
+        }
 
         return [
             'success' => true,

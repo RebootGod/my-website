@@ -14,11 +14,15 @@ use App\Models\UserRegistration;
 use App\Rules\StrongPasswordRule;
 use App\Rules\NoXssRule;
 use App\Rules\NoSqlInjectionRule;
+use App\Jobs\SendWelcomeEmailJob;
+use App\Notifications\WelcomeNotification;
+use App\Notifications\NewUserRegisteredNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\Log;
 
 class RegisterController extends Controller
 {
@@ -103,6 +107,55 @@ class RegisterController extends Controller
             $activityService = app(\App\Services\UserActivityService::class);
             $activityService->logRegistration($user);
             $activityService->logLogin($user);
+
+            // Dispatch welcome email job (queued, non-blocking)
+            try {
+                SendWelcomeEmailJob::dispatch($user, $sanitizedData['invite_code']);
+                Log::info('Welcome email job dispatched', ['user_id' => $user->id]);
+            } catch (\Exception $e) {
+                Log::error('Failed to dispatch welcome email job', [
+                    'user_id' => $user->id,
+                    'error' => $e->getMessage()
+                ]);
+                // Don't fail registration if email dispatch fails
+            }
+
+            // Send welcome notification (queued)
+            try {
+                $user->notify(new WelcomeNotification($sanitizedData['invite_code']));
+                Log::info('Welcome notification dispatched', ['user_id' => $user->id]);
+            } catch (\Exception $e) {
+                Log::error('Failed to dispatch welcome notification', [
+                    'user_id' => $user->id,
+                    'error' => $e->getMessage()
+                ]);
+            }
+
+            // Notify admins of new user registration (queued)
+            try {
+                $admins = User::whereHas('role', function ($query) {
+                    $query->whereIn('name', ['Admin', 'Super Admin']);
+                })->get();
+
+                // Fallback to legacy role column if no role-based admins
+                if ($admins->isEmpty()) {
+                    $admins = User::whereIn('role', ['admin', 'super_admin'])->get();
+                }
+
+                foreach ($admins as $admin) {
+                    $admin->notify(new NewUserRegisteredNotification($user, $sanitizedData['invite_code']));
+                }
+
+                Log::info('Admin notifications dispatched', [
+                    'user_id' => $user->id,
+                    'admins_count' => $admins->count()
+                ]);
+            } catch (\Exception $e) {
+                Log::error('Failed to notify admins', [
+                    'user_id' => $user->id,
+                    'error' => $e->getMessage()
+                ]);
+            }
 
             return redirect()->route('home')->with('success', 'Selamat datang di Noobz Cinema!');
 
