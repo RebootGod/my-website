@@ -74,6 +74,19 @@ class MovieController extends Controller
         return response()->json($searches);
     }
     
+    public function popular()
+    {
+        // Get popular movies based on views
+        $movies = Movie::published()
+            ->with('genres')
+            ->withCount('views')
+            ->orderByDesc('views_count')
+            ->take(20)
+            ->get();
+        
+        return response()->json($movies);
+    }
+    
     public function show(Movie $movie)
     {
         // Only show published movies to non-admin users
@@ -103,7 +116,7 @@ class MovieController extends Controller
         return view('movies.show', compact('movie', 'relatedMovies'));
     }
     
-    public function genre(Genre $genre)
+    public function byGenre(Genre $genre)
     {
         $movies = Movie::published()
             ->with('genres')
