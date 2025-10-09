@@ -40,25 +40,54 @@
 
 **Mitigation Strategy**:
 
-**OPTION 1: DISABLE CloudFlare RUM (RECOMMENDED)**
-Since noobz.space is invite-only private streaming service, analytics not critical:
+**🏆 BEST PRACTICE: CloudFlare Transform Rules (RECOMMENDED if keeping analytics)**
+
+**Why Transform Rules is Best:**
+- ✅ Removes CORS headers from RUM endpoint completely
+- ✅ RUM analytics still works for same-origin (noobz.space)
+- ✅ Blocks cross-origin access without blocking entire endpoint
+- ✅ Simple implementation, available on CloudFlare Free plan
+- ✅ No false positives, set-and-forget solution
+
+**Implementation Steps:**
 1. Login to CloudFlare Dashboard (https://dash.cloudflare.com)
 2. Select domain: noobz.space
-3. Navigate: Speed → Optimization → Content Optimization
-4. Find: Real User Monitoring (RUM)
-5. Action: Toggle OFF
-6. Result: `/cdn-cgi/rum` endpoint disabled, vulnerability eliminated
+3. Navigate: **Rules → Transform Rules → Modify Response Header**
+4. Click: **"Create rule"**
+5. Configure:
+   - **Rule name**: `Remove CORS Headers from RUM Endpoint`
+   - **When incoming requests match**:
+     - Field: `URI Path`
+     - Operator: `contains`
+     - Value: `/cdn-cgi/rum`
+   - **Then modify response headers** (Remove these):
+     - `Access-Control-Allow-Origin`
+     - `Access-Control-Allow-Credentials`
+     - `Access-Control-Allow-Methods`
+     - `Access-Control-Allow-Headers`
+6. Click: **"Deploy"**
+7. Result: RUM works normally, CORS vulnerability eliminated
 
-**OPTION 2: RESTRICT CORS via CloudFlare WAF**
-If RUM analytics needed:
-1. CloudFlare Dashboard → Security → WAF → Custom Rules
-2. Create rule:
-   - Name: "Block Cross-Origin RUM Requests"
-   - Match: URI Path contains "/cdn-cgi/rum" AND HTTP Header "Origin" ≠ "https://noobz.space"
-   - Action: Block
-3. Alternative: Transform Rules → Modify Response Header → Remove `Access-Control-Allow-Origin`
+**ALTERNATIVE 1: CloudFlare WAF Custom Rules**
+For more aggressive blocking:
+1. Navigate: Security → WAF → Custom Rules → Create rule
+2. Rule name: `Block Cross-Origin RUM Requests`
+3. Expression:
+   ```
+   (http.request.uri.path contains "/cdn-cgi/rum") and
+   (http.request.headers["origin"][0] ne "https://noobz.space") and
+   (http.request.headers["origin"][0] ne "")
+   ```
+4. Action: Block
+5. Deploy
 
-**OPTION 3: Contact CloudFlare Support**
+**ALTERNATIVE 2: DISABLE CloudFlare RUM**
+If analytics not needed:
+1. Navigate: Speed → Optimization → Content Optimization
+2. Find: Real User Monitoring (RUM)
+3. Action: Toggle OFF
+
+**ALTERNATIVE 3: Contact CloudFlare Support**
 Submit ticket requesting CORS restriction on RUM endpoint to same-origin only
 
 **Files Checked (No Changes Required)**:
@@ -68,9 +97,26 @@ Submit ticket requesting CORS restriction on RUM endpoint to same-origin only
 - No Laravel code changes needed - fix must be at CloudFlare level
 
 **Next Steps**:
-1. ⏳ PENDING: Disable CloudFlare RUM via CloudFlare Dashboard
-2. ⏳ PENDING: Verify fix by re-running Burpsuite scan
-3. ⏳ PENDING: Document CloudFlare configuration changes
+1. ⏳ PENDING: Implement CloudFlare Transform Rules to remove CORS headers from RUM endpoint
+2. ⏳ PENDING: Test with legitimate traffic (Origin: https://noobz.space) - should work
+3. ⏳ PENDING: Test with malicious traffic (Origin: https://evil-attacker.com) - should be blocked
+4. ⏳ PENDING: Verify fix by re-running Burpsuite Live Scan
+5. ⏳ PENDING: Confirm RUM analytics still collecting data in CloudFlare Dashboard
+
+**Verification Tests**:
+```bash
+# Test 1: Legitimate traffic (should work, no CORS headers)
+curl -H "Origin: https://noobz.space" https://noobz.space/cdn-cgi/rum?
+
+# Test 2: Malicious traffic (browser will block without CORS headers)
+curl -H "Origin: https://evil-attacker.com" https://noobz.space/cdn-cgi/rum?
+```
+
+**Expected Results After Fix**:
+- ✅ RUM analytics continues to work normally
+- ✅ Response has NO Access-Control-Allow-Origin header
+- ✅ Burpsuite scan shows no CORS vulnerability
+- ✅ Cross-origin requests blocked by browser's Same-Origin Policy
 
 **Status**: ⚠️ IDENTIFIED - Awaiting CloudFlare configuration fix
 **Responsible**: Site owner must access CloudFlare Dashboard to disable RUM
