@@ -16,6 +16,12 @@
                 <i class="fas fa-download"></i>
                 Export CSV
             </a>
+            @if(auth()->user()->hasRole('super_admin'))
+            <button onclick="showCleanupModal()" class="btn-modern bg-red-500 hover:bg-red-600">
+                <i class="fas fa-trash-alt"></i>
+                Cleanup Old Data
+            </button>
+            @endif
         </div>
     </div>
 
@@ -304,6 +310,35 @@
     </div>
 </div>
 
+{{-- Cleanup Confirmation Modal --}}
+<div id="cleanupModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+    <div class="bg-gray-800 rounded-lg p-6 max-w-md w-full mx-4">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-xl font-bold text-white">Cleanup Old Activities</h3>
+            <button onclick="closeCleanupModal()" class="text-gray-400 hover:text-white">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div id="cleanupModalContent">
+            <div class="text-center py-8">
+                <i class="fas fa-spinner fa-spin text-4xl text-blue-500 mb-4"></i>
+                <p class="text-gray-300">Loading data...</p>
+            </div>
+        </div>
+        
+        <div id="cleanupModalActions" class="hidden flex justify-end gap-3 mt-6">
+            <button onclick="closeCleanupModal()" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition">
+                Cancel
+            </button>
+            <button onclick="performCleanup()" id="confirmCleanupBtn" class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition">
+                <i class="fas fa-trash-alt mr-2"></i>
+                Cleanup Now
+            </button>
+        </div>
+    </div>
+</div>
+
 @push('styles')
 <link rel="stylesheet" href="{{ asset('css/admin/user-activity.css') }}">
 @endpush
@@ -320,6 +355,159 @@
             hourly_pattern: @json($stats['hourly_pattern'] ?? ['labels' => [], 'data' => []])
         });
     });
+
+    // Cleanup Modal Functions
+    function showCleanupModal() {
+        const modal = document.getElementById('cleanupModal');
+        modal.classList.remove('hidden');
+        
+        // Fetch old activities count
+        fetch('{{ route("admin.user-activity.old-count") }}')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const content = document.getElementById('cleanupModalContent');
+                    const actions = document.getElementById('cleanupModalActions');
+                    
+                    if (data.count === 0) {
+                        content.innerHTML = `
+                            <div class="text-center py-8">
+                                <i class="fas fa-check-circle text-5xl text-green-500 mb-4"></i>
+                                <p class="text-gray-300 text-lg mb-2">All Clean!</p>
+                                <p class="text-gray-400 text-sm">No old records to cleanup.</p>
+                            </div>
+                        `;
+                        actions.classList.add('hidden');
+                    } else {
+                        content.innerHTML = `
+                            <div class="mb-6">
+                                <div class="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-4 mb-4">
+                                    <div class="flex items-start">
+                                        <i class="fas fa-exclamation-triangle text-yellow-500 mt-1 mr-3"></i>
+                                        <div>
+                                            <p class="text-yellow-300 font-semibold mb-1">Warning</p>
+                                            <p class="text-gray-300 text-sm">This action will permanently delete old activity records.</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="space-y-3">
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-gray-400">Records to delete:</span>
+                                        <span class="text-red-400 font-bold text-lg">${data.count.toLocaleString()}</span>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-gray-400">Cutoff date:</span>
+                                        <span class="text-white">${new Date(data.cutoff_date).toLocaleString()}</span>
+                                    </div>
+                                    ${data.oldest_date ? `
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-gray-400">Oldest record:</span>
+                                        <span class="text-white">${new Date(data.oldest_date).toLocaleString()}</span>
+                                    </div>
+                                    ` : ''}
+                                </div>
+
+                                <div class="bg-blue-500/10 border border-blue-500/30 rounded-lg p-4 mt-4">
+                                    <div class="flex items-start">
+                                        <i class="fas fa-info-circle text-blue-400 mt-1 mr-3"></i>
+                                        <div class="text-sm text-gray-300">
+                                            <p class="font-semibold text-blue-300 mb-1">Backup & Delete</p>
+                                            <p>Records will be backed up to a JSON file before deletion. You can keep the last 7 days of activities.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                        actions.classList.remove('hidden');
+                    }
+                } else {
+                    showError(data.message || 'Failed to load data');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showError('Failed to load cleanup data');
+            });
+    }
+
+    function closeCleanupModal() {
+        const modal = document.getElementById('cleanupModal');
+        modal.classList.add('hidden');
+    }
+
+    function performCleanup() {
+        const confirmBtn = document.getElementById('confirmCleanupBtn');
+        const originalText = confirmBtn.innerHTML;
+        confirmBtn.disabled = true;
+        confirmBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Processing...';
+
+        fetch('{{ route("admin.user-activity.cleanup-old") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Show success message
+                const content = document.getElementById('cleanupModalContent');
+                const actions = document.getElementById('cleanupModalActions');
+                
+                content.innerHTML = `
+                    <div class="text-center py-8">
+                        <i class="fas fa-check-circle text-5xl text-green-500 mb-4"></i>
+                        <p class="text-white text-lg font-semibold mb-2">Cleanup Successful!</p>
+                        <div class="text-left bg-gray-700/50 rounded-lg p-4 mt-4">
+                            <div class="space-y-2 text-sm">
+                                <div class="flex justify-between">
+                                    <span class="text-gray-400">Records deleted:</span>
+                                    <span class="text-green-400 font-bold">${data.records_deleted.toLocaleString()}</span>
+                                </div>
+                                ${data.backup_file ? `
+                                <div class="flex justify-between">
+                                    <span class="text-gray-400">Backup file:</span>
+                                    <span class="text-blue-400 text-xs">${data.backup_file}</span>
+                                </div>
+                                ` : ''}
+                            </div>
+                        </div>
+                        <p class="text-gray-400 text-sm mt-4">Page will reload in 3 seconds...</p>
+                    </div>
+                `;
+                actions.classList.add('hidden');
+                
+                // Reload page after 3 seconds
+                setTimeout(() => {
+                    window.location.reload();
+                }, 3000);
+            } else {
+                showError(data.message || 'Cleanup failed');
+                confirmBtn.disabled = false;
+                confirmBtn.innerHTML = originalText;
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showError('Failed to perform cleanup');
+            confirmBtn.disabled = false;
+            confirmBtn.innerHTML = originalText;
+        });
+    }
+
+    function showError(message) {
+        const content = document.getElementById('cleanupModalContent');
+        content.innerHTML = `
+            <div class="text-center py-8">
+                <i class="fas fa-exclamation-circle text-5xl text-red-500 mb-4"></i>
+                <p class="text-white text-lg font-semibold mb-2">Error</p>
+                <p class="text-gray-400">${message}</p>
+            </div>
+        `;
+        document.getElementById('cleanupModalActions').classList.add('hidden');
+    }
 </script>
 @endpush
 @endsection

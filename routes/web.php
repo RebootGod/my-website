@@ -350,6 +350,8 @@ Route::middleware(['auth', 'admin', CheckPermission::class . ':access_admin_pane
         Route::get('/export', [\App\Http\Controllers\Admin\UserActivityController::class, 'export'])->name('export');
         Route::post('/clear-cache', [\App\Http\Controllers\Admin\UserActivityController::class, 'clearCache'])->name('clear-cache');
         Route::post('/cleanup', [\App\Http\Controllers\Admin\UserActivityController::class, 'cleanup'])->name('cleanup');
+        Route::post('/cleanup-old', [\App\Http\Controllers\Admin\UserActivityController::class, 'cleanupOldActivities'])->name('cleanup-old');
+        Route::get('/old-count', [\App\Http\Controllers\Admin\UserActivityController::class, 'getOldActivitiesCount'])->name('old-count');
         Route::get('/{user}', [\App\Http\Controllers\Admin\UserActivityController::class, 'show'])->name('show');
     });
     

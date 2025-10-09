@@ -186,4 +186,156 @@ class UserActivityController extends Controller
             'deleted_count' => $deletedCount
         ]);
     }
+
+    /**
+     * Cleanup old activities (keep last 7 days, backup and delete older)
+     * Only accessible by super_admin
+     */
+    public function cleanupOldActivities()
+    {
+        // Check if user is super_admin
+        if (!auth()->user()->hasRole('super_admin')) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized. Only super admin can perform this action.'
+            ], 403);
+        }
+
+        try {
+            // Get count of records that will be deleted
+            $cutoffDate = Carbon::now()->subDays(7);
+            $oldRecordsCount = UserActivity::where('created_at', '<', $cutoffDate)->count();
+
+            if ($oldRecordsCount === 0) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'No old records to clean up.',
+                    'records_to_delete' => 0,
+                    'records_deleted' => 0,
+                    'backup_file' => null
+                ]);
+            }
+
+            // Get old records for backup
+            $oldRecords = UserActivity::where('created_at', '<', $cutoffDate)
+                ->with('user:id,username,email')
+                ->orderBy('created_at', 'asc')
+                ->get();
+
+            // Create backup file
+            $backupDir = storage_path('app/backups/user_activities');
+            if (!file_exists($backupDir)) {
+                mkdir($backupDir, 0755, true);
+            }
+
+            $filename = 'user_activities_backup_' . now()->format('Y_m_d_H_i_s') . '.json';
+            $filepath = $backupDir . '/' . $filename;
+
+            // Prepare backup data
+            $backupData = [
+                'backup_date' => now()->toIso8601String(),
+                'cutoff_date' => $cutoffDate->toIso8601String(),
+                'total_records' => $oldRecordsCount,
+                'performed_by' => [
+                    'id' => auth()->id(),
+                    'username' => auth()->user()->username,
+                    'email' => auth()->user()->email
+                ],
+                'records' => $oldRecords->map(function($activity) {
+                    return [
+                        'id' => $activity->id,
+                        'user_id' => $activity->user_id,
+                        'username' => $activity->user->username ?? 'Unknown',
+                        'activity_type' => $activity->activity_type,
+                        'description' => $activity->description,
+                        'metadata' => $activity->metadata,
+                        'ip_address' => $activity->ip_address,
+                        'user_agent' => $activity->user_agent,
+                        'activity_at' => $activity->activity_at,
+                        'created_at' => $activity->created_at,
+                    ];
+                })
+            ];
+
+            // Save backup file
+            file_put_contents($filepath, json_encode($backupData, JSON_PRETTY_PRINT));
+
+            // Delete old records
+            $deletedCount = UserActivity::where('created_at', '<', $cutoffDate)->delete();
+
+            // Log to admin action logs
+            \App\Models\AdminActionLog::create([
+                'user_id' => auth()->id(),
+                'action' => 'cleanup_user_activities',
+                'description' => "Cleaned up {$deletedCount} user activity records older than 7 days",
+                'model_type' => 'UserActivity',
+                'model_id' => null,
+                'ip_address' => request()->ip(),
+                'user_agent' => request()->userAgent(),
+                'changes' => [
+                    'records_deleted' => $deletedCount,
+                    'cutoff_date' => $cutoffDate->toIso8601String(),
+                    'backup_file' => $filename
+                ]
+            ]);
+
+            // Full logging
+            \Log::info('User Activity Cleanup Performed', [
+                'admin_id' => auth()->id(),
+                'admin_username' => auth()->user()->username,
+                'records_deleted' => $deletedCount,
+                'cutoff_date' => $cutoffDate->toDateTimeString(),
+                'backup_file' => $filename,
+                'backup_path' => $filepath,
+                'ip_address' => request()->ip()
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => "Successfully cleaned up {$deletedCount} old activity records. Backup saved.",
+                'records_to_delete' => $oldRecordsCount,
+                'records_deleted' => $deletedCount,
+                'backup_file' => $filename
+            ]);
+
+        } catch (\Exception $e) {
+            \Log::error('User Activity Cleanup Failed', [
+                'admin_id' => auth()->id(),
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to cleanup activities: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Get count of old activities (for preview before cleanup)
+     */
+    public function getOldActivitiesCount()
+    {
+        // Check if user is super_admin
+        if (!auth()->user()->hasRole('super_admin')) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized.'
+            ], 403);
+        }
+
+        $cutoffDate = Carbon::now()->subDays(7);
+        $count = UserActivity::where('created_at', '<', $cutoffDate)->count();
+        $oldestDate = UserActivity::where('created_at', '<', $cutoffDate)
+            ->orderBy('created_at', 'asc')
+            ->value('created_at');
+
+        return response()->json([
+            'success' => true,
+            'count' => $count,
+            'cutoff_date' => $cutoffDate->toDateTimeString(),
+            'oldest_date' => $oldestDate ? Carbon::parse($oldestDate)->toDateTimeString() : null
+        ]);
+    }
 }
