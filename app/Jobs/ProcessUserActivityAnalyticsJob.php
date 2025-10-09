@@ -82,11 +82,11 @@ class ProcessUserActivityAnalyticsJob implements ShouldQueue
     {
         $last24h = now()->subDay();
 
-        $activityStats = UserActivity::select('action', DB::raw('COUNT(*) as count'))
+        $activityStats = UserActivity::select('activity_type', DB::raw('COUNT(*) as count'))
             ->where('created_at', '>=', $last24h)
-            ->groupBy('action')
+            ->groupBy('activity_type')
             ->get()
-            ->pluck('count', 'action');
+            ->pluck('count', 'activity_type');
 
         // Cache for 1 hour
         Cache::put('user_activity_stats_24h', $activityStats, 3600);
@@ -160,7 +160,7 @@ class ProcessUserActivityAnalyticsJob implements ShouldQueue
         }
 
         // Detect failed login attempts
-        $failedLogins = UserActivity::where('action', 'login_failed')
+        $failedLogins = UserActivity::where('activity_type', 'login_failed')
             ->where('created_at', '>=', $last1Hour)
             ->select('ip_address', DB::raw('COUNT(*) as failed_count'))
             ->groupBy('ip_address')
