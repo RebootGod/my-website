@@ -218,13 +218,10 @@ class Series extends Model
      */
     public function incrementViewCount(): void
     {
-        // Use DB query to prevent updated_at from being modified
-        self::where('id', $this->id)->update([
-            'view_count' => \DB::raw('view_count + 1')
-        ]);
-        
-        // Refresh the model to get updated view_count
-        $this->refresh();
+        // Use timestamps = false to prevent updated_at from being modified
+        $this->timestamps = false;
+        $this->increment('view_count');
+        $this->timestamps = true;
     }
 
     /**

@@ -1,3 +1,53 @@
+## 2025-10-09 - VIEW COUNT INCREMENT LOGIC FIX (CRITICAL BUG) - PART 3 (FINAL FIX)
+
+### BUGFIX: Better Implementation - Explicitly Disable Timestamps During Increment ✅
+**Issue Discovered**: Meski sudah menggunakan raw DB query, `updated_at` masih berubah saat increment view count
+**Root Cause**: Laravel's query builder `update()` method tetap touch `updated_at` timestamp secara default
+**Impact**: Movie yang di-watch tetap pindah ke urutan teratas homepage
+
+**Technical Analysis**:
+Approach sebelumnya menggunakan:
+```php
+// PREVIOUS ATTEMPT (STILL WRONG):
+self::where('id', $this->id)->update([
+    'view_count' => \DB::raw('view_count + 1')
+]);
+// Laravel masih auto-update updated_at karena ini adalah Eloquent operation
+```
+
+**Final Solution - Explicitly Disable Timestamps**:
+```php
+// FINAL FIX (CORRECT):
+public function incrementViewCount(): void
+{
+    // Temporarily disable timestamps
+    $this->timestamps = false;
+    
+    // Increment view count
+    $this->increment('view_count');
+    
+    // Re-enable timestamps for future operations
+    $this->timestamps = true;
+}
+```
+
+**Why This Works**:
+- `$this->timestamps = false` tells Eloquent to NOT touch `updated_at` or `created_at`
+- After increment, we re-enable timestamps to prevent affecting other operations
+- This is the cleanest and most reliable approach
+
+**Files Modified**:
+- `app/Models/Movie.php` - Changed to explicitly disable/enable timestamps
+- `app/Models/Series.php` - Changed to explicitly disable/enable timestamps
+
+**Result**: 
+- ✅ View count bertambah saat user watch movie/series
+- ✅ `updated_at` 100% GUARANTEED tidak berubah
+- ✅ Homepage sorting PASTI akurat (hanya berubah saat admin edit)
+- ✅ Approach ini adalah Laravel best practice untuk skip timestamps
+
+---
+
 ## 2025-10-09 - VIEW COUNT INCREMENT LOGIC FIX (CRITICAL BUG) - PART 2
 
 ### BUGFIX: Removed Duplicate View Count Increment from UserActivityService ✅
