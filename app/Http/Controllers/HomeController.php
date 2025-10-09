@@ -160,44 +160,6 @@ class HomeController extends Controller
             return Genre::orderBy('name')->get();
         });
 
-        // Get popular searches (cached for 30 minutes)
-        $popularSearches = Cache::remember('home:popular_searches', 1800, function() {
-            return SearchHistory::select('search_term as query')
-                ->groupBy('search_term')
-                ->orderByRaw('COUNT(*) DESC')
-                ->limit(10)
-                ->pluck('query');
-        });
-
-        // Get featured movies for carousel (cached for 1 hour)
-        $featuredMovies = Cache::remember('home:featured_movies', 3600, function() {
-            return Movie::where('is_featured', true)
-                ->where('is_active', true)
-                ->with('genres')
-                ->limit(10)
-                ->get();
-        });
-
-        // Get trending movies (cached for 30 minutes)
-        $trendingMovies = Cache::remember('home:trending_movies', 1800, function() {
-            return Movie::withCount(['views' => function($q) {
-                $q->where('created_at', '>=', now()->subDays(7));
-            }])
-            ->where('is_active', true)
-            ->orderBy('views_count', 'desc')
-            ->limit(10)
-            ->get();
-        });
-
-        // Get newly added movies (cached for 15 minutes)
-        $newMovies = Cache::remember('home:new_movies', 900, function() {
-            return Movie::where('is_active', true)
-                ->whereDate('created_at', '>=', now()->subDays(7))
-                ->latest()
-                ->limit(10)
-                ->get();
-        });
-
         // Calculate active filters count
         $activeFiltersCount = 0;
         if ($request->filled('search')) $activeFiltersCount++;
@@ -208,10 +170,6 @@ class HomeController extends Controller
         return view('home', compact(
             'contents',
             'genres',
-            'popularSearches',
-            'featuredMovies',
-            'trendingMovies',
-            'newMovies',
             'activeFiltersCount'
         ));
     }

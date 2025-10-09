@@ -102,44 +102,6 @@
 
         {{-- Main Content --}}
         <div class="col-lg-9 col-md-8">
-            {{-- Featured Movies Section --}}
-            @if($featuredMovies->count() > 0)
-            <div class="content-section">
-                <h2 class="section-title">Featured Movies</h2>
-                <div class="movie-grid">
-                    @foreach($featuredMovies as $movie)
-                        <div class="movie-card-modern">
-                            <div class="movie-poster">
-                                <img src="{{ $movie->poster_url ?: 'https://placehold.co/300x450/2c3e50/ecf0f1?text=No+Image' }}"
-                                     alt="{{ $movie->title }}"
-                                     loading="lazy">
-                                <div class="movie-overlay"></div>
-                                <div class="movie-rating">
-                                    <i class="fas fa-star me-1"></i>{{ number_format($movie->rating, 1) }}
-                                </div>
-                            </div>
-                            <div class="movie-info">
-                                <h3 class="movie-title">{{ $movie->title }}</h3>
-                                <div class="movie-meta">
-                                    <span>{{ $movie->year }}</span>
-                                    <span>{{ $movie->duration }} min</span>
-                                </div>
-                                <p class="movie-description">{{ Str::limit($movie->description, 120) }}</p>
-                                <div class="movie-actions">
-                                    <a href="{{ route('movies.show', $movie->slug) }}" class="btn-watch">
-                                        <i class="fas fa-play me-2"></i>Watch Now
-                                    </a>
-                                    <button class="btn-bookmark" onclick="toggleWatchlist('{{ $movie->slug }}')">
-                                        <i class="fas fa-bookmark"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    @endforeach
-                </div>
-            </div>
-            @endif
-
             {{-- All Movies Section --}}
             <div class="content-section">
                 <h2 class="section-title">
