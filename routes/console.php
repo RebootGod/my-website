@@ -7,6 +7,8 @@ use App\Jobs\ProcessMovieAnalyticsJob;
 use App\Jobs\CleanupExpiredInviteCodesJob;
 use App\Jobs\ProcessUserActivityAnalyticsJob;
 use App\Jobs\CacheWarmupJob;
+use App\Jobs\ExportUserActivityReportJob;
+use App\Jobs\BackupDatabaseJob;
 
 Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
@@ -47,5 +49,21 @@ Schedule::job(new CacheWarmupJob())
     ->onOneServer()
     ->name('cache-warmup')
     ->description('Preload frequently accessed data into Redis cache');
+
+// Export User Activity Report - Weekly (Every Monday at 8:00 AM)
+Schedule::job(new ExportUserActivityReportJob('weekly'))
+    ->weeklyOn(1, '08:00')
+    ->withoutOverlapping()
+    ->onOneServer()
+    ->name('export-user-activity-report')
+    ->description('Generate and email weekly user activity report to admins');
+
+// Database Backup - Daily at 3:00 AM
+Schedule::job(new BackupDatabaseJob('critical'))
+    ->dailyAt('03:00')
+    ->withoutOverlapping()
+    ->onOneServer()
+    ->name('database-backup')
+    ->description('Backup critical database tables and notify admins');
 
 // Additional scheduled tasks can be added here...
