@@ -194,7 +194,7 @@ class UserActivityController extends Controller
     public function cleanupOldActivities()
     {
         // Check if user is super_admin
-        if (!auth()->user()->hasRole('super_admin')) {
+        if (!auth()->user()->isSuperAdmin()) {
             return response()->json([
                 'success' => false,
                 'message' => 'Unauthorized. Only super admin can perform this action.'
@@ -318,7 +318,7 @@ class UserActivityController extends Controller
     public function getOldActivitiesCount()
     {
         // Check if user is super_admin
-        if (!auth()->user()->hasRole('super_admin')) {
+        if (!auth()->user()->isSuperAdmin()) {
             return response()->json([
                 'success' => false,
                 'message' => 'Unauthorized.'

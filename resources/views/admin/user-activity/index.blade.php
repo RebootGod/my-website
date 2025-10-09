@@ -16,7 +16,7 @@
                 <i class="fas fa-download"></i>
                 Export CSV
             </a>
-            @if(auth()->user()->hasRole('super_admin'))
+            @if(auth()->user()->isSuperAdmin())
             <button onclick="showCleanupModal()" class="btn-modern bg-red-500 hover:bg-red-600">
                 <i class="fas fa-trash-alt"></i>
                 Cleanup Old Data
