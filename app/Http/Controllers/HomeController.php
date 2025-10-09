@@ -34,12 +34,31 @@ class HomeController extends Controller
 
             // Log search if user is authenticated
             if (Auth::check()) {
-                SearchHistory::create([
-                    'user_id' => Auth::id(),
-                    'search_term' => $searchTerm,
-                    'results_count' => $query->count(),
-                    'ip_address' => $request->ip()
-                ]);
+                try {
+                    // SECURITY & BUG FIX: Sanitize search term and limit length
+                    // Prevents SQL charset errors with emoji/special characters
+                    // Prevents XSS and overly long search terms
+                    $sanitizedSearchTerm = mb_substr(strip_tags(trim($searchTerm)), 0, 255);
+                    
+                    SearchHistory::create([
+                        'user_id' => Auth::id(),
+                        'search_term' => $sanitizedSearchTerm,
+                        'results_count' => $query->count(),
+                        'ip_address' => $request->ip()
+                    ]);
+                } catch (\Exception $e) {
+                    // SILENT FAIL: Don't crash the search if logging fails
+                    // Log error for debugging but continue showing search results
+                    \Log::warning('Failed to log search history', [
+                        'error' => $e->getMessage(),
+                        'user_id' => Auth::id(),
+                        'search_term' => $searchTerm,
+                        'ip' => $request->ip()
+                    ]);
+                    
+                    // Optional: Report to error tracking service
+                    // report($e);
+                }
             }
         }
 

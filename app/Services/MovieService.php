@@ -38,12 +38,22 @@ class MovieService
 
             // Log search if user is authenticated
             if (Auth::check()) {
-                SearchHistory::create([
-                    'user_id' => Auth::id(),
-                    'search_term' => $searchTerm,
-                    'results_count' => $query->count(),
-                    'ip_address' => $request->ip()
-                ]);
+                try {
+                    // SECURITY & BUG FIX: Sanitize search term and limit length
+                    $sanitizedSearchTerm = mb_substr(strip_tags(trim($searchTerm)), 0, 255);
+                    
+                    SearchHistory::create([
+                        'user_id' => Auth::id(),
+                        'search_term' => $sanitizedSearchTerm,
+                        'results_count' => $query->count(),
+                        'ip_address' => $request->ip()
+                    ]);
+                } catch (\Exception $e) {
+                    \Log::warning('Failed to log search history in MovieService', [
+                        'error' => $e->getMessage(),
+                        'user_id' => Auth::id()
+                    ]);
+                }
             }
         }
 
@@ -142,12 +152,22 @@ class MovieService
 
             // Log search if user is authenticated
             if (Auth::check()) {
-                SearchHistory::create([
-                    'user_id' => Auth::id(),
-                    'search_term' => $searchTerm,
-                    'results_count' => $moviesQuery->count() + $seriesQuery->count(),
-                    'ip_address' => $request->ip()
-                ]);
+                try {
+                    // SECURITY & BUG FIX: Sanitize search term and limit length
+                    $sanitizedSearchTerm = mb_substr(strip_tags(trim($searchTerm)), 0, 255);
+                    
+                    SearchHistory::create([
+                        'user_id' => Auth::id(),
+                        'search_term' => $sanitizedSearchTerm,
+                        'results_count' => $moviesQuery->count() + $seriesQuery->count(),
+                        'ip_address' => $request->ip()
+                    ]);
+                } catch (\Exception $e) {
+                    \Log::warning('Failed to log search history in MovieService (combined search)', [
+                        'error' => $e->getMessage(),
+                        'user_id' => Auth::id()
+                    ]);
+                }
             }
         }
 

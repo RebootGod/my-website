@@ -152,12 +152,23 @@ class MovieFilterService
     protected function logSearch(string $query): void
     {
         if (Auth::check()) {
-            SearchHistory::create([
-                'user_id' => Auth::id(),
-                'query' => $query,
-                'ip_address' => request()->ip(),
-                'user_agent' => request()->userAgent()
-            ]);
+            try {
+                // SECURITY & BUG FIX: Sanitize search term and limit length
+                // FIX: Changed 'query' to 'search_term' (correct column name)
+                $sanitizedSearchTerm = mb_substr(strip_tags(trim($query)), 0, 255);
+                
+                SearchHistory::create([
+                    'user_id' => Auth::id(),
+                    'search_term' => $sanitizedSearchTerm,  // FIX: was 'query'
+                    'results_count' => 0,  // Count not available in this context
+                    'ip_address' => request()->ip()
+                ]);
+            } catch (\Exception $e) {
+                \Log::warning('Failed to log search history in MovieFilterService', [
+                    'error' => $e->getMessage(),
+                    'user_id' => Auth::id()
+                ]);
+            }
         }
     }
 
