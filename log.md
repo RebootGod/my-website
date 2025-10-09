@@ -1,3 +1,47 @@
+## 2025-10-09 - VIEW COUNT INCREMENT LOGIC CHANGE
+
+### FEATURE UPDATE: Move View Count Increment from Detail Pages to Player Pages ✅
+**Change Request**: Pindahkan increment view count dari saat user klik Watch Now di homepage ke saat user klik Watch Now/Play di detail page
+
+**Why This Change**:
+- View count sebelumnya di-increment saat user membuka detail page (Movies/Series)
+- Sekarang view count hanya di-increment saat user benar-benar klik tombol Watch Now/Play di player page
+- Lebih akurat karena hanya menghitung user yang benar-benar menonton, bukan hanya melihat detail
+
+**Technical Changes**:
+
+**SERIES CONTROLLER**:
+```php
+// BEFORE (SeriesController::show() - Line 35):
+// Increment view count
+$series->incrementViewCount();
+
+// AFTER:
+// [REMOVED] - View count tidak lagi di-increment di detail page
+```
+
+**Files Modified**:
+1. `app/Http/Controllers/SeriesController.php` 
+   - Removed `$series->incrementViewCount()` from `show()` method (line 35)
+
+**View Count Increment Now Only Happens In**:
+1. `app/Http/Controllers/MoviePlayerController.php`
+   - Line 25-26: `$movie->incrementViewCount()` when user clicks Watch Now on movie detail page
+   
+2. `app/Http/Controllers/SeriesPlayerController.php`
+   - Line 37: `$series->incrementViewCount()` when user clicks Watch Episode on series detail page
+
+**Impact**:
+- ✅ View count hanya bertambah saat user klik Watch Now/Play di player page
+- ✅ View count tidak bertambah saat user hanya melihat detail page
+- ✅ Statistik viewing menjadi lebih akurat
+- ✅ Movies: sudah correct dari awal (tidak ada perubahan)
+- ✅ Series: view count logic dipindahkan dari detail page ke player page
+
+**Result**: ✅ View count increment sekarang hanya terjadi di player pages, bukan detail pages
+
+---
+
 ## 2025-10-08 - HOMEPAGE SORTING CHANGE TO UPDATED_AT
 
 ### FEATURE UPDATE: Homepage Default Sorting Changed from created_at to updated_at ✅

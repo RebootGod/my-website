@@ -31,9 +31,6 @@ class SeriesController extends Controller
             app(\App\Services\UserActivityService::class)->logSeriesWatch(auth()->user(), $series);
         }
 
-        // Increment view count
-        $series->incrementViewCount();
-
         return view('series.show', compact('series'));
     }
 
