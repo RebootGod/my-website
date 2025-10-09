@@ -66,6 +66,12 @@
                     <span>User Activity</span>
                 </a>
 
+                <a href="{{ route('admin.ban-history.index') }}"
+                   class="admin-nav-item {{ request()->routeIs('admin.ban-history.*') ? 'active' : '' }}">
+                    <i class="fas fa-gavel admin-nav-icon"></i>
+                    <span>Ban History</span>
+                </a>
+
                 <a href="{{ route('admin.invite-codes.index') }}"
                    class="admin-nav-item {{ request()->routeIs('admin.invite-codes.*') ? 'active' : '' }}">
                     <i class="fas fa-ticket-alt admin-nav-icon"></i>
