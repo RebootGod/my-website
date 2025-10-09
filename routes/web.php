@@ -336,6 +336,13 @@ Route::middleware(['auth', 'admin', CheckPermission::class . ':access_admin_pane
         Route::post('/bulk-action', [UserManagementController::class, 'bulkAction'])->name('bulk-action');
     });
 
+    // Ban History Management
+    Route::prefix('ban-history')->name('ban-history.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Admin\BanHistoryController::class, 'index'])->name('index');
+        Route::get('/export', [\App\Http\Controllers\Admin\BanHistoryController::class, 'export'])->name('export');
+        Route::get('/user/{userId}', [\App\Http\Controllers\Admin\BanHistoryController::class, 'userHistory'])->name('user');
+    });
+
     // User Activity Management
     Route::prefix('user-activity')->name('user-activity.')->group(function () {
         Route::get('/', [\App\Http\Controllers\Admin\UserActivityController::class, 'index'])->name('index');

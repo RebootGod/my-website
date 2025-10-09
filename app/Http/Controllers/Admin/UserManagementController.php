@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\UserBanHistory;
 use App\Http\Requests\Admin\UserUpdateRequest;
 use App\Http\Requests\Admin\UserPasswordResetRequest;
 use App\Http\Requests\Admin\UserBulkActionRequest;
@@ -12,8 +13,11 @@ use App\Services\Admin\UserActionLogger;
 use App\Services\Admin\UserBulkOperationService;
 use App\Services\Admin\UserStatsService;
 use App\Services\Admin\UserExportService;
+use App\Mail\BanNotificationMail;
+use App\Mail\SuspensionNotificationMail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 
 /**
@@ -220,23 +224,63 @@ class UserManagementController extends Controller
         }
 
         $oldStatus = $user->status;
+        $admin = auth()->user();
+        $banReason = $request->input('ban_reason', 'Terms of Service violation');
         
         if ($user->status === 'banned') {
+            // UNBAN user
             $user->update(['status' => 'active']);
             $message = 'User unbanned successfully!';
             $action = 'user_unbanned';
+            $actionType = 'unban';
         } else {
+            // BAN user
             $user->update(['status' => 'banned']);
             $message = 'User banned successfully!';
             $action = 'user_banned';
+            $actionType = 'ban';
+            
+            // Send ban notification email
+            try {
+                Mail::to($user->email)->queue(
+                    new BanNotificationMail($user, $banReason, $admin->username)
+                );
+            } catch (\Exception $e) {
+                \Log::error('Failed to send ban notification email', [
+                    'user_id' => $user->id,
+                    'error' => $e->getMessage()
+                ]);
+            }
         }
 
-        // Log action
+        // Save to ban history
+        try {
+            UserBanHistory::create([
+                'user_id' => $user->id,
+                'action_type' => $actionType,
+                'reason' => $banReason,
+                'performed_by' => $admin->id,
+                'duration' => null,
+                'admin_ip' => $request->ip(),
+                'metadata' => [
+                    'old_status' => $oldStatus,
+                    'new_status' => $user->status,
+                    'method' => 'toggle_ban'
+                ]
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Failed to save ban history', [
+                'user_id' => $user->id,
+                'error' => $e->getMessage()
+            ]);
+        }
+
+        // Log action (legacy logging)
         UserActionLogger::logUserBanToggle(
             $user, 
             $oldStatus, 
             $action,
-            ['ban_reason' => $request->input('ban_reason')]
+            ['ban_reason' => $banReason]
         );
 
         return back()->with('success', $message);

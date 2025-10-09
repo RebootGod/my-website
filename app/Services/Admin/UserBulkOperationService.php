@@ -3,10 +3,14 @@
 namespace App\Services\Admin;
 
 use App\Models\User;
+use App\Models\UserBanHistory;
 use App\Services\Admin\UserPermissionService;
 use App\Services\Admin\UserActionLogger;
+use App\Mail\BanNotificationMail;
+use App\Mail\SuspensionNotificationMail;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 
 /**
  * UserBulkOperationService - Handles all bulk user operations
@@ -33,13 +37,54 @@ class UserBulkOperationService
             
             // Perform bulk ban
             $count = $users->update(['status' => 'banned']);
+            
+            $admin = auth()->user();
+            $adminName = $admin->username ?? 'System Admin';
+            $reason = $banReason ?? 'Terms of Service violation';
 
-            // Log the action
+            // Send email notifications and save history for each user
+            foreach ($affectedUsers as $user) {
+                // Send ban notification email
+                try {
+                    Mail::to($user->email)->queue(
+                        new BanNotificationMail($user, $reason, $adminName)
+                    );
+                } catch (\Exception $e) {
+                    \Log::error('Failed to send ban notification email', [
+                        'user_id' => $user->id,
+                        'error' => $e->getMessage()
+                    ]);
+                }
+                
+                // Save ban history
+                try {
+                    UserBanHistory::create([
+                        'user_id' => $user->id,
+                        'action_type' => 'ban',
+                        'reason' => $reason,
+                        'performed_by' => $admin->id,
+                        'duration' => null,
+                        'admin_ip' => request()->ip(),
+                        'metadata' => [
+                            'old_status' => $user->status,
+                            'new_status' => 'banned',
+                            'method' => 'bulk_ban'
+                        ]
+                    ]);
+                } catch (\Exception $e) {
+                    \Log::error('Failed to save ban history', [
+                        'user_id' => $user->id,
+                        'error' => $e->getMessage()
+                    ]);
+                }
+            }
+
+            // Log the action (legacy logging)
             UserActionLogger::logBulkBan(
                 $count, 
                 $validation['valid_user_ids'], 
                 $affectedUsers->pluck('username')->toArray(),
-                ['ban_reason' => $banReason]
+                ['ban_reason' => $reason]
             );
 
             DB::commit();
@@ -81,8 +126,34 @@ class UserBulkOperationService
             
             // Perform bulk unban
             $count = $users->update(['status' => 'active']);
+            
+            $admin = auth()->user();
 
-            // Log the action
+            // Save unban history for each user
+            foreach ($affectedUsers as $user) {
+                try {
+                    UserBanHistory::create([
+                        'user_id' => $user->id,
+                        'action_type' => 'unban',
+                        'reason' => 'Account reactivated by administrator',
+                        'performed_by' => $admin->id,
+                        'duration' => null,
+                        'admin_ip' => request()->ip(),
+                        'metadata' => [
+                            'old_status' => $user->status,
+                            'new_status' => 'active',
+                            'method' => 'bulk_unban'
+                        ]
+                    ]);
+                } catch (\Exception $e) {
+                    \Log::error('Failed to save unban history', [
+                        'user_id' => $user->id,
+                        'error' => $e->getMessage()
+                    ]);
+                }
+            }
+
+            // Log the action (legacy logging)
             UserActionLogger::logBulkUnban(
                 $count, 
                 $validation['valid_user_ids'], 
@@ -256,8 +327,34 @@ class UserBulkOperationService
             
             // Perform bulk activation
             $count = $users->update(['status' => 'active']);
+            
+            $admin = auth()->user();
 
-            // Log the action (using unban logger as it's similar)
+            // Save activation history for each user
+            foreach ($affectedUsers as $user) {
+                try {
+                    UserBanHistory::create([
+                        'user_id' => $user->id,
+                        'action_type' => 'activate',
+                        'reason' => 'Account reactivated by administrator',
+                        'performed_by' => $admin->id,
+                        'duration' => null,
+                        'admin_ip' => request()->ip(),
+                        'metadata' => [
+                            'old_status' => $user->status,
+                            'new_status' => 'active',
+                            'method' => 'bulk_activate'
+                        ]
+                    ]);
+                } catch (\Exception $e) {
+                    \Log::error('Failed to save activation history', [
+                        'user_id' => $user->id,
+                        'error' => $e->getMessage()
+                    ]);
+                }
+            }
+
+            // Log the action (legacy logging)
             UserActionLogger::logBulkUnban(
                 $count, 
                 $validation['valid_user_ids'], 
@@ -304,15 +401,57 @@ class UserBulkOperationService
             
             // Perform bulk suspension
             $count = $users->update(['status' => 'suspended']);
+            
+            $admin = auth()->user();
+            $adminName = $admin->username ?? 'System Admin';
+            $reason = $suspendReason ?? 'Community Guidelines violation';
+            $duration = null; // Can be extended to include duration parameter
 
-            // Log the action (using ban logger as it's similar)
+            // Send email notifications and save history for each user
+            foreach ($affectedUsers as $user) {
+                // Send suspension notification email
+                try {
+                    Mail::to($user->email)->queue(
+                        new SuspensionNotificationMail($user, $reason, $adminName, $duration)
+                    );
+                } catch (\Exception $e) {
+                    \Log::error('Failed to send suspension notification email', [
+                        'user_id' => $user->id,
+                        'error' => $e->getMessage()
+                    ]);
+                }
+                
+                // Save suspension history
+                try {
+                    UserBanHistory::create([
+                        'user_id' => $user->id,
+                        'action_type' => 'suspend',
+                        'reason' => $reason,
+                        'performed_by' => $admin->id,
+                        'duration' => $duration,
+                        'admin_ip' => request()->ip(),
+                        'metadata' => [
+                            'old_status' => $user->status,
+                            'new_status' => 'suspended',
+                            'method' => 'bulk_suspend'
+                        ]
+                    ]);
+                } catch (\Exception $e) {
+                    \Log::error('Failed to save suspension history', [
+                        'user_id' => $user->id,
+                        'error' => $e->getMessage()
+                    ]);
+                }
+            }
+
+            // Log the action (legacy logging)
             UserActionLogger::logBulkBan(
                 $count, 
                 $validation['valid_user_ids'], 
                 $affectedUsers->pluck('username')->toArray(),
                 [
                     'action_type' => 'bulk_suspend',
-                    'suspend_reason' => $suspendReason
+                    'suspend_reason' => $reason
                 ]
             );
 
