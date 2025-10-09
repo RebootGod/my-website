@@ -1,3 +1,43 @@
+## 2025-10-09 - VIEW COUNT INCREMENT LOGIC FIX (CRITICAL BUG)
+
+### BUGFIX: View Count Increment No Longer Updates `updated_at` Timestamp ✅
+**Issue Discovered**: Setiap kali user klik Watch Now pada movie/series, `updated_at` timestamp ikut berubah
+**Root Cause**: Laravel's `increment()` method secara default juga mengupdate `updated_at` timestamp
+**Impact**: Movie/series lama yang di-klik Watch Now muncul di urutan teratas homepage (yang sort by `updated_at`)
+
+**Technical Details**:
+```php
+// BEFORE (WRONG):
+public function incrementViewCount(): void
+{
+    $this->increment('view_count'); // This also updates updated_at!
+}
+
+// AFTER (FIXED):
+public function incrementViewCount(): void
+{
+    // Use raw DB query to prevent updated_at from being modified
+    self::where('id', $this->id)->update([
+        'view_count' => \DB::raw('view_count + 1')
+    ]);
+    
+    // Refresh the model to get updated view_count
+    $this->refresh();
+}
+```
+
+**Files Modified**:
+- `app/Models/Movie.php` - Fixed incrementViewCount() to skip timestamp update
+- `app/Models/Series.php` - Fixed incrementViewCount() to skip timestamp update
+
+**Result**: 
+- ✅ View count bertambah saat user klik Watch Now/Play
+- ✅ `updated_at` timestamp TIDAK berubah
+- ✅ Homepage sorting by `updated_at` tetap akurat (hanya berubah saat admin edit)
+- ✅ Movie/series lama tidak akan muncul di urutan teratas hanya karena ditonton
+
+---
+
 ## 2025-10-09 - VIEW COUNT INCREMENT LOGIC CHANGE
 
 ### FEATURE UPDATE: Move View Count Increment from Detail Pages to Player Pages ✅

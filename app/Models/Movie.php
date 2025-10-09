@@ -255,13 +255,19 @@ class Movie extends Model
     }
     
     /**
-     * Increment view count
+     * Increment view count without updating timestamps
      */
     public function incrementViewCount(): void
     {
         // Only increment the view count, no watch history tracking
         // Watch history should only be tracked when user actually watches the movie (in player)
-        $this->increment('view_count');
+        // Use DB query to prevent updated_at from being modified
+        self::where('id', $this->id)->update([
+            'view_count' => \DB::raw('view_count + 1')
+        ]);
+        
+        // Refresh the model to get updated view_count
+        $this->refresh();
     }
 
     /**
