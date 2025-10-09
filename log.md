@@ -1,3 +1,50 @@
+## 2025-10-09 - VIEW COUNT INCREMENT LOGIC FIX (CRITICAL BUG) - PART 2
+
+### BUGFIX: Removed Duplicate View Count Increment from UserActivityService ✅
+**Issue Discovered**: View count masih di-increment di detail page via `UserActivityService::logMovieWatch()`
+**Root Cause**: Ada 2 tempat yang increment view count:
+  1. `MovieController::show()` → calls `UserActivityService::logMovieWatch()` → `$movie->increment('view_count')` ❌
+  2. `MoviePlayerController::play()` → calls `$movie->incrementViewCount()` ✅
+
+**Impact**: 
+- View count bertambah 2x (di detail page DAN player page)
+- `updated_at` berubah saat user buka detail page (karena pakai `increment()` yang lama)
+- Movie lama muncul di urutan teratas homepage
+
+**Technical Fix**:
+```php
+// File: app/Services/UserActivityService.php
+
+// BEFORE (WRONG):
+public function logMovieWatch(User $user, Movie $movie): UserActivity
+{
+    \App\Models\MovieView::logView($movie->id, $user->id);
+    $movie->increment('view_count'); // ❌ Double increment + updates updated_at!
+    // ...
+}
+
+// AFTER (FIXED):
+public function logMovieWatch(User $user, Movie $movie): UserActivity
+{
+    \App\Models\MovieView::logView($movie->id, $user->id);
+    // View count increment removed - now only increments in MoviePlayerController::play()
+    // This prevents updated_at from changing when user only views detail page
+    // ...
+}
+```
+
+**Files Modified**:
+- `app/Services/UserActivityService.php` - Removed `$movie->increment('view_count')` from `logMovieWatch()`
+
+**Result**: 
+- ✅ View count TIDAK bertambah saat user buka detail page
+- ✅ View count HANYA bertambah saat user klik Watch Now di player page
+- ✅ `updated_at` TIDAK berubah saat user hanya lihat detail
+- ✅ Homepage sorting by `updated_at` sekarang benar-benar akurat
+- ✅ Tidak ada double counting view
+
+---
+
 ## 2025-10-09 - VIEW COUNT INCREMENT LOGIC FIX (CRITICAL BUG)
 
 ### BUGFIX: View Count Increment No Longer Updates `updated_at` Timestamp ✅

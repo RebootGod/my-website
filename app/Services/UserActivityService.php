@@ -86,14 +86,15 @@ class UserActivityService
 
     /**
      * Log movie watching activity
+     * Note: View count increment is handled in MoviePlayerController, not here
      */
     public function logMovieWatch(User $user, Movie $movie): UserActivity
     {
         // Record to MovieView for statistics tracking
         \App\Models\MovieView::logView($movie->id, $user->id);
 
-        // Also increment movie view count
-        $movie->increment('view_count');
+        // View count increment removed - now only increments in MoviePlayerController::play()
+        // This prevents updated_at from changing when user only views detail page
 
         return $this->logActivity(
             $user->id,
