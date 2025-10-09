@@ -40,7 +40,7 @@
         <div class="container-fluid">
             {{-- Logo --}}
             <a href="{{ route('home') }}" class="navbar-brand text-dark">
-                <img src="https://github.com/RebootGod/Assets/blob/main/Removal.png?raw=true"
+                <img src="{{ asset('Removal.png') }}"
                      alt="Noobz Cinema"
                      height="40"
                      class="d-inline-block align-top">
@@ -261,7 +261,7 @@
     <footer class="bg-dark mt-5 py-4">
         <div class="container text-center text-light">
             <p class="mb-2">&copy; 2025
-                <img src="https://github.com/RebootGod/Assets/blob/main/Removal.png?raw=true"
+                <img src="{{ asset('Removal.png') }}"
                      alt="Noobz Cinema"
                      height="20"
                      class="d-inline-block align-baseline">
