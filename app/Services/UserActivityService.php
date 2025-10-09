@@ -31,13 +31,32 @@ class UserActivityService
         ?string $ipAddress = null,
         ?string $userAgent = null
     ): UserActivity {
+        // SECURITY & BUG FIX: Sanitize and validate input
+        // Prevent: XSS, SQL injection, data truncation errors
+        
+        // Sanitize user agent (remove potential XSS, limit length)
+        $sanitizedUserAgent = $userAgent ?? request()->userAgent();
+        if ($sanitizedUserAgent) {
+            // Remove HTML tags and limit to reasonable length (10,000 chars max)
+            $sanitizedUserAgent = mb_substr(strip_tags($sanitizedUserAgent), 0, 10000);
+        }
+        
+        // Sanitize description (remove HTML tags, limit length)
+        $sanitizedDescription = mb_substr(strip_tags(trim($description)), 0, 1000);
+        
+        // Sanitize IP address
+        $sanitizedIpAddress = $ipAddress ?? request()->ip();
+        if ($sanitizedIpAddress) {
+            $sanitizedIpAddress = mb_substr($sanitizedIpAddress, 0, 45); // IPv6 max length
+        }
+        
         return UserActivity::create([
             'user_id' => $userId,
             'activity_type' => $activityType,
-            'description' => $description,
+            'description' => $sanitizedDescription,
             'metadata' => $metadata,
-            'ip_address' => $ipAddress ?? request()->ip(),
-            'user_agent' => $userAgent ?? request()->userAgent(),
+            'ip_address' => $sanitizedIpAddress,
+            'user_agent' => $sanitizedUserAgent,
             'activity_at' => now(),
         ]);
     }
