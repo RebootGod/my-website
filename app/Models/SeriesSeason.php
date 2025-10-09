@@ -9,6 +9,11 @@ class SeriesSeason extends Model
 {
     use HasFactory;
 
+    /**
+     * Touch parent series updated_at when season is created/updated/deleted
+     */
+    protected $touches = ['series'];
+
     protected $fillable = [
         'series_id',
         'tmdb_id',

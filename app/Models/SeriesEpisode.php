@@ -9,6 +9,12 @@ class SeriesEpisode extends Model
 {
     use HasFactory;
 
+    /**
+     * Touch parent series updated_at when episode is created/updated/deleted
+     * This ensures series appears at top of homepage when new episode is added
+     */
+    protected $touches = ['series'];
+
     protected $fillable = [
         'series_id',
         'season_id',
