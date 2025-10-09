@@ -51,4 +51,30 @@ class StoreSeriesRequest extends FormRequest
             'poster.max' => 'Poster file size cannot exceed 2MB.',
         ];
     }
+
+    /**
+     * Configure the validator instance.
+     */
+    public function withValidator($validator): void
+    {
+        $validator->after(function ($validator) {
+            // Check if combination of title and year already exists
+            $query = \App\Models\Series::where('title', $this->title);
+            
+            if ($this->filled('year')) {
+                $query->where('year', $this->year);
+            } else {
+                $query->whereNull('year');
+            }
+            
+            if ($query->exists()) {
+                $validator->errors()->add(
+                    'title',
+                    $this->filled('year') 
+                        ? "A series with this title already exists for the year {$this->year}."
+                        : "A series with this title already exists (without year)."
+                );
+            }
+        });
+    }
 }

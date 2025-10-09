@@ -25,8 +25,8 @@ class StoreMovieRequest extends FormRequest
                 'required',
                 'string',
                 'max:255',
-                Rule::unique('movies', 'title')
             ],
+            'year' => 'nullable|integer|min:1888|max:' . (date('Y') + 5),
             'overview' => 'nullable|string|max:2000',
             'release_date' => 'nullable|date|before_or_equal:today',
             'runtime' => 'nullable|integer|min:1|max:1000',
@@ -82,6 +82,32 @@ class StoreMovieRequest extends FormRequest
             'genre_ids.array' => 'Genres must be provided as an array.',
             'genre_ids.*.exists' => 'One or more selected genres do not exist.'
         ];
+    }
+
+    /**
+     * Configure the validator instance.
+     */
+    public function withValidator($validator): void
+    {
+        $validator->after(function ($validator) {
+            // Check if combination of title and year already exists
+            $query = \App\Models\Movie::where('title', $this->title);
+            
+            if ($this->filled('year')) {
+                $query->where('year', $this->year);
+            } else {
+                $query->whereNull('year');
+            }
+            
+            if ($query->exists()) {
+                $validator->errors()->add(
+                    'title',
+                    $this->filled('year') 
+                        ? "A movie with this title already exists for the year {$this->year}."
+                        : "A movie with this title already exists (without year)."
+                );
+            }
+        });
     }
 
     /**
