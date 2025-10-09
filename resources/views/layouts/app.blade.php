@@ -63,6 +63,84 @@
                         </a>
                     @endif
                     
+                    {{-- Notifications Bell --}}
+                    <div class="dropdown me-2">
+                        <button class="btn btn-outline-dark position-relative" 
+                                type="button" 
+                                id="notificationDropdown"
+                                data-bs-toggle="dropdown" 
+                                aria-expanded="false">
+                            <i class="fas fa-bell"></i>
+                            @if(auth()->user()->unreadNotifications->count() > 0)
+                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                    {{ auth()->user()->unreadNotifications->count() > 9 ? '9+' : auth()->user()->unreadNotifications->count() }}
+                                    <span class="visually-hidden">unread notifications</span>
+                                </span>
+                            @endif
+                        </button>
+                        
+                        {{-- Notifications Dropdown --}}
+                        <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0" 
+                            style="min-width: 350px; max-height: 400px; overflow-y: auto;"
+                            aria-labelledby="notificationDropdown">
+                            <li class="dropdown-header d-flex justify-content-between align-items-center">
+                                <span class="fw-bold">Notifications</span>
+                                @if(auth()->user()->unreadNotifications->count() > 0)
+                                    <form action="{{ route('notifications.mark-all-read') }}" method="POST" class="d-inline">
+                                        @csrf
+                                        <button type="submit" class="btn btn-link btn-sm text-decoration-none p-0">
+                                            Mark all as read
+                                        </button>
+                                    </form>
+                                @endif
+                            </li>
+                            <li><hr class="dropdown-divider my-1"></li>
+                            
+                            @forelse(auth()->user()->notifications()->take(10)->get() as $notification)
+                                <li>
+                                    <a href="{{ route('notifications.show', $notification->id) }}" 
+                                       class="dropdown-item py-2 {{ is_null($notification->read_at) ? 'bg-light' : '' }}">
+                                        <div class="d-flex">
+                                            <div class="flex-grow-1">
+                                                <div class="fw-bold text-dark">
+                                                    {{ $notification->data['title'] ?? 'Notification' }}
+                                                </div>
+                                                <small class="text-muted">
+                                                    {{ $notification->data['message'] ?? 'You have a new notification' }}
+                                                </small>
+                                                <div class="text-muted" style="font-size: 0.75rem;">
+                                                    {{ $notification->created_at->diffForHumans() }}
+                                                </div>
+                                            </div>
+                                            @if(is_null($notification->read_at))
+                                                <div class="ms-2">
+                                                    <span class="badge bg-primary rounded-circle" style="width: 8px; height: 8px;"></span>
+                                                </div>
+                                            @endif
+                                        </div>
+                                    </a>
+                                </li>
+                                @if(!$loop->last)
+                                    <li><hr class="dropdown-divider my-0"></li>
+                                @endif
+                            @empty
+                                <li class="dropdown-item text-center text-muted py-3">
+                                    <i class="fas fa-inbox fa-2x mb-2"></i>
+                                    <div>No notifications</div>
+                                </li>
+                            @endforelse
+                            
+                            @if(auth()->user()->notifications->count() > 0)
+                                <li><hr class="dropdown-divider my-1"></li>
+                                <li>
+                                    <a href="{{ route('notifications.index') }}" class="dropdown-item text-center text-primary fw-bold py-2">
+                                        View All Notifications
+                                    </a>
+                                </li>
+                            @endif
+                        </ul>
+                    </div>
+                    
                     {{-- User Dropdown --}}
                     <div class="dropdown">
                         <button class="btn btn-danger dropdown-toggle d-flex align-items-center px-3 py-2" 

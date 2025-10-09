@@ -9,6 +9,7 @@ use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\WatchlistController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
@@ -194,6 +195,16 @@ Route::middleware(['auth', 'check.user.status'])->group(function () {
             ->name('remove')
             ->middleware('throttle:30,1'); // 30 watchlist removals per minute
         Route::get('/check/{movie}', [WatchlistController::class, 'check'])->name('check');
+    });
+    
+    // Notifications
+    Route::prefix('notifications')->name('notifications.')->group(function () {
+        Route::get('/', [NotificationController::class, 'index'])->name('index');
+        Route::get('/{id}', [NotificationController::class, 'show'])->name('show');
+        Route::post('/mark-all-read', [NotificationController::class, 'markAllAsRead'])->name('mark-all-read');
+        Route::post('/{id}/mark-read', [NotificationController::class, 'markAsRead'])->name('mark-read');
+        Route::delete('/{id}', [NotificationController::class, 'destroy'])->name('destroy');
+        Route::delete('/read/all', [NotificationController::class, 'deleteAllRead'])->name('delete-all-read');
     });
 });
 
