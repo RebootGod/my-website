@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Schedule;
 use App\Jobs\ProcessMovieAnalyticsJob;
 use App\Jobs\CleanupExpiredInviteCodesJob;
 use App\Jobs\ProcessUserActivityAnalyticsJob;
+use App\Jobs\CacheWarmupJob;
 
 Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
@@ -38,5 +39,13 @@ Schedule::job(new CleanupExpiredInviteCodesJob())
     ->onOneServer()
     ->name('cleanup-expired-invite-codes')
     ->description('Delete expired invite codes and notify admins');
+
+// Cache Warmup - Every 2 hours
+Schedule::job(new CacheWarmupJob())
+    ->everyTwoHours()
+    ->withoutOverlapping()
+    ->onOneServer()
+    ->name('cache-warmup')
+    ->description('Preload frequently accessed data into Redis cache');
 
 // Additional scheduled tasks can be added here...

@@ -13,6 +13,9 @@ use App\Models\Movie;
 use App\Models\MovieSource;
 use App\Models\Genre;
 use App\Models\BrokenLinkReport;
+use App\Models\User;
+use App\Models\MovieView;
+use App\Notifications\NewMovieAddedNotification;
 use App\Services\Admin\MovieTMDBService;
 use App\Services\Admin\MovieSourceService;
 use App\Services\Admin\MovieFileService;
@@ -132,6 +135,16 @@ class AdminMovieController extends Controller
                 'title' => $movie->title,
                 'admin_id' => auth()->id()
             ]);
+
+            // Dispatch notification to interested users
+            try {
+                $this->notifyInterestedUsers($movie);
+            } catch (\Exception $e) {
+                Log::warning('Failed to dispatch movie notifications', [
+                    'movie_id' => $movie->id,
+                    'error' => $e->getMessage(),
+                ]);
+            }
 
             return redirect()
                 ->route('admin.movies.index')
@@ -507,4 +520,69 @@ class AdminMovieController extends Controller
             return back()->with('error', 'Migration failed: ' . $e->getMessage());
         }
     }
+
+    /**
+     * Notify interested users about new movie.
+     * Users are considered interested if they've watched movies with matching genres.
+     */
+    private function notifyInterestedUsers(Movie $movie): void
+    {
+        // Load movie genres
+        $movie->load('genres');
+        $movieGenreIds = $movie->genres->pluck('id')->toArray();
+        
+        if (empty($movieGenreIds)) {
+            Log::info('NewMovieAddedNotification: No genres for movie, skipping notifications', [
+                'movie_id' => $movie->id,
+            ]);
+            return;
+        }
+
+        // Get genre names for notification
+        $genreNames = $movie->genres->pluck('name')->toArray();
+
+        // Find users who have watched movies with matching genres
+        $interestedUserIds = MovieView::whereHas('movie.genres', function ($query) use ($movieGenreIds) {
+            $query->whereIn('genres.id', $movieGenreIds);
+        })
+            ->distinct()
+            ->pluck('user_id')
+            ->toArray();
+
+        if (empty($interestedUserIds)) {
+            Log::info('NewMovieAddedNotification: No interested users found', [
+                'movie_id' => $movie->id,
+                'genres' => $genreNames,
+            ]);
+            return;
+        }
+
+        // Get active users
+        $users = User::whereIn('id', $interestedUserIds)
+            ->where('status', 'active')
+            ->get();
+
+        $notifiedCount = 0;
+        foreach ($users as $user) {
+            try {
+                $user->notify(new NewMovieAddedNotification($movie, $genreNames));
+                $notifiedCount++;
+            } catch (\Exception $e) {
+                Log::warning('NewMovieAddedNotification: Failed to notify user', [
+                    'user_id' => $user->id,
+                    'movie_id' => $movie->id,
+                    'error' => $e->getMessage(),
+                ]);
+            }
+        }
+
+        Log::info('NewMovieAddedNotification: Notifications dispatched', [
+            'movie_id' => $movie->id,
+            'movie_title' => $movie->title,
+            'genres' => $genreNames,
+            'interested_users' => count($interestedUserIds),
+            'notified_users' => $notifiedCount,
+        ]);
+    }
 }
+
