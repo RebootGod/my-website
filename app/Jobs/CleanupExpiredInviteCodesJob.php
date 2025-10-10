@@ -46,9 +46,15 @@ class CleanupExpiredInviteCodesJob implements ShouldQueue
         try {
             $now = now();
 
-            // Find expired invite codes that haven't been used
+            // Find expired invite codes that haven't reached max usage
+            // Delete codes where:
+            // 1. expires_at is past current time
+            // 2. Either: used_count < max_uses OR max_uses is unlimited (NULL)
             $expiredCodes = InviteCode::where('expires_at', '<', $now)
-                ->whereNull('used_at')
+                ->where(function($query) {
+                    $query->whereColumn('used_count', '<', 'max_uses')
+                          ->orWhereNull('max_uses');
+                })
                 ->get();
 
             if ($expiredCodes->isEmpty()) {
