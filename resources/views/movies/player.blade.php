@@ -4,7 +4,16 @@
 @section('title', 'Watching: ' . $movie->title . ' - Cinema')
 
 @push('styles')
-<link rel="stylesheet" href="{{ asset('css/movie-player.css') }}">
+@vite([
+    'resources/css/components/player-controls-v2.css',
+    'resources/css/components/player-mobile.css'
+])
+@endpush
+
+@push('scripts')
+@vite([
+    'resources/js/components/player-gestures.js'
+])
 @endpush
 
 @section('content')
