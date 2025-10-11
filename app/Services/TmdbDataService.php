@@ -30,34 +30,49 @@ class TmdbDataService
     }
 
     /**
-     * Fetch movie details from TMDB
+     * Fetch movie details from TMDB with Indonesian language priority
      *
      * @param int $tmdbId
      * @return array|null
      */
     public function fetchMovie(int $tmdbId): ?array
     {
-        $cacheKey = "tmdb:movie:{$tmdbId}";
+        $cacheKey = "tmdb:movie:{$tmdbId}:id";
 
         return Cache::remember($cacheKey, $this->cacheTtl, function () use ($tmdbId) {
             try {
-                $response = Http::timeout(30)
+                // Try Indonesian first
+                $idResponse = Http::timeout(30)
                     ->get("{$this->baseUrl}/movie/{$tmdbId}", [
                         'api_key' => $this->apiKey,
-                        'language' => 'en-US'
+                        'language' => 'id-ID'
                     ]);
 
-                if ($response->successful()) {
-                    return $response->json();
+                $enResponse = null;
+                
+                // Also fetch English as fallback
+                if ($idResponse->successful()) {
+                    $enResponse = Http::timeout(30)
+                        ->get("{$this->baseUrl}/movie/{$tmdbId}", [
+                            'api_key' => $this->apiKey,
+                            'language' => 'en-US'
+                        ]);
                 }
 
-                Log::warning('TMDB API fetch movie failed', [
-                    'tmdb_id' => $tmdbId,
-                    'status' => $response->status(),
-                    'body' => $response->body()
-                ]);
+                if (!$idResponse->successful()) {
+                    Log::warning('TMDB API fetch movie failed', [
+                        'tmdb_id' => $tmdbId,
+                        'status' => $idResponse->status()
+                    ]);
+                    return null;
+                }
 
-                return null;
+                $idData = $idResponse->json();
+                $enData = $enResponse && $enResponse->successful() ? $enResponse->json() : [];
+
+                // Merge data: Use Indonesian if available, fallback to English
+                return $this->mergeLanguageData($idData, $enData);
+
             } catch (\Exception $e) {
                 Log::error('TMDB API exception fetching movie', [
                     'tmdb_id' => $tmdbId,
@@ -70,33 +85,49 @@ class TmdbDataService
     }
 
     /**
-     * Fetch series details from TMDB
+     * Fetch series details from TMDB with Indonesian language priority
      *
      * @param int $tmdbId
      * @return array|null
      */
     public function fetchSeries(int $tmdbId): ?array
     {
-        $cacheKey = "tmdb:series:{$tmdbId}";
+        $cacheKey = "tmdb:series:{$tmdbId}:id";
 
         return Cache::remember($cacheKey, $this->cacheTtl, function () use ($tmdbId) {
             try {
-                $response = Http::timeout(30)
+                // Try Indonesian first
+                $idResponse = Http::timeout(30)
                     ->get("{$this->baseUrl}/tv/{$tmdbId}", [
                         'api_key' => $this->apiKey,
-                        'language' => 'en-US'
+                        'language' => 'id-ID'
                     ]);
 
-                if ($response->successful()) {
-                    return $response->json();
+                $enResponse = null;
+                
+                // Also fetch English as fallback
+                if ($idResponse->successful()) {
+                    $enResponse = Http::timeout(30)
+                        ->get("{$this->baseUrl}/tv/{$tmdbId}", [
+                            'api_key' => $this->apiKey,
+                            'language' => 'en-US'
+                        ]);
                 }
 
-                Log::warning('TMDB API fetch series failed', [
-                    'tmdb_id' => $tmdbId,
-                    'status' => $response->status()
-                ]);
+                if (!$idResponse->successful()) {
+                    Log::warning('TMDB API fetch series failed', [
+                        'tmdb_id' => $tmdbId,
+                        'status' => $idResponse->status()
+                    ]);
+                    return null;
+                }
 
-                return null;
+                $idData = $idResponse->json();
+                $enData = $enResponse && $enResponse->successful() ? $enResponse->json() : [];
+
+                // Merge data: Use Indonesian if available, fallback to English
+                return $this->mergeLanguageData($idData, $enData);
+
             } catch (\Exception $e) {
                 Log::error('TMDB API exception fetching series', [
                     'tmdb_id' => $tmdbId,
@@ -109,7 +140,7 @@ class TmdbDataService
     }
 
     /**
-     * Fetch season details from TMDB
+     * Fetch season details from TMDB with Indonesian language priority
      *
      * @param int $tmdbId
      * @param int $seasonNumber
@@ -117,27 +148,43 @@ class TmdbDataService
      */
     public function fetchSeason(int $tmdbId, int $seasonNumber): ?array
     {
-        $cacheKey = "tmdb:season:{$tmdbId}:{$seasonNumber}";
+        $cacheKey = "tmdb:season:{$tmdbId}:{$seasonNumber}:id";
 
         return Cache::remember($cacheKey, $this->cacheTtl, function () use ($tmdbId, $seasonNumber) {
             try {
-                $response = Http::timeout(30)
+                // Try Indonesian first
+                $idResponse = Http::timeout(30)
                     ->get("{$this->baseUrl}/tv/{$tmdbId}/season/{$seasonNumber}", [
                         'api_key' => $this->apiKey,
-                        'language' => 'en-US'
+                        'language' => 'id-ID'
                     ]);
 
-                if ($response->successful()) {
-                    return $response->json();
+                $enResponse = null;
+                
+                // Also fetch English as fallback
+                if ($idResponse->successful()) {
+                    $enResponse = Http::timeout(30)
+                        ->get("{$this->baseUrl}/tv/{$tmdbId}/season/{$seasonNumber}", [
+                            'api_key' => $this->apiKey,
+                            'language' => 'en-US'
+                        ]);
                 }
 
-                Log::warning('TMDB API fetch season failed', [
-                    'tmdb_id' => $tmdbId,
-                    'season_number' => $seasonNumber,
-                    'status' => $response->status()
-                ]);
+                if (!$idResponse->successful()) {
+                    Log::warning('TMDB API fetch season failed', [
+                        'tmdb_id' => $tmdbId,
+                        'season_number' => $seasonNumber,
+                        'status' => $idResponse->status()
+                    ]);
+                    return null;
+                }
 
-                return null;
+                $idData = $idResponse->json();
+                $enData = $enResponse && $enResponse->successful() ? $enResponse->json() : [];
+
+                // Merge data: Use Indonesian if available, fallback to English
+                return $this->mergeLanguageData($idData, $enData);
+
             } catch (\Exception $e) {
                 Log::error('TMDB API exception fetching season', [
                     'tmdb_id' => $tmdbId,
@@ -151,7 +198,7 @@ class TmdbDataService
     }
 
     /**
-     * Fetch episode details from TMDB
+     * Fetch episode details from TMDB with Indonesian language priority
      *
      * @param int $tmdbId
      * @param int $seasonNumber
@@ -160,28 +207,44 @@ class TmdbDataService
      */
     public function fetchEpisode(int $tmdbId, int $seasonNumber, int $episodeNumber): ?array
     {
-        $cacheKey = "tmdb:episode:{$tmdbId}:{$seasonNumber}:{$episodeNumber}";
+        $cacheKey = "tmdb:episode:{$tmdbId}:{$seasonNumber}:{$episodeNumber}:id";
 
         return Cache::remember($cacheKey, $this->cacheTtl, function () use ($tmdbId, $seasonNumber, $episodeNumber) {
             try {
-                $response = Http::timeout(30)
+                // Try Indonesian first
+                $idResponse = Http::timeout(30)
                     ->get("{$this->baseUrl}/tv/{$tmdbId}/season/{$seasonNumber}/episode/{$episodeNumber}", [
                         'api_key' => $this->apiKey,
-                        'language' => 'en-US'
+                        'language' => 'id-ID'
                     ]);
 
-                if ($response->successful()) {
-                    return $response->json();
+                $enResponse = null;
+                
+                // Also fetch English as fallback
+                if ($idResponse->successful()) {
+                    $enResponse = Http::timeout(30)
+                        ->get("{$this->baseUrl}/tv/{$tmdbId}/season/{$seasonNumber}/episode/{$episodeNumber}", [
+                            'api_key' => $this->apiKey,
+                            'language' => 'en-US'
+                        ]);
                 }
 
-                Log::warning('TMDB API fetch episode failed', [
-                    'tmdb_id' => $tmdbId,
-                    'season_number' => $seasonNumber,
-                    'episode_number' => $episodeNumber,
-                    'status' => $response->status()
-                ]);
+                if (!$idResponse->successful()) {
+                    Log::warning('TMDB API fetch episode failed', [
+                        'tmdb_id' => $tmdbId,
+                        'season_number' => $seasonNumber,
+                        'episode_number' => $episodeNumber,
+                        'status' => $idResponse->status()
+                    ]);
+                    return null;
+                }
 
-                return null;
+                $idData = $idResponse->json();
+                $enData = $enResponse && $enResponse->successful() ? $enResponse->json() : [];
+
+                // Merge data: Use Indonesian if available, fallback to English
+                return $this->mergeLanguageData($idData, $enData);
+
             } catch (\Exception $e) {
                 Log::error('TMDB API exception fetching episode', [
                     'tmdb_id' => $tmdbId,
@@ -239,5 +302,41 @@ class TmdbDataService
         }
 
         return config('services.tmdb.image_url') . '/original' . $backdropPath;
+    }
+
+    /**
+     * Merge Indonesian and English data, prioritizing Indonesian
+     * Falls back to English if Indonesian fields are empty
+     *
+     * @param array $idData Indonesian data
+     * @param array $enData English data
+     * @return array Merged data
+     */
+    private function mergeLanguageData(array $idData, array $enData): array
+    {
+        // Text fields that should use Indonesian if available
+        $textFields = ['title', 'name', 'overview', 'tagline'];
+        
+        foreach ($textFields as $field) {
+            // If Indonesian field is empty or null, use English
+            if (empty($idData[$field]) && !empty($enData[$field])) {
+                $idData[$field] = $enData[$field];
+            }
+        }
+
+        // For genres, merge both and deduplicate
+        if (!empty($enData['genres']) && !empty($idData['genres'])) {
+            // Keep Indonesian names but ensure all genre IDs are present
+            $idGenreIds = array_column($idData['genres'], 'id');
+            foreach ($enData['genres'] as $enGenre) {
+                if (!in_array($enGenre['id'], $idGenreIds)) {
+                    $idData['genres'][] = $enGenre;
+                }
+            }
+        } elseif (empty($idData['genres']) && !empty($enData['genres'])) {
+            $idData['genres'] = $enData['genres'];
+        }
+
+        return $idData;
     }
 }
