@@ -69,7 +69,7 @@
 
 /* Mobile Filter Bottom Sheet */
 .filter-bottom-sheet {
-    display: none;
+    display: block;
     position: fixed;
     bottom: 0;
     left: 0;
@@ -83,10 +83,12 @@
     transform: translateY(100%);
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.5);
+    pointer-events: none;
 }
 
 .filter-bottom-sheet.active {
     transform: translateY(0);
+    pointer-events: all;
 }
 
 /* Smooth scrolling for bottom sheet */
@@ -97,7 +99,7 @@
 
 /* Bottom Sheet Overlay */
 .filter-bottom-sheet-overlay {
-    display: none;
+    display: block;
     position: fixed;
     top: 0;
     left: 0;
@@ -166,21 +168,6 @@
 
 /* Mobile Responsive */
 @media (max-width: 768px) {
-    /* Show mobile filter elements */
-    .filter-toggle-btn {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-    
-    .filter-bottom-sheet {
-        display: block;
-    }
-    
-    .filter-bottom-sheet-overlay {
-        display: block;
-    }
-    
     /* Adjust FAB position for safe area (iOS notch) */
     .filter-toggle-btn {
         bottom: calc(24px + env(safe-area-inset-bottom));
