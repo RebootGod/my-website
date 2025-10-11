@@ -224,9 +224,6 @@
                                          loading="lazy"
                                          onerror="this.src='https://placehold.co/500x750/1a1f3a/8b5cf6?text=No+Poster'">
                                     <div class="movie-overlay"></div>
-                                    <div class="movie-rating">
-                                        <i class="fas fa-star me-1"></i>{{ number_format($item->rating, 1) }}
-                                    </div>
                                     @if($item instanceof \App\Models\Series)
                                         <div class="content-type-badge series-badge">
                                             <i class="fas fa-tv me-1"></i>TV Series
@@ -240,11 +237,12 @@
                                 <div class="movie-info">
                                     <h3 class="movie-title">{{ $item->title }}</h3>
                                     <div class="movie-meta">
+                                        <span>{{ number_format($item->rating, 1) }}</span>
                                         <span>{{ $item->year }}</span>
                                         @if($item instanceof \App\Models\Series)
-                                            <span class="me-2">{{ $item->seasons->count() }} Season{{ $item->seasons->count() != 1 ? 's' : '' }}</span>
+                                            <span>{{ $item->seasons->count() }}S</span>
                                         @else
-                                            <span>{{ $item->duration }} min</span>
+                                            <span>{{ $item->duration }}m</span>
                                         @endif
                                     </div>
                                     <p class="movie-description">{{ Str::limit($item->description, 120) }}</p>
