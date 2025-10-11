@@ -345,34 +345,38 @@ class TmdbImageDownloaderCli {
     private function status() {
         echo Color::YELLOW . "📊 Current Status...\n\n" . Color::RESET;
         
-        // Movies
-        $moviesTotal = Movie::count();
+        // Movies (only count those with poster_path/backdrop_path from TMDB)
+        $moviesPosterTotal = Movie::whereNotNull('poster_path')->count();
         $moviesWithPoster = Movie::whereNotNull('local_poster_path')->count();
+        
+        $moviesBackdropTotal = Movie::whereNotNull('backdrop_path')->count();
         $moviesWithBackdrop = Movie::whereNotNull('local_backdrop_path')->count();
         
         // Series
-        $seriesTotal = Series::count();
+        $seriesPosterTotal = Series::whereNotNull('poster_path')->count();
         $seriesWithPoster = Series::whereNotNull('local_poster_path')->count();
+        
+        $seriesBackdropTotal = Series::whereNotNull('backdrop_path')->count();
         $seriesWithBackdrop = Series::whereNotNull('local_backdrop_path')->count();
         
         // Seasons
-        $seasonsTotal = SeriesSeason::count();
+        $seasonsPosterTotal = SeriesSeason::whereNotNull('poster_path')->count();
         $seasonsWithPoster = SeriesSeason::whereNotNull('local_poster_path')->count();
         
         // Episodes
-        $episodesTotal = SeriesEpisode::count();
+        $episodesStillTotal = SeriesEpisode::whereNotNull('still_path')->count();
         $episodesWithStill = SeriesEpisode::whereNotNull('local_still_path')->count();
         
         echo "╔════════════════════════════════════════════════════════════════╗\n";
         echo "║ " . Color::BOLD . "Download Progress Status" . Color::RESET . "                                     ║\n";
         echo "╠════════════════════════════════════════════════════════════════╣\n";
         
-        $this->printProgressRow("Movies (Posters)", $moviesWithPoster, $moviesTotal);
-        $this->printProgressRow("Movies (Backdrops)", $moviesWithBackdrop, $moviesTotal);
-        $this->printProgressRow("Series (Posters)", $seriesWithPoster, $seriesTotal);
-        $this->printProgressRow("Series (Backdrops)", $seriesWithBackdrop, $seriesTotal);
-        $this->printProgressRow("Seasons (Posters)", $seasonsWithPoster, $seasonsTotal);
-        $this->printProgressRow("Episodes (Stills)", $episodesWithStill, $episodesTotal);
+        $this->printProgressRow("Movies (Posters)", $moviesWithPoster, $moviesPosterTotal);
+        $this->printProgressRow("Movies (Backdrops)", $moviesWithBackdrop, $moviesBackdropTotal);
+        $this->printProgressRow("Series (Posters)", $seriesWithPoster, $seriesPosterTotal);
+        $this->printProgressRow("Series (Backdrops)", $seriesWithBackdrop, $seriesBackdropTotal);
+        $this->printProgressRow("Seasons (Posters)", $seasonsWithPoster, $seasonsPosterTotal);
+        $this->printProgressRow("Episodes (Stills)", $episodesWithStill, $episodesStillTotal);
         
         echo "╚════════════════════════════════════════════════════════════════╝\n\n";
         
