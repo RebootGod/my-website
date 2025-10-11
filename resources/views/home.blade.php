@@ -216,9 +216,13 @@
                         @foreach($contents as $item)
                             <div class="movie-card-modern">
                                 <div class="movie-poster">
-                                    <img src="{{ $item->poster_url ?: 'https://placehold.co/300x450/2c3e50/ecf0f1?text=No+Image' }}"
+                                    @php
+                                        $posterUrl = $item->poster_url ?? 'https://placehold.co/500x750/1a1f3a/8b5cf6?text=' . urlencode($item->title);
+                                    @endphp
+                                    <img src="{{ $posterUrl }}"
                                          alt="{{ $item->title }}"
-                                         loading="lazy">
+                                         loading="lazy"
+                                         onerror="this.src='https://placehold.co/500x750/1a1f3a/8b5cf6?text=No+Poster'">
                                     <div class="movie-overlay"></div>
                                     <div class="movie-rating">
                                         <i class="fas fa-star me-1"></i>{{ number_format($item->rating, 1) }}

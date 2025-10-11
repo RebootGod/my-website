@@ -46,7 +46,8 @@
     /* Maintain 2:3 aspect ratio (poster standard) */
     aspect-ratio: 2 / 3;
     overflow: hidden;
-    background: var(--bg-tertiary, #1e2849);
+    background: linear-gradient(145deg, #1a1f3a 0%, #141b34 100%);
+    min-height: 200px;
 }
 
 .movie-poster img {
@@ -54,6 +55,26 @@
     height: 100%;
     object-fit: cover;
     transition: transform 0.4s ease;
+    display: block;
+    background: var(--bg-tertiary, #1e2849);
+}
+
+/* Loading state for images */
+.movie-poster img:not([src]),
+.movie-poster img[src=""] {
+    background: linear-gradient(
+        90deg,
+        #1a1f3a 0%,
+        #2a2f4a 50%,
+        #1a1f3a 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
 }
 
 .movie-overlay {
