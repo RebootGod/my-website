@@ -177,7 +177,7 @@ class UserActivityController extends Controller
      */
     public function cleanup(Request $request)
     {
-        $olderThanDays = $request->get('older_than_days', 365);
+        $olderThanDays = $request->get('older_than_days', 14); // Changed from 365 to 14
         $deletedCount = $this->activityService->cleanupOldActivities($olderThanDays);
 
         return response()->json([
@@ -188,7 +188,7 @@ class UserActivityController extends Controller
     }
 
     /**
-     * Cleanup old activities (keep last 7 days, backup and delete older)
+     * Cleanup old activities (keep last 14 days, backup and delete older)
      * Only accessible by super_admin
      */
     public function cleanupOldActivities()
@@ -202,8 +202,8 @@ class UserActivityController extends Controller
         }
 
         try {
-            // Get count of records that will be deleted
-            $cutoffDate = Carbon::now()->subDays(7);
+            // Get count of records that will be deleted (older than 14 days)
+            $cutoffDate = Carbon::now()->subDays(14); // Changed from 7 to 14
             $oldRecordsCount = UserActivity::where('created_at', '<', $cutoffDate)->count();
 
             if ($oldRecordsCount === 0) {
@@ -268,7 +268,7 @@ class UserActivityController extends Controller
                 'admin_id' => auth()->id(),
                 'action' => 'cleanup_user_activities',
                 'action_type' => 'system',
-                'description' => "Cleaned up {$deletedCount} user activity records older than 7 days",
+                'description' => "Cleaned up {$deletedCount} user activity records older than 14 days", // Changed from 7 to 14
                 'target_type' => 'UserActivity',
                 'target_id' => null,
                 'ip_address' => request()->ip(),
