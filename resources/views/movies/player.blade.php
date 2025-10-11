@@ -321,7 +321,7 @@
         event.preventDefault();
         const formData = new FormData(event.target);
         
-        fetch('{{ route("broken-links.report") }}', {
+        fetch('{{ route("movies.report", $movie->id) }}', {
             method: 'POST',
             headers: {
                 'X-CSRF-TOKEN': '{{ csrf_token() }}',
