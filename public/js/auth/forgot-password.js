@@ -11,11 +11,7 @@ function forgotPasswordHandler() {
         rateLimitData: {},
 
         init() {
-            console.log('forgotPasswordHandler init called', {
-                isSubmitting: this.isSubmitting,
-                canSubmit: this.canSubmit
-            });
-
+            
             if (this.email) {
                 this.checkRateLimit();
             }
@@ -47,8 +43,7 @@ function forgotPasswordHandler() {
                     this.updateRateLimitDisplay();
                 }
             } catch (error) {
-                console.log('Rate limit check failed:', error);
-            }
+                            }
         },
 
         updateRateLimitDisplay() {

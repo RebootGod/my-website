@@ -19,8 +19,7 @@ class EpisodeDraftManager {
     
     init() {
         if (!this.form) {
-            console.error('Episode edit form not found for draft manager');
-            return;
+                        return;
         }
         
         // Store original form data
@@ -58,8 +57,7 @@ class EpisodeDraftManager {
                 this.clearDraft();
             }
         } catch (e) {
-            console.warn('Failed to parse saved draft:', e);
-            this.clearDraft();
+                        this.clearDraft();
         }
     }
     
@@ -245,8 +243,7 @@ class EpisodeDraftManager {
             localStorage.setItem(this.draftKey, JSON.stringify(draft));
             this.showDraftIndicator();
         } catch (e) {
-            console.warn('Failed to save draft:', e);
-        }
+                    }
     }
 
     serializeFormData() {

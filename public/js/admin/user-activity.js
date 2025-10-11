@@ -26,8 +26,7 @@ function initializeCharts() {
 
     // Validate data
     if (!chartData || !chartData.daily_trend || !chartData.activity_breakdown || !chartData.hourly_pattern) {
-        console.error('Chart data is incomplete');
-        return;
+                return;
     }
 
     chartsInitialized = true;
@@ -73,8 +72,7 @@ function initializeCharts() {
             }
         });
         } catch (error) {
-            console.error('Error creating trend chart:', error);
-        }
+                    }
     }
 
     // Activity Types Chart
@@ -108,8 +106,7 @@ function initializeCharts() {
             }
         });
         } catch (error) {
-            console.error('Error creating types chart:', error);
-        }
+                    }
     }
 
     // Hourly Activity Chart
@@ -148,8 +145,7 @@ function initializeCharts() {
             }
         });
         } catch (error) {
-            console.error('Error creating hourly chart:', error);
-        }
+                    }
     }
 
     // Period toggle

@@ -17,8 +17,7 @@ class EpisodeEditManager {
 
     init() {
         if (!this.form) {
-            console.error('Episode edit form not found');
-            return;
+                        return;
         }
 
         this.bindEvents();
@@ -91,8 +90,7 @@ class EpisodeEditManager {
                 this.clearFieldError(input);
             }
         } catch (error) {
-            console.error('Error checking episode uniqueness:', error);
-        }
+                    }
     }
 
     validateField(input) {
@@ -231,8 +229,7 @@ class EpisodeEditManager {
                 this.showMessage(errorData.message || 'An error occurred while updating the episode', 'error');
             }
         } catch (error) {
-            console.error('Submission error:', error);
-            this.showMessage('Network error occurred. Please try again.', 'error');
+                        this.showMessage('Network error occurred. Please try again.', 'error');
         } finally {
             this.isSubmitting = false;
             this.submitBtn.disabled = false;

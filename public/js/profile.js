@@ -151,8 +151,7 @@ function initializeProfile(config) {
     // Store config globally for access in other functions
     window.profileConfig = config;
 
-    console.log('Profile page initialized with config:', config);
-
+    
     // Initialize form validation
     initializeFormValidation();
 

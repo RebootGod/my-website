@@ -26,8 +26,7 @@ function resetPasswordHandler() {
         },
 
         init() {
-            console.log('resetPasswordHandler initialized');
-
+            
             // Reset loading state on page unload
             window.addEventListener('beforeunload', () => {
                 this.isSubmitting = false;
@@ -113,5 +112,4 @@ function initializeResetPasswordForm(config) {
     // Store config globally for access in Alpine component
     window.authConfig = config;
 
-    console.log('Reset password form initialized with config:', config);
-}
+    }

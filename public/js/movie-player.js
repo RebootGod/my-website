@@ -3,8 +3,6 @@
 // Global variables - will be initialized from blade template
 let movieId, movieSlug, movieTitle, csrfToken, currentSourceId;
 
-console.log('🎬 Player.js loaded successfully');
-
 // Initialize function to be called from blade template
 function initializeMoviePlayer(data) {
     movieId = data.movieId;
@@ -16,7 +14,6 @@ function initializeMoviePlayer(data) {
 
 // Player controls
 function reloadPlayer() {
-    console.log('🔄 reloadPlayer called');
     const player = document.getElementById('moviePlayer');
     if (player) {
         const src = player.src;
@@ -28,7 +25,6 @@ function reloadPlayer() {
 
 // Watchlist functionality
 function addToWatchlist() {
-    console.log('🚀 addToWatchlist called');
     if (!movieSlug) {
         alert('Error: Movie slug not available');
         return;
@@ -63,14 +59,12 @@ function addToWatchlist() {
         }
     })
     .catch((error) => {
-        console.error('Error adding to watchlist:', error);
         alert('Error adding movie to watchlist. Please try again.');
     });
 }
 
 // Share functionality
 function shareMovie() {
-    console.log('🚀 shareMovie called');
     if (navigator.share) {
         navigator.share({
             title: movieTitle,
@@ -112,7 +106,6 @@ function fallbackCopy() {
 
 // Report issue functionality
 function reportIssue() {
-    console.log('🚀 reportIssue called');
     openReportModal();
 }
 
@@ -180,7 +173,6 @@ function submitReport(event) {
         closeReportModal();
     })
     .catch((error) => {
-        console.error('Error submitting report:', error);
         alert('Thank you for your report! We will investigate the issue.');
         closeReportModal();
     });
@@ -188,19 +180,8 @@ function submitReport(event) {
 
 // Notification helper function
 function showNotification(message, type = 'success') {
-    // Simple notification - can be enhanced later
-    console.log(`${type.toUpperCase()}: ${message}`);
     alert(message);
 }
-
-// DOM ready handler
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('🔍 DOM loaded, checking functions...');
-    console.log('addToWatchlist exists:', typeof addToWatchlist);
-    console.log('reloadPlayer exists:', typeof reloadPlayer);
-    console.log('shareMovie exists:', typeof shareMovie);
-    console.log('reportIssue exists:', typeof reportIssue);
-});
 
 // Make functions globally available
 window.addToWatchlist = addToWatchlist;

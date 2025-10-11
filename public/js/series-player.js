@@ -24,7 +24,6 @@ function shareEpisode() {
 }
 
 function reportIssue() {
-    console.log('🚀 reportIssue called');
     openReportModal();
 }
 
@@ -89,7 +88,6 @@ function submitReport(event) {
         closeReportModal();
     })
     .catch((error) => {
-        console.error('Error submitting report:', error);
         alert('Thank you for your report! We will investigate the issue.');
         closeReportModal();
     });
@@ -99,6 +97,4 @@ function submitReport(event) {
 function initializeSeriesPlayer(config) {
     // Store config globally for access in other functions
     window.seriesPlayerConfig = config;
-
-    console.log('Series player initialized with config:', config);
 }

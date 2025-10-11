@@ -19,8 +19,7 @@ function loginHandler() {
         },
 
         init() {
-            console.log('loginHandler initialized');
-
+            
             // Reset loading state on page unload
             window.addEventListener('beforeunload', () => {
                 this.isSubmitting = false;
@@ -99,8 +98,7 @@ function initializeLoginForm(config) {
     // Store config globally for access in Alpine component
     window.authConfig = config || {};
 
-    console.log('Login form initialized');
-
+    
     // Auto-hide alert messages after 5 seconds
     const alerts = document.querySelectorAll('.alert');
     alerts.forEach(alert => {

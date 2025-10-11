@@ -34,8 +34,7 @@ function registerHandler() {
         },
 
         init() {
-            console.log('registerHandler initialized');
-
+            
             // Reset loading state on page unload
             window.addEventListener('beforeunload', () => {
                 this.isSubmitting = false;
@@ -129,8 +128,7 @@ function registerHandler() {
                     feedback.className = `invite-feedback ${data.valid ? 'valid' : 'invalid'}`;
                 }
             } catch (error) {
-                console.log('Invite code validation failed:', error);
-                this.inviteCodeValid = null;
+                                this.inviteCodeValid = null;
             }
         },
 
@@ -172,8 +170,7 @@ function initializeRegisterForm(config) {
     // Store config globally for access in Alpine component
     window.authConfig = config || {};
 
-    console.log('Register form initialized with config:', config);
-
+    
     // Auto-hide alert messages after 5 seconds
     const alerts = document.querySelectorAll('.alert');
     alerts.forEach(alert => {

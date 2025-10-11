@@ -16,8 +16,7 @@ class ModernEpisodeEditor {
 
     init() {
         if (!this.form) {
-            console.error('Episode edit form not found');
-            return;
+                        return;
         }
 
         this.storeOriginalData();
@@ -264,8 +263,7 @@ class ModernEpisodeEditor {
                 this.handleSubmissionErrors(errorData);
             }
         } catch (error) {
-            console.error('Submission error:', error);
-            this.showNotification('Network error occurred. Please try again.', 'error');
+                        this.showNotification('Network error occurred. Please try again.', 'error');
         } finally {
             this.isSubmitting = false;
             this.setButtonLoading(submitBtn, false);
@@ -453,8 +451,7 @@ class ModernEpisodeEditor {
                 this.showFieldError(input, 'Episode number already exists in this season');
             }
         } catch (error) {
-            console.error('Error checking episode uniqueness:', error);
-        }
+                    }
     }
 
     formatRuntime(input) {

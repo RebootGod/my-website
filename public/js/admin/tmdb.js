@@ -14,8 +14,7 @@ function initializeTMDBAdmin(config) {
     // Store config globally for access in other functions
     window.tmdbConfig = config;
 
-    console.log('TMDB Admin initialized with config:', config);
-
+    
     // Get DOM elements
     const searchInput = document.getElementById('searchInput');
     const searchBtn = document.getElementById('searchBtn');
@@ -102,21 +101,19 @@ async function searchMovies(query, page = 1) {
     currentType = 'search';
     currentPage = page;
 
-    console.log('Searching movies with query:', query, 'URL:', `${window.tmdbConfig.searchUrl}?query=${encodeURIComponent(query)}&page=${page}`);
+    }&page=${page}`);
     showLoading();
 
     try {
         const response = await fetch(`${window.tmdbConfig.searchUrl}?query=${encodeURIComponent(query)}&page=${page}`);
         
-        console.log('Response status:', response.status, response.statusText);
-        
+                
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         
         const data = await response.json();
-        console.log('Response data:', data);
-
+        
         if (data.error) {
             showError(data.error);
             return;
@@ -129,8 +126,7 @@ async function searchMovies(query, page = 1) {
 
         displayMovies(data);
     } catch (error) {
-        console.error('Search error:', error);
-        showError(`Failed to search movies: ${error.message}`);
+                showError(`Failed to search movies: ${error.message}`);
     }
 }
 
@@ -610,8 +606,7 @@ function viewMovieDetails(tmdbId) {
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize basic functionality even without explicit config
     if (typeof window.tmdbConfig === 'undefined') {
-        console.log('TMDB Config not found, initializing with defaults...');
-        // Set default config if not provided
+                // Set default config if not provided
         window.tmdbConfig = {
             searchUrl: '/admin/tmdb/search',
             popularUrl: '/admin/tmdb/popular',

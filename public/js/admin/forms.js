@@ -6,8 +6,7 @@
  * @param {Object} config - Configuration object
  */
 function initializeAdminForms(config) {
-    console.log('Initializing admin forms...', config);
-    
+        
     // Initialize password generation
     initPasswordGeneration(config);
     
@@ -72,8 +71,7 @@ function initPasswordGeneration(config) {
                 }
                 
             } catch (error) {
-                console.error('Error generating password:', error);
-                showNotification('Failed to generate password. Please try again.', 'error');
+                                showNotification('Failed to generate password. Please try again.', 'error');
             } finally {
                 // Restore button state
                 btn.disabled = false;
@@ -226,8 +224,7 @@ function initStatusToggles() {
             const action = this.dataset.action;
             
             if (!userId || !action) {
-                console.error('Missing required data attributes');
-                return;
+                                return;
             }
             
             // Confirm action
@@ -270,8 +267,7 @@ function initStatusToggles() {
                 }
                 
             } catch (error) {
-                console.error('Status toggle error:', error);
-                showNotification('Failed to update user status. Please try again.', 'error');
+                                showNotification('Failed to update user status. Please try again.', 'error');
                 
                 // Restore button
                 btn.disabled = false;
@@ -376,8 +372,7 @@ function getIconForType(type) {
  * Initialize on DOM ready
  */
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('Admin forms JavaScript loaded');
-});
+    });
 
 // Export for use in other scripts
 if (typeof module !== 'undefined' && module.exports) {
