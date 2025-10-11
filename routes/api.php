@@ -3,6 +3,10 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\RoleApiController;
 use App\Http\Controllers\Api\PermissionApiController;
 use App\Http\Controllers\Api\UserApiController;
+use App\Http\Controllers\Api\Bot\BotMovieController;
+use App\Http\Controllers\Api\Bot\BotSeriesController;
+use App\Http\Controllers\Api\Bot\BotSeasonController;
+use App\Http\Controllers\Api\Bot\BotEpisodeController;
 
 Route::middleware(['auth:sanctum', 'check.permission:access_admin_panel'])->prefix('admin')->group(function () {
     Route::get('/roles', [RoleApiController::class, 'index']);
@@ -18,4 +22,19 @@ Route::middleware(['auth:sanctum', 'check.permission:access_admin_panel'])->pref
     Route::get('/users', [UserApiController::class, 'index']);
     Route::put('/users/{user}/role', [UserApiController::class, 'updateRole']);
     Route::put('/users/{user}/permissions', [UserApiController::class, 'updatePermissions']);
+});
+
+// Telegram Bot API Routes
+Route::middleware(['auth.bot', 'throttle:100,1'])->prefix('bot')->group(function () {
+    // Movie upload
+    Route::post('/movies', [BotMovieController::class, 'store']);
+    
+    // Series upload (creates series only, no seasons/episodes)
+    Route::post('/series', [BotSeriesController::class, 'store']);
+    
+    // Season upload (creates season only, no episodes)
+    Route::post('/series/{tmdbId}/seasons', [BotSeasonController::class, 'store']);
+    
+    // Episode upload (creates individual episode with URLs)
+    Route::post('/series/{tmdbId}/episodes', [BotEpisodeController::class, 'store']);
 });

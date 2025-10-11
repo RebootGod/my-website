@@ -1,0 +1,3 @@
+[submodule "noobz-bot"]
+	path = noobz-bot
+	url = https://github.com/RebootGod/noobz-bot.git

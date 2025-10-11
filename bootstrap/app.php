@@ -19,6 +19,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'password.rehash' => \App\Http\Middleware\PasswordRehashMiddleware::class,
             'audit' => \App\Http\Middleware\AuditMiddleware::class,
             'sanitize.input' => \App\Http\Middleware\SanitizeInputMiddleware::class,
+            'auth.bot' => \App\Http\Middleware\AuthenticateTelegramBot::class,
         ]);
 
         // Register global middleware

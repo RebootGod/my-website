@@ -22,7 +22,7 @@ return [
         ],
     ],
     
-    // TMDB configuration
+        // TMDB configuration
     'tmdb' => [
         'api_key' => env('TMDB_API_KEY'),
         'base_url' => env('TMDB_BASE_URL', 'https://api.themoviedb.org/3'),
@@ -32,5 +32,10 @@ return [
         'region' => env('TMDB_REGION', 'US'),
         'include_adult' => env('TMDB_INCLUDE_ADULT', false),
         'cache_ttl' => env('TMDB_CACHE_TTL', 3600),
+    ],
+    
+    // Telegram Bot API configuration
+    'telegram_bot' => [
+        'token' => env('TELEGRAM_BOT_TOKEN'),
     ],
 ];
