@@ -56,6 +56,7 @@ export default defineConfig({
                 'resources/css/components/player-mobile.css',
                 'resources/css/components/skeleton-loader.css',  // Phase 6.1
                 'resources/css/components/loading-states.css',   // Phase 6.1
+                'resources/css/components/micro-interactions.css', // Phase 6.2
                 'resources/css/components/loading.css',
                 'resources/css/components/animations.css',
                 'resources/css/components/mobile.css',
@@ -63,6 +64,8 @@ export default defineConfig({
                 'resources/js/components/watchlist.js',
                 'resources/js/components/player-gestures.js',
                 'resources/js/components/page-transitions.js',   // Phase 6.1
+                'resources/js/components/toast-notifications.js', // Phase 6.2
+                'resources/js/components/scroll-animations.js',  // Phase 6.2
             ],
             refresh: true,
         }),
