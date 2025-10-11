@@ -23,6 +23,7 @@ class SeriesEpisode extends Model
         'name',
         'overview',
         'still_path',
+        'local_still_path',
         'air_date',
         'runtime',
         'vote_average',

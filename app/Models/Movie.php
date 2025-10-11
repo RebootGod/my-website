@@ -26,6 +26,8 @@ class Movie extends Model
         'download_url',
         'poster_path',
         'backdrop_path',
+        'local_poster_path',
+        'local_backdrop_path',
         'year',
         'duration',
         'rating',

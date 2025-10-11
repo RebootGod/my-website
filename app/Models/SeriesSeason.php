@@ -21,6 +21,7 @@ class SeriesSeason extends Model
         'name',
         'overview',
         'poster_path',
+        'local_poster_path',
         'air_date',
         'episode_count',
         'is_active'

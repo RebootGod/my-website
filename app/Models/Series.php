@@ -20,6 +20,8 @@ class Series extends Model
         'overview',
         'poster_path',
         'backdrop_path',
+        'local_poster_path',
+        'local_backdrop_path',
         'poster_url',
         'backdrop_url',
         'year',
