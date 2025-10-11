@@ -127,10 +127,6 @@ Route::middleware(['auth', 'check.user.status'])->group(function () {
     Route::post('/movie/{movie}/track-view', [MovieController::class, 'trackView'])
         ->name('movies.track-view');
 
-    // Report movie issues
-    Route::post('/movie/{movie}/report', [MovieController::class, 'reportIssue'])
-        ->name('movies.report');
-    
     // Get movie sources for player
     Route::get('/movie/{movie}/sources', [MoviePlayerController::class, 'getSources'])
         ->name('movies.sources');
