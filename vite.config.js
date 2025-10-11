@@ -58,6 +58,7 @@ export default defineConfig({
                 'resources/css/components/loading-states.css', // Phase 6.1
                 'resources/css/components/micro-interactions.css', // Phase 6.2
                 'resources/css/components/accessibility.css', // Phase 6.4
+                'resources/css/components/feedback-modal.css', // Phase 6.6
                 'resources/css/components/loading.css',
                 'resources/css/components/animations.css',
                 'resources/css/components/mobile.css',
@@ -72,6 +73,8 @@ export default defineConfig({
                 'resources/js/components/cache-strategy.js', // Phase 6.3
                 'resources/js/components/keyboard-nav.js', // Phase 6.4
                 'resources/js/components/aria-labels.js', // Phase 6.4
+                'resources/js/components/error-handler.js', // Phase 6.6
+                'resources/js/components/offline-detector.js', // Phase 6.6
             ],
             refresh: true,
         }),
