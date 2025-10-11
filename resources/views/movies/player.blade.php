@@ -381,7 +381,7 @@
 
     // Track view
     document.addEventListener('DOMContentLoaded', function() {
-        fetch('{{ route("movies.view", $movie->id) }}', {
+        fetch('{{ route("movies.track-view", $movie->id) }}', {
             method: 'POST',
             headers: {
                 'X-CSRF-TOKEN': '{{ csrf_token() }}',
