@@ -1,0 +1,365 @@
+/**
+ * ========================================
+ * NOOBZ CINEMA - NAVIGATION V2.0
+ * ========================================
+ * 
+ * Modern navbar with glassmorphism
+ * Fixed mobile dropdown positioning
+ * Touch-friendly interactions
+ * 
+ * Created: October 11, 2025
+ * Phase 2: Navigation & Layout
+ * ========================================
+ */
+
+/* ========================================
+   BASE NAVBAR STYLES
+   ======================================== */
+
+.navbar-redesign {
+    background: var(--gradient-primary);
+    border-bottom: 1px solid var(--border-primary);
+    padding: var(--space-3) 0;
+    transition: all var(--duration-normal) var(--ease-out);
+    position: sticky;
+    top: 0;
+    z-index: var(--z-sticky);
+    box-shadow: var(--shadow-md);
+}
+
+/* Glassmorphism effect on scroll */
+.navbar-redesign.scrolled {
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    box-shadow: var(--shadow-lg);
+}
+
+.navbar-brand-redesign {
+    display: flex;
+    align-items: center;
+    transition: var(--transition-transform);
+    color: white !important;
+}
+
+.navbar-brand-redesign:hover {
+    transform: scale(1.05);
+}
+
+.nav-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+
+/* ========================================
+   NAVBAR BUTTONS
+   ======================================== */
+
+.btn-nav {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    min-height: var(--touch-target-min);
+    padding: var(--space-2) var(--space-4);
+    font-size: var(--text-sm);
+    font-weight: var(--font-semibold);
+    border-radius: var(--radius-lg);
+    border: none;
+    transition: var(--transition-base);
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+/* Nav button variants */
+.btn-nav-outline {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.btn-nav-outline:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.3);
+    color: white;
+    transform: translateY(-2px);
+}
+
+.btn-nav-warning {
+    background: var(--accent-warning);
+    color: white;
+}
+
+.btn-nav-warning:hover {
+    background: #d97706;
+    color: white;
+    transform: translateY(-2px);
+}
+
+.btn-nav-primary {
+    background: white;
+    color: var(--accent-primary);
+}
+
+.btn-nav-primary:hover {
+    background: rgba(255, 255, 255, 0.9);
+    transform: translateY(-2px);
+}
+
+.btn-nav-secondary {
+    background: var(--accent-secondary);
+    color: white;
+}
+
+.btn-nav-secondary:hover {
+    background: #7c3aed;
+    color: white;
+    transform: translateY(-2px);
+}
+
+/* Icon-only button */
+.btn-nav-icon {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    min-width: var(--touch-target-min);
+    padding: var(--space-2);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.btn-nav-icon:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+/* User button */
+.btn-nav-user {
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.btn-nav-user:hover {
+    background: rgba(255, 255, 255, 0.25);
+    color: white;
+}
+
+
+/* ========================================
+   DROPDOWN REDESIGN
+   ======================================== */
+
+.dropdown-menu-redesign {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-xl);
+    padding: var(--space-2);
+    margin-top: var(--space-2);
+    min-width: 320px;
+    max-height: 400px;
+    overflow-y: auto;
+    animation: dropdownFadeIn var(--duration-normal) var(--ease-out);
+}
+
+@keyframes dropdownFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Custom scrollbar for dropdown */
+.dropdown-menu-redesign::-webkit-scrollbar {
+    width: 6px;
+}
+
+.dropdown-menu-redesign::-webkit-scrollbar-track {
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-full);
+}
+
+.dropdown-menu-redesign::-webkit-scrollbar-thumb {
+    background: var(--accent-primary);
+    border-radius: var(--radius-full);
+}
+
+.dropdown-header-redesign {
+    padding: var(--space-3) var(--space-4);
+    color: var(--text-primary);
+    font-weight: var(--font-semibold);
+    font-size: var(--text-sm);
+}
+
+.dropdown-menu-redesign .dropdown-item {
+    padding: var(--space-3) var(--space-4);
+    border-radius: var(--radius-md);
+    color: var(--text-secondary);
+    transition: var(--transition-colors);
+    margin: var(--space-1) 0;
+}
+
+.dropdown-menu-redesign .dropdown-item:hover {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+}
+
+.dropdown-menu-redesign .dropdown-item.bg-light {
+    background: var(--bg-tertiary);
+}
+
+.dropdown-menu-redesign .dropdown-divider {
+    border-color: var(--border-primary);
+    margin: var(--space-2) 0;
+}
+
+/* User dropdown specific */
+.user-dropdown-menu {
+    min-width: 280px;
+}
+
+.user-dropdown-menu .dropdown-header-redesign {
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-lg);
+    margin-bottom: var(--space-2);
+}
+
+.avatar-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-full);
+    background: var(--gradient-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: var(--font-bold);
+    color: white;
+    font-size: var(--text-base);
+}
+
+
+/* ========================================
+   MOBILE DROPDOWN FIX
+   ======================================== */
+
+@media (max-width: 767px) {
+    /* Fix dropdown positioning on mobile */
+    .dropdown-menu-redesign {
+        position: fixed !important;
+        top: 70px !important;
+        left: var(--space-3) !important;
+        right: var(--space-3) !important;
+        width: calc(100vw - var(--space-6)) !important;
+        min-width: unset !important;
+        max-width: unset !important;
+        transform: none !important;
+        margin: 0 !important;
+    }
+    
+    /* Ensure dropdown shows above everything */
+    .dropdown.show {
+        position: static !important;
+    }
+    
+    /* Fix notification dropdown text */
+    .dropdown-menu-redesign .dropdown-item {
+        white-space: normal !important;
+        word-wrap: break-word !important;
+        font-size: var(--text-sm) !important;
+    }
+    
+    .dropdown-header-redesign {
+        font-size: var(--text-base) !important;
+    }
+    
+    /* Hide text on small screens, show icons only */
+    .btn-nav span.d-none {
+        display: none !important;
+    }
+    
+    /* Navbar spacing */
+    .navbar-redesign {
+        padding: var(--space-2) 0;
+    }
+    
+    .navbar-brand-redesign img {
+        height: 32px !important;
+    }
+    
+    .nav-actions {
+        gap: var(--space-1);
+    }
+    
+    .btn-nav {
+        padding: var(--space-2) var(--space-3);
+        font-size: var(--text-xs);
+    }
+    
+    .btn-nav-icon {
+        min-width: var(--touch-target-android);
+        min-height: var(--touch-target-android);
+    }
+}
+
+
+/* ========================================
+   NOTIFICATION BADGE
+   ======================================== */
+
+.btn-nav .badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    min-width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--text-xs);
+    font-weight: var(--font-bold);
+    background: var(--accent-danger);
+    border: 2px solid var(--bg-primary);
+    animation: badgePulse 2s infinite;
+}
+
+@keyframes badgePulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+
+/* ========================================
+   TABLET & DESKTOP ADJUSTMENTS
+   ======================================== */
+
+/* Tablet */
+@media (min-width: 768px) and (max-width: 1023px) {
+    .dropdown-menu-redesign {
+        min-width: 300px;
+    }
+    
+    .btn-nav {
+        padding: var(--space-2) var(--space-4);
+    }
+}
+
+/* Desktop */
+@media (min-width: 1024px) {
+    .navbar-redesign {
+        padding: var(--space-4) 0;
+    }
+    
+    .dropdown-menu-redesign {
+        min-width: 350px;
+    }
+    
+    .btn-nav:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+}

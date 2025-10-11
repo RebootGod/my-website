@@ -6,6 +6,28 @@ let csrfToken = '';
 // Initialize app layout with data from view
 function initializeAppLayout(data) {
     csrfToken = data.csrfToken;
+    initNavbar();
+}
+
+// Navbar scroll effect for glassmorphism
+function initNavbar() {
+    const navbar = document.getElementById('mainNavbar');
+    if (!navbar) return;
+    
+    let lastScroll = 0;
+    
+    window.addEventListener('scroll', () => {
+        const currentScroll = window.pageYOffset;
+        
+        // Add/remove scrolled class for glassmorphism
+        if (currentScroll > 50) {
+            navbar.classList.add('scrolled');
+        } else {
+            navbar.classList.remove('scrolled');
+        }
+        
+        lastScroll = currentScroll;
+    });
 }
 
 // Global watchlist function

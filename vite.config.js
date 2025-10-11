@@ -12,7 +12,8 @@ export default defineConfig({
                 'resources/css/design-system.css',
                 'resources/css/utilities.css',
 
-                // Layout styles and scripts
+                // Layout styles and scripts (Phase 2)
+                'resources/css/layouts/navigation.css',
                 'resources/css/layouts/app.css',
                 'resources/js/layouts/app.js',
 

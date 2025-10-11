@@ -29,6 +29,9 @@
           referrerpolicy="no-referrer">
     
     {{-- Custom Styles --}}
+    @vite('resources/css/design-system.css')
+    @vite('resources/css/utilities.css')
+    @vite('resources/css/layouts/navigation.css')
     @vite('resources/css/layouts/app.css')
     @vite('resources/css/components/mobile.css')
     
@@ -36,10 +39,10 @@
 </head>
 <body>
     {{-- Navigation --}}
-    <nav class="navbar navbar-expand-lg" style="background: linear-gradient(to right, #00ff88, #66ff99);">
+    <nav class="navbar navbar-expand-lg navbar-redesign" id="mainNavbar">
         <div class="container-fluid">
             {{-- Logo --}}
-            <a href="{{ route('home') }}" class="navbar-brand text-dark">
+            <a href="{{ route('home') }}" class="navbar-brand navbar-brand-redesign">
                 <img src="{{ asset('Removal.png') }}"
                      alt="Noobz Cinema"
                      height="40"
@@ -47,25 +50,27 @@
             </a>
             
             {{-- Navigation Items --}}
-            <div class="d-flex align-items-center">
+            <div class="d-flex align-items-center gap-2 nav-actions">
                 @auth
                     {{-- Watchlist Link --}}
                     <a href="{{ route('profile.watchlist') }}" 
-                       class="btn btn-outline-dark me-2">
-                        <i class="fas fa-list me-1"></i> Watchlist
+                       class="btn btn-nav btn-nav-outline">
+                        <i class="fas fa-bookmark me-1"></i> 
+                        <span class="d-none d-md-inline">Watchlist</span>
                     </a>
                     
                     {{-- Admin Dashboard (if admin) --}}
                     @if(auth()->user()->isAdmin())
                         <a href="{{ route('admin.dashboard') }}" 
-                           class="btn btn-warning me-2">
-                            <i class="fas fa-cog me-1"></i> Admin Dashboard
+                           class="btn btn-nav btn-nav-warning">
+                            <i class="fas fa-tools me-1"></i> 
+                            <span class="d-none d-lg-inline">Admin</span>
                         </a>
                     @endif
                     
                     {{-- Notifications Bell --}}
-                    <div class="dropdown me-2">
-                        <button class="btn btn-outline-dark position-relative" 
+                    <div class="dropdown notification-dropdown">
+                        <button class="btn btn-nav btn-nav-icon position-relative" 
                                 type="button" 
                                 id="notificationDropdown"
                                 data-bs-toggle="dropdown" 
@@ -80,16 +85,15 @@
                         </button>
                         
                         {{-- Notifications Dropdown --}}
-                        <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0" 
-                            style="min-width: 350px; max-height: 400px; overflow-y: auto;"
+                        <ul class="dropdown-menu dropdown-menu-redesign dropdown-menu-end" 
                             aria-labelledby="notificationDropdown">
-                            <li class="dropdown-header d-flex justify-content-between align-items-center">
-                                <span class="fw-bold">Notifications</span>
+                            <li class="dropdown-header-redesign d-flex justify-content-between align-items-center">
+                                <span class="fw-semibold">Notifications</span>
                                 @if(auth()->user()->unreadNotifications->count() > 0)
                                     <form action="{{ route('notifications.mark-all-read') }}" method="POST" class="d-inline">
                                         @csrf
                                         <button type="submit" class="btn btn-link btn-sm text-decoration-none p-0">
-                                            Mark all as read
+                                            Mark all read
                                         </button>
                                     </form>
                                 @endif
@@ -142,19 +146,19 @@
                     </div>
                     
                     {{-- User Dropdown --}}
-                    <div class="dropdown">
-                        <button class="btn btn-danger dropdown-toggle d-flex align-items-center px-3 py-2" 
+                    <div class="dropdown user-dropdown">
+                        <button class="btn btn-nav btn-nav-user dropdown-toggle" 
                                 type="button" 
                                 id="userDropdown"
                                 data-bs-toggle="dropdown" 
                                 data-bs-auto-close="true"
                                 aria-expanded="false">
                             <i class="fas fa-user-circle me-2"></i>
-                            <span>{{ auth()->user()->username }}</span>
+                            <span class="d-none d-sm-inline">{{ auth()->user()->username }}</span>
                         </button>
                         
                         {{-- Dropdown Menu with better positioning --}}
-                        <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark shadow-lg border-0 user-dropdown" 
+                        <ul class="dropdown-menu dropdown-menu-redesign dropdown-menu-end user-dropdown-menu" 
                             aria-labelledby="userDropdown">
                             {{-- User Info Header --}}
                             <li class="dropdown-header px-3 py-2">
@@ -215,11 +219,11 @@
                 @else
                     {{-- Guest Links --}}
                     <a href="{{ route('login') }}" 
-                       class="btn btn-danger me-2">
+                       class="btn btn-nav btn-nav-primary">
                         <i class="fas fa-sign-in-alt me-1"></i> Login
                     </a>
                     <a href="{{ route('register') }}" 
-                       class="btn btn-danger">
+                       class="btn btn-nav btn-nav-secondary">
                         <i class="fas fa-user-plus me-1"></i> Register
                     </a>
                 @endauth
