@@ -5,6 +5,7 @@
 
 @push('styles')
 @vite([
+    'resources/css/pages/series-player.css',
     'resources/css/components/player-controls-v2.css',
     'resources/css/components/player-mobile.css'
 ])
@@ -46,115 +47,121 @@
                     @endif
                 </div>
 
-                {{-- Episode Info Below Player --}}
-                <div class="info-card mt-4">
-                    <h3 class="card-title">
-                        <span>📺</span>
-                        Episode Info
-                    </h3>
-                    <div class="episode-details">
-                        <h4 class="episode-title">{{ $episode->name }}</h4>
-                        <div class="episode-meta">
-                            <div class="meta-item">
-                                <strong>Series:</strong> {{ $series->title }}
-                            </div>
-                            <div class="meta-item">
-                                <strong>Season:</strong> {{ $currentSeason->season_number }}
-                            </div>
-                            <div class="meta-item">
-                                <strong>Episode:</strong> {{ $episode->episode_number }}
-                            </div>
-                            @if($episode->runtime)
-                            <div class="meta-item">
-                                <strong>Duration:</strong> {{ $episode->getFormattedRuntime() }}
-                            </div>
-                            @endif
+                {{-- Episode Info Below Player - Modern Design --}}
+                <div class="episode-info-card mt-4">
+                    <div class="episode-info-header">
+                        <div class="icon">📺</div>
+                        <h3>Episode Info</h3>
+                    </div>
+                    
+                    <h4 class="episode-main-title">{{ $episode->name }}</h4>
+                    
+                    <div class="episode-meta-grid">
+                        <div class="meta-pill">
+                            <div class="meta-pill-label">Series</div>
+                            <div class="meta-pill-value">{{ $series->title }}</div>
                         </div>
-                        @if($episode->overview)
-                        <p class="episode-overview">{{ $episode->overview }}</p>
+                        <div class="meta-pill">
+                            <div class="meta-pill-label">Season</div>
+                            <div class="meta-pill-value">{{ $currentSeason->season_number }}</div>
+                        </div>
+                        <div class="meta-pill">
+                            <div class="meta-pill-label">Episode</div>
+                            <div class="meta-pill-value">{{ $episode->episode_number }}</div>
+                        </div>
+                        @if($episode->runtime)
+                        <div class="meta-pill">
+                            <div class="meta-pill-label">Duration</div>
+                            <div class="meta-pill-value">{{ $episode->getFormattedRuntime() }}</div>
+                        </div>
                         @endif
                     </div>
+                    
+                    @if($episode->overview)
+                    <div class="episode-overview-section">
+                        <p class="episode-overview-text">{{ $episode->overview }}</p>
+                    </div>
+                    @endif
                 </div>
             </div>
 
-            {{-- Quick Actions Sidebar --}}
+            {{-- Quick Actions Sidebar - Modern Design --}}
             <div class="col-lg-4">
-                <div class="info-card">
-                    <h3 class="card-title">
-                        <span>⚡</span>
-                        Quick Actions
-                    </h3>
-                    <div class="d-grid gap-2">
-                        <a href="{{ route('series.show', $series) }}" class="btn btn-outline-light">
-                            ← Series Details
+                <div class="quick-actions-card">
+                    <div class="quick-actions-header">
+                        <div class="icon">⚡</div>
+                        <h3>Quick Actions</h3>
+                    </div>
+                    <div class="actions-stack">
+                        <a href="{{ route('series.show', $series) }}" class="action-btn-modern action-btn-outline">
+                            <span>←</span>
+                            <span>Series Details</span>
                         </a>
                         @if($episode->download_url)
-                        <a href="{{ $episode->download_url }}" target="_blank" class="btn btn-success" download>
-                            ⬇️ Download Episode
+                        <a href="{{ $episode->download_url }}" target="_blank" class="action-btn-modern action-btn-success" download>
+                            <span>⬇️</span>
+                            <span>Download Episode</span>
                         </a>
                         @endif
-                        <button onclick="reloadPlayer()" class="btn">
-                            🔄 Reload Player
+                        <button onclick="reloadPlayer()" class="action-btn-modern action-btn-primary">
+                            <span>🔄</span>
+                            <span>Reload Player</span>
                         </button>
-                        <button onclick="shareEpisode()" class="btn btn-secondary">
-                            📤 Share Episode
+                        <button onclick="shareEpisode()" class="action-btn-modern action-btn-outline">
+                            <span>📤</span>
+                            <span>Share Episode</span>
                         </button>
-                        <button onclick="reportIssue()" class="btn btn-danger">
-                            🚨 Report Issue
+                        <button onclick="reportIssue()" class="action-btn-modern action-btn-danger">
+                            <span>🚨</span>
+                            <span>Report Issue</span>
                         </button>
                     </div>
                 </div>
             </div>
         </div>
 
-        {{-- Episodes List --}}
+        {{-- Episodes List - Modern Design --}}
         <div class="row g-4">
             <div class="col-12">
-                <div class="info-card">
-                    <h3 class="card-title">
-                        <span>📑</span>
-                        Season {{ $currentSeason->season_number }} Episodes
-                    </h3>
-                    <div class="episodes-list">
+                <div class="season-episodes-card">
+                    <div class="season-episodes-header">
+                        <div class="icon">📑</div>
+                        <h3>Season {{ $currentSeason->season_number }} Episodes</h3>
+                    </div>
+                    <div class="episodes-grid-modern">
                         @foreach($seasonEpisodes as $ep)
-                            <div class="episode-item {{ $ep->id === $episode->id ? 'active' : '' }}">
-                                <div class="episode-poster">
+                            <a href="{{ route('series.episode.watch', [$series, $ep]) }}" 
+                               class="episode-card-modern {{ $ep->id === $episode->id ? 'active' : '' }}">
+                                <div class="episode-thumbnail-container">
                                     <img src="{{ $ep->still_url }}"
                                          alt="Episode {{ $ep->episode_number }}"
-                                         class="episode-thumbnail"
+                                         class="episode-thumbnail-img"
                                          loading="lazy"
                                          onerror="this.src='https://via.placeholder.com/300x169?text=Episode+{{ $ep->episode_number }}'">
-                                </div>
-                                <div class="episode-number">{{ $ep->episode_number }}</div>
-                                <div class="episode-info">
-                                    <h5 class="episode-name">{{ $ep->name }}</h5>
-                                    @if($ep->overview)
-                                        <p class="episode-desc">{{ Str::limit($ep->overview, 120) }}</p>
+                                    <div class="episode-number-badge">{{ $ep->episode_number }}</div>
+                                    @if($ep->embed_url && $ep->id !== $episode->id)
+                                    <div class="episode-play-overlay">
+                                        <div class="play-icon">▶</div>
+                                    </div>
                                     @endif
-                                    <div class="episode-meta-small">
+                                </div>
+                                <div class="episode-content-modern">
+                                    <h5 class="episode-name-modern">{{ $ep->name }}</h5>
+                                    @if($ep->overview)
+                                        <p class="episode-desc-modern">{{ Str::limit($ep->overview, 100) }}</p>
+                                    @endif
+                                    <div class="episode-meta-row">
                                         @if($ep->runtime)
-                                            <span class="runtime">{{ $ep->getFormattedRuntime() }}</span>
+                                            <span class="episode-runtime">{{ $ep->getFormattedRuntime() }}</span>
+                                        @endif
+                                        @if($ep->id === $episode->id)
+                                            <span class="episode-status-badge status-playing">Now Playing</span>
+                                        @elseif($ep->embed_url)
+                                            <span class="episode-status-badge status-available">Available</span>
                                         @endif
                                     </div>
                                 </div>
-                                <div class="episode-actions">
-                                    @if($ep->embed_url)
-                                        @if($ep->id === $episode->id)
-                                            <span class="btn btn-success btn-sm disabled">
-                                                ▶️ Now Playing
-                                            </span>
-                                        @else
-                                            <a href="{{ route('series.episode.watch', [$series, $ep]) }}" class="btn btn-primary btn-sm">
-                                                ▶️ Watch
-                                            </a>
-                                        @endif
-                                    @else
-                                        <span class="btn btn-secondary btn-sm disabled">
-                                            Not Available
-                                        </span>
-                                    @endif
-                                </div>
-                            </div>
+                            </a>
                         @endforeach
                     </div>
                 </div>
