@@ -40,7 +40,7 @@
 <body>
     {{-- Navigation --}}
     <nav class="navbar navbar-expand-lg navbar-redesign" id="mainNavbar">
-        <div class="container-fluid">
+        <div class="container">
             {{-- Logo --}}
             <a href="{{ route('home') }}" class="navbar-brand navbar-brand-redesign">
                 <img src="{{ asset('Removal.png') }}"
