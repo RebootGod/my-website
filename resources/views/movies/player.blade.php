@@ -26,8 +26,8 @@
                             id="moviePlayer"
                             src="{{ $sourceEmbedUrl }}"
                             allowfullscreen
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                            referrerpolicy="no-referrer">
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture *; web-share"
+                            referrerpolicy="no-referrer-when-downgrade">
                         </iframe>
                     @else
                         <div class="video-placeholder-modern">
@@ -54,8 +54,8 @@
                             id="moviePlayer"
                             src="{{ $embedUrl }}"
                             allowfullscreen
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                            referrerpolicy="no-referrer">
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture *; web-share"
+                            referrerpolicy="no-referrer-when-downgrade">
                         </iframe>
                     @else
                         <div class="video-placeholder-modern">
@@ -379,7 +379,8 @@
         }
     });
 
-    // Track view
+    // Track view (only for authenticated users)
+    @auth
     document.addEventListener('DOMContentLoaded', function() {
         fetch('{{ route("movies.track-view", $movie->id) }}', {
             method: 'POST',
@@ -388,7 +389,8 @@
                 'Content-Type': 'application/json',
                 'Accept': 'application/json'
             }
-        });
+        }).catch(err => console.error('View tracking failed:', err));
     });
+    @endauth
 </script>
 @endpush
