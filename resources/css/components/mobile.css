@@ -1,5 +1,53 @@
 /* Mobile & Responsive Optimizations */
 
+/* ========================================
+   NAVBAR MOBILE FIXES
+   ======================================== */
+@media (max-width: 768px) {
+    /* Fix notification dropdown positioning */
+    .dropdown-menu {
+        position: absolute !important;
+        min-width: 320px !important;
+        max-width: calc(100vw - 40px) !important;
+        left: auto !important;
+        right: 10px !important;
+        transform: none !important;
+    }
+
+    /* Fix notification text overflow */
+    .dropdown-menu .dropdown-item {
+        white-space: normal !important;
+        word-wrap: break-word !important;
+        padding: 12px 16px !important;
+        font-size: 0.9rem !important;
+    }
+
+    .dropdown-header {
+        font-size: 0.95rem !important;
+        padding: 12px 16px !important;
+    }
+
+    /* Watchlist button responsive */
+    .navbar .btn-outline-dark {
+        padding: 8px 12px !important;
+        font-size: 0.85rem !important;
+    }
+
+    .navbar .btn-outline-dark .fas {
+        font-size: 0.9rem !important;
+    }
+
+    /* Navbar spacing */
+    .navbar .me-2 {
+        margin-right: 0.5rem !important;
+    }
+
+    /* Logo size */
+    .navbar-brand img {
+        height: 35px !important;
+    }
+}
+
 /* Touch-friendly sizing */
 @media (max-width: 768px) {
     /* Minimum touch target size 44px */
@@ -404,5 +452,228 @@
     .movie-card-modern {
         break-inside: avoid;
         border: 1px solid #ccc;
+    }
+}
+
+/* ========================================
+   ADDITIONAL MOBILE FIXES - October 11, 2025
+   ======================================== */
+
+/* Fix filter modal spacing on mobile */
+@media (max-width: 768px) {
+    /* Remove extra whitespace at top of filter */
+    .filter-sidebar {
+        margin-top: 0 !important;
+        padding-top: 20px !important;
+    }
+
+    .filter-title {
+        margin-top: 0 !important;
+        padding-top: 0 !important;
+    }
+
+    /* Fix filter button positioning */
+    .filter-actions {
+        position: sticky;
+        bottom: 0;
+        background: #1a1a1a;
+        padding: 15px;
+        margin: 0 -20px -20px -20px;
+        border-radius: 0 0 16px 16px;
+    }
+
+    /* Better touch targets for checkboxes */
+    .filter-group label {
+        min-height: 44px !important;
+        display: flex !important;
+        align-items: center !important;
+        padding: 8px 0 !important;
+    }
+
+    input[type="checkbox"],
+    input[type="radio"] {
+        width: 20px !important;
+        height: 20px !important;
+        margin-right: 12px !important;
+    }
+}
+
+/* Fix movie/series card layout */
+@media (max-width: 768px) {
+    /* Better poster aspect ratio */
+    .movie-card-modern,
+    .series-card {
+        aspect-ratio: 2/3;
+        overflow: hidden;
+    }
+
+    .movie-poster,
+    .series-poster {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    /* Fix card title overflow */
+    .movie-title,
+    .series-title {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        line-height: 1.3 !important;
+        min-height: 2.6em;
+    }
+
+    /* Better spacing for genre badges */
+    .genre-badge,
+    .quality-badge {
+        font-size: 0.7rem !important;
+        padding: 4px 8px !important;
+        margin: 2px !important;
+    }
+
+    /* Fix rating stars */
+    .rating-stars {
+        font-size: 0.85rem !important;
+    }
+
+    /* Episode cards mobile */
+    .episode-card {
+        flex-direction: column !important;
+    }
+
+    .episode-thumbnail {
+        width: 100% !important;
+        height: auto !important;
+        aspect-ratio: 16/9;
+    }
+
+    .episode-info {
+        padding: 12px !important;
+    }
+}
+
+/* Fix series season/episode layout */
+@media (max-width: 768px) {
+    .season-selector {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: thin;
+    }
+
+    .season-button {
+        min-width: 100px !important;
+        white-space: nowrap !important;
+    }
+
+    /* Episode list mobile */
+    .episode-list {
+        gap: 12px !important;
+    }
+
+    .episode-number {
+        font-size: 1rem !important;
+        min-width: 36px !important;
+        min-height: 36px !important;
+    }
+
+    .episode-title {
+        font-size: 0.95rem !important;
+    }
+
+    .episode-duration {
+        font-size: 0.8rem !important;
+    }
+}
+
+/* Fix profile page mobile */
+@media (max-width: 768px) {
+    .profile-header {
+        flex-direction: column !important;
+        text-align: center !important;
+    }
+
+    .profile-avatar {
+        width: 100px !important;
+        height: 100px !important;
+        margin: 0 auto 16px !important;
+    }
+
+    .profile-stats {
+        justify-content: center !important;
+        gap: 20px !important;
+    }
+
+    .stat-item {
+        text-align: center !important;
+    }
+
+    /* Quick actions mobile */
+    .quick-actions {
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+    }
+
+    .action-card {
+        padding: 20px !important;
+    }
+}
+
+/* Fix watchlist mobile */
+@media (max-width: 768px) {
+    .watchlist-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 12px !important;
+    }
+
+    .watchlist-item {
+        padding: 12px !important;
+    }
+
+    .remove-watchlist-btn {
+        padding: 6px 10px !important;
+        font-size: 0.8rem !important;
+    }
+}
+
+/* Safe area insets for notch devices */
+@supports (padding: max(0px)) {
+    @media (max-width: 768px) {
+        .navbar {
+            padding-top: max(12px, env(safe-area-inset-top)) !important;
+        }
+
+        .container {
+            padding-left: max(15px, env(safe-area-inset-left)) !important;
+            padding-right: max(15px, env(safe-area-inset-right)) !important;
+        }
+
+        .filter-actions {
+            padding-bottom: max(15px, env(safe-area-inset-bottom)) !important;
+        }
+    }
+}
+
+/* Improve tap highlighting */
+@media (max-width: 768px) {
+    * {
+        -webkit-tap-highlight-color: rgba(0, 255, 136, 0.2);
+    }
+
+    button, a {
+        -webkit-tap-highlight-color: rgba(0, 255, 136, 0.3);
+    }
+
+    /* Smooth scrolling */
+    html {
+        scroll-behavior: smooth;
+    }
+
+    /* Better focus states for keyboard navigation */
+    *:focus-visible {
+        outline: 2px solid #00ff88 !important;
+        outline-offset: 2px !important;
     }
 }
