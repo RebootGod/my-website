@@ -8,6 +8,10 @@ export default defineConfig({
                 'resources/css/app.css',
                 'resources/js/app.js',
 
+                // Design System v2.0 (Foundation)
+                'resources/css/design-system.css',
+                'resources/css/utilities.css',
+
                 // Layout styles and scripts
                 'resources/css/layouts/app.css',
                 'resources/js/layouts/app.js',
@@ -33,7 +37,9 @@ export default defineConfig({
                 'resources/js/pages/series-detail.js',
                 'resources/js/pages/player.js',
 
-                // Component styles and scripts
+                // Component styles and scripts (v2.0)
+                'resources/css/components/buttons.css',
+                'resources/css/components/cards.css',
                 'resources/css/components/movie-cards.css',
                 'resources/css/components/loading.css',
                 'resources/css/components/animations.css',

@@ -1,0 +1,339 @@
+/**
+ * ========================================
+ * NOOBZ CINEMA - DESIGN SYSTEM
+ * ========================================
+ * 
+ * Modern Design System with CSS Variables
+ * Mobile-First, Responsive, Accessible
+ * 
+ * Created: October 11, 2025
+ * Version: 2.0
+ * 
+ * Usage: Import this file first before other CSS
+ * All components should use these CSS variables
+ * ========================================
+ */
+
+:root {
+    /* ========================================
+       COLOR PALETTE - Enhanced Dark Theme
+       ======================================== */
+    
+    /* Background Colors */
+    --bg-primary: #0a0e27;        /* Deep navy - main background */
+    --bg-secondary: #141b34;      /* Lighter navy - cards, sections */
+    --bg-tertiary: #1e2849;       /* Component backgrounds */
+    --bg-hover: #252f4a;          /* Hover state background */
+    
+    /* Accent Colors */
+    --accent-primary: #6366f1;    /* Indigo - primary actions, links */
+    --accent-secondary: #8b5cf6;  /* Purple - secondary actions */
+    --accent-success: #10b981;    /* Green - success states, ratings */
+    --accent-warning: #f59e0b;    /* Amber - warnings, HD badge */
+    --accent-danger: #ef4444;     /* Red - errors, live badges, delete */
+    --accent-info: #3b82f6;       /* Blue - info messages */
+    
+    /* Text Colors */
+    --text-primary: #f8fafc;      /* Pure white - headings, important text */
+    --text-secondary: #cbd5e1;    /* Light gray - body text, paragraphs */
+    --text-tertiary: #64748b;     /* Gray - metadata, captions */
+    --text-muted: #475569;        /* Muted gray - disabled, placeholders */
+    
+    /* Border Colors */
+    --border-primary: rgba(255, 255, 255, 0.1);
+    --border-secondary: rgba(255, 255, 255, 0.05);
+    --border-focus: rgba(99, 102, 241, 0.5);
+    
+    /* Overlay Colors */
+    --overlay-dark: rgba(10, 14, 39, 0.9);
+    --overlay-light: rgba(10, 14, 39, 0.7);
+    --overlay-gradient: linear-gradient(180deg, transparent 0%, rgba(10, 14, 39, 0.9) 100%);
+    
+    
+    /* ========================================
+       GRADIENTS
+       ======================================== */
+    
+    --gradient-primary: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    --gradient-secondary: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
+    --gradient-success: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+    --gradient-hero: linear-gradient(180deg, transparent 0%, #0a0e27 100%);
+    --gradient-card: linear-gradient(145deg, #141b34 0%, #1e2849 100%);
+    --gradient-glow: radial-gradient(circle at center, rgba(99, 102, 241, 0.15) 0%, transparent 70%);
+    
+    
+    /* ========================================
+       GLASSMORPHISM
+       ======================================== */
+    
+    --glass-bg: rgba(20, 27, 52, 0.7);
+    --glass-bg-light: rgba(20, 27, 52, 0.5);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --glass-blur: blur(10px);
+    --glass-blur-heavy: blur(20px);
+    
+    
+    /* ========================================
+       SHADOWS
+       ======================================== */
+    
+    --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.25);
+    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.5);
+    --shadow-xl: 0 12px 24px rgba(0, 0, 0, 0.6);
+    --shadow-2xl: 0 20px 40px rgba(0, 0, 0, 0.7);
+    
+    /* Special Shadows */
+    --shadow-glow: 0 0 20px rgba(99, 102, 241, 0.3);
+    --shadow-glow-hover: 0 0 30px rgba(99, 102, 241, 0.5);
+    --shadow-inner: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+    
+    
+    /* ========================================
+       TYPOGRAPHY
+       ======================================== */
+    
+    /* Font Families */
+    --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
+    --font-display: 'Poppins', 'Inter', -apple-system, sans-serif;
+    --font-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+    
+    /* Font Sizes - Mobile First */
+    --text-xs: 0.75rem;      /* 12px */
+    --text-sm: 0.875rem;     /* 14px */
+    --text-base: 1rem;       /* 16px */
+    --text-lg: 1.125rem;     /* 18px */
+    --text-xl: 1.25rem;      /* 20px */
+    --text-2xl: 1.5rem;      /* 24px */
+    --text-3xl: 1.875rem;    /* 30px */
+    --text-4xl: 2.25rem;     /* 36px */
+    --text-5xl: 3rem;        /* 48px */
+    
+    /* Font Weights */
+    --font-normal: 400;
+    --font-medium: 500;
+    --font-semibold: 600;
+    --font-bold: 700;
+    --font-extrabold: 800;
+    
+    /* Line Heights */
+    --leading-none: 1;
+    --leading-tight: 1.25;
+    --leading-snug: 1.375;
+    --leading-normal: 1.5;
+    --leading-relaxed: 1.625;
+    --leading-loose: 2;
+    
+    
+    /* ========================================
+       SPACING SYSTEM - 8px base unit
+       ======================================== */
+    
+    --space-0: 0;
+    --space-1: 0.25rem;      /* 4px */
+    --space-2: 0.5rem;       /* 8px */
+    --space-3: 0.75rem;      /* 12px */
+    --space-4: 1rem;         /* 16px */
+    --space-5: 1.25rem;      /* 20px */
+    --space-6: 1.5rem;       /* 24px */
+    --space-7: 1.75rem;      /* 28px */
+    --space-8: 2rem;         /* 32px */
+    --space-10: 2.5rem;      /* 40px */
+    --space-12: 3rem;        /* 48px */
+    --space-14: 3.5rem;      /* 56px */
+    --space-16: 4rem;        /* 64px */
+    --space-20: 5rem;        /* 80px */
+    --space-24: 6rem;        /* 96px */
+    
+    
+    /* ========================================
+       BORDER RADIUS
+       ======================================== */
+    
+    --radius-none: 0;
+    --radius-sm: 0.375rem;   /* 6px */
+    --radius-md: 0.5rem;     /* 8px */
+    --radius-lg: 0.75rem;    /* 12px */
+    --radius-xl: 1rem;       /* 16px */
+    --radius-2xl: 1.5rem;    /* 24px */
+    --radius-3xl: 2rem;      /* 32px */
+    --radius-full: 9999px;   /* Pills, circular */
+    
+    
+    /* ========================================
+       Z-INDEX LAYERS
+       ======================================== */
+    
+    --z-base: 1;
+    --z-dropdown: 1000;
+    --z-sticky: 1020;
+    --z-fixed: 1030;
+    --z-modal-backdrop: 1040;
+    --z-modal: 1050;
+    --z-popover: 1060;
+    --z-tooltip: 1070;
+    
+    
+    /* ========================================
+       TRANSITIONS & ANIMATIONS
+       ======================================== */
+    
+    /* Duration */
+    --duration-fast: 150ms;
+    --duration-normal: 250ms;
+    --duration-slow: 350ms;
+    --duration-slower: 500ms;
+    
+    /* Easing Functions */
+    --ease-in: cubic-bezier(0.4, 0, 1, 1);
+    --ease-out: cubic-bezier(0, 0, 0.2, 1);
+    --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+    --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    
+    /* Common Transitions */
+    --transition-base: all var(--duration-normal) var(--ease-in-out);
+    --transition-colors: color var(--duration-normal) var(--ease-in-out),
+                         background-color var(--duration-normal) var(--ease-in-out),
+                         border-color var(--duration-normal) var(--ease-in-out);
+    --transition-transform: transform var(--duration-normal) var(--ease-out);
+    --transition-opacity: opacity var(--duration-normal) var(--ease-in-out);
+    
+    
+    /* ========================================
+       RESPONSIVE BREAKPOINTS
+       ======================================== */
+    
+    --screen-xs: 320px;      /* Small phones */
+    --screen-sm: 375px;      /* iPhone SE, standard phones */
+    --screen-md: 414px;      /* Large phones (iPhone 14 Pro Max) */
+    --screen-lg: 768px;      /* Tablets portrait */
+    --screen-xl: 1024px;     /* Tablets landscape / Small laptops */
+    --screen-2xl: 1280px;    /* Laptops */
+    --screen-3xl: 1536px;    /* Desktop */
+    --screen-4xl: 1920px;    /* Large desktop / TV */
+    
+    
+    /* ========================================
+       TOUCH TARGETS
+       ======================================== */
+    
+    --touch-target-min: 44px;    /* iOS minimum */
+    --touch-target-android: 48px; /* Android minimum */
+    
+    
+    /* ========================================
+       CONTENT WIDTHS
+       ======================================== */
+    
+    --container-xs: 640px;
+    --container-sm: 768px;
+    --container-md: 1024px;
+    --container-lg: 1280px;
+    --container-xl: 1536px;
+    --container-2xl: 1920px;
+}
+
+
+/* ========================================
+   GLOBAL RESETS & BASE STYLES
+   ======================================== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+}
+
+body {
+    font-family: var(--font-primary);
+    font-size: var(--text-base);
+    line-height: var(--leading-normal);
+    color: var(--text-secondary);
+    background-color: var(--bg-primary);
+    min-height: 100vh;
+}
+
+/* Smooth Scrolling */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Selection Colors */
+::selection {
+    background-color: var(--accent-primary);
+    color: white;
+}
+
+::-moz-selection {
+    background-color: var(--accent-primary);
+    color: white;
+}
+
+/* Focus Styles for Accessibility */
+:focus-visible {
+    outline: 2px solid var(--accent-primary);
+    outline-offset: 2px;
+}
+
+/* Remove focus outline for mouse users */
+:focus:not(:focus-visible) {
+    outline: none;
+}
+
+
+/* ========================================
+   UTILITY CLASSES - COMMON PATTERNS
+   ======================================== */
+
+/* Text Utilities */
+.text-primary { color: var(--text-primary); }
+.text-secondary { color: var(--text-secondary); }
+.text-tertiary { color: var(--text-tertiary); }
+.text-muted { color: var(--text-muted); }
+
+/* Background Utilities */
+.bg-primary { background-color: var(--bg-primary); }
+.bg-secondary { background-color: var(--bg-secondary); }
+.bg-tertiary { background-color: var(--bg-tertiary); }
+
+/* Gradient Backgrounds */
+.bg-gradient-primary { background: var(--gradient-primary); }
+.bg-gradient-secondary { background: var(--gradient-secondary); }
+.bg-gradient-success { background: var(--gradient-success); }
+
+/* Glass Effect */
+.glass {
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--glass-border);
+}
+
+/* Shadow Utilities */
+.shadow-sm { box-shadow: var(--shadow-sm); }
+.shadow-md { box-shadow: var(--shadow-md); }
+.shadow-lg { box-shadow: var(--shadow-lg); }
+.shadow-xl { box-shadow: var(--shadow-xl); }
+.shadow-glow { box-shadow: var(--shadow-glow); }
+
+/* Border Radius */
+.rounded-sm { border-radius: var(--radius-sm); }
+.rounded-md { border-radius: var(--radius-md); }
+.rounded-lg { border-radius: var(--radius-lg); }
+.rounded-xl { border-radius: var(--radius-xl); }
+.rounded-2xl { border-radius: var(--radius-2xl); }
+.rounded-full { border-radius: var(--radius-full); }
+
+/* Transitions */
+.transition { transition: var(--transition-base); }
+.transition-colors { transition: var(--transition-colors); }
+.transition-transform { transition: var(--transition-transform); }
+.transition-opacity { transition: var(--transition-opacity); }

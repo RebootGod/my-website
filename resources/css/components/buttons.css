@@ -1,0 +1,419 @@
+/**
+ * ========================================
+ * NOOBZ CINEMA - BUTTON COMPONENTS
+ * ========================================
+ * 
+ * Modern button styles with variants
+ * Touch-friendly (min 48x48px for mobile)
+ * Accessible & Animated
+ * 
+ * Created: October 11, 2025
+ * Version: 2.0
+ * 
+ * Usage:
+ * <button class="btn btn-primary">Click me</button>
+ * <button class="btn btn-secondary">Secondary</button>
+ * ========================================
+ */
+
+/* ========================================
+   BASE BUTTON STYLES
+   ======================================== */
+
+.btn {
+    /* Layout */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    
+    /* Sizing */
+    min-height: var(--touch-target-android); /* 48px for touch */
+    padding: var(--space-3) var(--space-6);
+    
+    /* Typography */
+    font-family: var(--font-primary);
+    font-size: var(--text-base);
+    font-weight: var(--font-semibold);
+    line-height: var(--leading-none);
+    text-decoration: none;
+    text-align: center;
+    white-space: nowrap;
+    
+    /* Visual */
+    border: none;
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    user-select: none;
+    
+    /* Transitions */
+    transition: var(--transition-colors), var(--transition-transform);
+    
+    /* Disable text selection */
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* Button hover state */
+.btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+}
+
+/* Button active/pressed state */
+.btn:active:not(:disabled) {
+    transform: translateY(0) scale(0.98);
+}
+
+/* Disabled state */
+.btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+/* Focus state for accessibility */
+.btn:focus-visible {
+    outline: 2px solid var(--accent-primary);
+    outline-offset: 2px;
+}
+
+
+/* ========================================
+   BUTTON VARIANTS
+   ======================================== */
+
+/* Primary Button - Main actions */
+.btn-primary {
+    background: var(--gradient-primary);
+    color: white;
+    box-shadow: var(--shadow-md);
+}
+
+.btn-primary:hover:not(:disabled) {
+    box-shadow: var(--shadow-lg), var(--shadow-glow);
+}
+
+/* Secondary Button - Secondary actions */
+.btn-secondary {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-primary);
+}
+
+.btn-secondary:hover:not(:disabled) {
+    background: var(--bg-hover);
+    border-color: var(--accent-primary);
+}
+
+/* Success Button - Positive actions */
+.btn-success {
+    background: var(--gradient-success);
+    color: white;
+    box-shadow: var(--shadow-md);
+}
+
+.btn-success:hover:not(:disabled) {
+    box-shadow: var(--shadow-lg);
+    filter: brightness(1.1);
+}
+
+/* Danger Button - Destructive actions */
+.btn-danger {
+    background: var(--accent-danger);
+    color: white;
+    box-shadow: var(--shadow-md);
+}
+
+.btn-danger:hover:not(:disabled) {
+    background: #dc2626;
+    box-shadow: var(--shadow-lg);
+}
+
+/* Warning Button */
+.btn-warning {
+    background: var(--accent-warning);
+    color: white;
+    box-shadow: var(--shadow-md);
+}
+
+.btn-warning:hover:not(:disabled) {
+    background: #d97706;
+    box-shadow: var(--shadow-lg);
+}
+
+/* Info Button */
+.btn-info {
+    background: var(--accent-info);
+    color: white;
+    box-shadow: var(--shadow-md);
+}
+
+.btn-info:hover:not(:disabled) {
+    background: #2563eb;
+    box-shadow: var(--shadow-lg);
+}
+
+
+/* ========================================
+   OUTLINE BUTTON VARIANTS
+   ======================================== */
+
+.btn-outline {
+    background: transparent;
+    border: 2px solid var(--border-primary);
+    color: var(--text-secondary);
+}
+
+.btn-outline:hover:not(:disabled) {
+    background: var(--bg-tertiary);
+    border-color: var(--accent-primary);
+    color: var(--text-primary);
+}
+
+.btn-outline-primary {
+    background: transparent;
+    border: 2px solid var(--accent-primary);
+    color: var(--accent-primary);
+}
+
+.btn-outline-primary:hover:not(:disabled) {
+    background: var(--accent-primary);
+    color: white;
+}
+
+.btn-outline-danger {
+    background: transparent;
+    border: 2px solid var(--accent-danger);
+    color: var(--accent-danger);
+}
+
+.btn-outline-danger:hover:not(:disabled) {
+    background: var(--accent-danger);
+    color: white;
+}
+
+
+/* ========================================
+   GHOST BUTTON - Subtle, text-like
+   ======================================== */
+
+.btn-ghost {
+    background: transparent;
+    color: var(--text-secondary);
+    box-shadow: none;
+}
+
+.btn-ghost:hover:not(:disabled) {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+
+
+/* ========================================
+   LINK BUTTON - Looks like a link
+   ======================================== */
+
+.btn-link {
+    background: transparent;
+    color: var(--accent-primary);
+    text-decoration: underline;
+    min-height: auto;
+    padding: 0;
+    box-shadow: none;
+}
+
+.btn-link:hover:not(:disabled) {
+    color: var(--accent-secondary);
+    transform: none;
+}
+
+
+/* ========================================
+   BUTTON SIZES
+   ======================================== */
+
+.btn-xs {
+    min-height: 32px;
+    padding: var(--space-1) var(--space-3);
+    font-size: var(--text-xs);
+}
+
+.btn-sm {
+    min-height: 40px;
+    padding: var(--space-2) var(--space-4);
+    font-size: var(--text-sm);
+}
+
+.btn-lg {
+    min-height: 56px;
+    padding: var(--space-4) var(--space-8);
+    font-size: var(--text-lg);
+}
+
+.btn-xl {
+    min-height: 64px;
+    padding: var(--space-5) var(--space-10);
+    font-size: var(--text-xl);
+}
+
+
+/* ========================================
+   BUTTON SHAPES
+   ======================================== */
+
+.btn-square {
+    aspect-ratio: 1;
+    padding: var(--space-3);
+    min-width: var(--touch-target-android);
+}
+
+.btn-circle {
+    aspect-ratio: 1;
+    padding: var(--space-3);
+    min-width: var(--touch-target-android);
+    border-radius: var(--radius-full);
+}
+
+.btn-pill {
+    border-radius: var(--radius-full);
+}
+
+
+/* ========================================
+   BUTTON WIDTHS
+   ======================================== */
+
+.btn-block {
+    width: 100%;
+}
+
+.btn-wide {
+    min-width: 200px;
+}
+
+
+/* ========================================
+   BUTTON GROUPS
+   ======================================== */
+
+.btn-group {
+    display: inline-flex;
+    gap: var(--space-2);
+}
+
+.btn-group .btn:not(:last-child) {
+    margin-right: 0;
+}
+
+
+/* ========================================
+   FLOATING ACTION BUTTON (FAB)
+   ======================================== */
+
+.btn-fab {
+    position: fixed;
+    bottom: var(--space-6);
+    right: var(--space-6);
+    width: 56px;
+    height: 56px;
+    padding: 0;
+    border-radius: var(--radius-full);
+    background: var(--gradient-primary);
+    color: white;
+    box-shadow: var(--shadow-xl);
+    z-index: var(--z-fixed);
+}
+
+.btn-fab:hover:not(:disabled) {
+    box-shadow: var(--shadow-2xl), var(--shadow-glow-hover);
+    transform: translateY(-4px) scale(1.05);
+}
+
+/* FAB on mobile */
+@media (max-width: 767px) {
+    .btn-fab {
+        bottom: var(--space-4);
+        right: var(--space-4);
+    }
+}
+
+
+/* ========================================
+   BUTTON WITH ICON
+   ======================================== */
+
+.btn-icon {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.btn-icon i,
+.btn-icon svg {
+    font-size: 1.2em;
+}
+
+/* Icon only button */
+.btn-icon-only {
+    padding: var(--space-3);
+    aspect-ratio: 1;
+}
+
+
+/* ========================================
+   LOADING STATE
+   ======================================== */
+
+.btn-loading {
+    position: relative;
+    color: transparent;
+    pointer-events: none;
+}
+
+.btn-loading::after {
+    content: '';
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    top: 50%;
+    left: 50%;
+    margin-left: -8px;
+    margin-top: -8px;
+    border: 2px solid currentColor;
+    border-radius: 50%;
+    border-top-color: transparent;
+    animation: btn-spin 0.6s linear infinite;
+}
+
+@keyframes btn-spin {
+    to { transform: rotate(360deg); }
+}
+
+
+/* ========================================
+   RESPONSIVE ADJUSTMENTS
+   ======================================== */
+
+/* Tablet and below */
+@media (max-width: 1023px) {
+    .btn {
+        /* Slightly larger touch targets on tablets */
+        min-height: 44px;
+    }
+    
+    .btn-lg {
+        min-height: 52px;
+    }
+}
+
+/* Mobile only */
+@media (max-width: 767px) {
+    .btn {
+        /* Optimize for mobile touch */
+        padding: var(--space-3) var(--space-5);
+    }
+    
+    /* Full width buttons on mobile (optional class) */
+    .btn-mobile-full {
+        width: 100%;
+    }
+}
