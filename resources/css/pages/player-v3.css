@@ -1,0 +1,660 @@
+/* ============================================
+   MOVIE PLAYER PAGE V3 - MODERN REDESIGN
+   ============================================ */
+
+.player-wrapper {
+    background: linear-gradient(180deg, #0a0e1a 0%, #151922 100%);
+    min-height: 100vh;
+    padding: 20px 0;
+}
+
+/* ============================================
+   VIDEO PLAYER SECTION
+   ============================================ */
+.video-player-section {
+    margin-bottom: 24px;
+}
+
+.video-container-modern {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16/9;
+    border-radius: 20px;
+    overflow: hidden;
+    background: #000000;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.video-container-modern iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+/* Video Placeholder */
+.video-placeholder-modern {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #1e293b, #0f172a);
+    padding: 40px;
+    text-align: center;
+}
+
+.placeholder-icon-modern {
+    font-size: 4rem;
+    margin-bottom: 20px;
+    opacity: 0.7;
+}
+
+.placeholder-icon-modern + h3 {
+    color: #ffffff;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+}
+
+.placeholder-icon-modern ~ p {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 1rem;
+    margin-bottom: 24px;
+    max-width: 500px;
+}
+
+/* ============================================
+   QUICK ACTIONS BAR - HORIZONTAL
+   ============================================ */
+.quick-actions-bar {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 24px;
+}
+
+.action-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    background: rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 50px;
+    color: #ffffff;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.action-pill:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+    color: #ffffff;
+}
+
+.action-pill i {
+    font-size: 1rem;
+}
+
+/* Primary Action */
+.action-pill.primary {
+    background: linear-gradient(135deg, #ec4899, #f43f5e);
+    border-color: rgba(236, 72, 153, 0.3);
+}
+
+.action-pill.primary:hover {
+    background: linear-gradient(135deg, #f43f5e, #ec4899);
+    box-shadow: 0 8px 20px rgba(236, 72, 153, 0.4);
+}
+
+/* Success Action */
+.action-pill.success {
+    background: linear-gradient(135deg, #10b981, #059669);
+    border-color: rgba(16, 185, 129, 0.3);
+}
+
+.action-pill.success:hover {
+    background: linear-gradient(135deg, #059669, #10b981);
+    box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
+}
+
+/* Danger Action */
+.action-pill.danger {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    border-color: rgba(239, 68, 68, 0.3);
+}
+
+.action-pill.danger:hover {
+    background: linear-gradient(135deg, #dc2626, #ef4444);
+    box-shadow: 0 8px 20px rgba(239, 68, 68, 0.4);
+}
+
+/* ============================================
+   SOURCE SELECTOR - TABS STYLE
+   ============================================ */
+.sources-section {
+    margin-bottom: 24px;
+}
+
+.section-header-modern {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #ffffff;
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 16px;
+}
+
+.section-header-modern i {
+    color: #8b5cf6;
+    font-size: 1.2rem;
+}
+
+.sources-tabs {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.source-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 24px;
+    background: rgba(255, 255, 255, 0.04);
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.95rem;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.source-tab:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(139, 92, 246, 0.3);
+    color: #ffffff;
+}
+
+.source-tab.active {
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(99, 102, 241, 0.2));
+    border-color: rgba(139, 92, 246, 0.5);
+    color: #c4b5fd;
+}
+
+.source-tab i {
+    font-size: 1rem;
+}
+
+.quality-badge-inline {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 8px;
+    background: linear-gradient(135deg, #10b981, #059669);
+    border-radius: 6px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: 0.5px;
+}
+
+/* ============================================
+   MOVIE INFO CARD - COMPACT
+   ============================================ */
+.movie-info-compact {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 20px;
+    padding: 24px;
+    margin-bottom: 24px;
+}
+
+.movie-info-header {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 24px;
+}
+
+.movie-poster-compact {
+    flex-shrink: 0;
+    width: 120px;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.movie-poster-compact img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.movie-details-compact {
+    flex: 1;
+}
+
+.movie-title-compact {
+    color: #ffffff;
+    font-size: 1.5rem;
+    font-weight: 800;
+    margin-bottom: 8px;
+    line-height: 1.2;
+}
+
+.movie-meta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.meta-item-inline {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.9rem;
+}
+
+.meta-item-inline i {
+    color: #8b5cf6;
+    font-size: 1rem;
+}
+
+.meta-item-inline.rating {
+    color: #fbbf24;
+}
+
+.meta-item-inline.rating i {
+    color: #fbbf24;
+}
+
+/* Genres Inline */
+.genres-inline {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.genre-tag-inline {
+    display: inline-block;
+    padding: 6px 16px;
+    background: rgba(139, 92, 246, 0.15);
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    border-radius: 50px;
+    color: #a78bfa;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.genre-tag-inline:hover {
+    background: rgba(139, 92, 246, 0.25);
+    border-color: rgba(139, 92, 246, 0.5);
+    color: #c4b5fd;
+}
+
+/* Synopsis Section */
+.synopsis-section {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.synopsis-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #ffffff;
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+}
+
+.synopsis-title i {
+    color: #ec4899;
+}
+
+.synopsis-text {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.95rem;
+    line-height: 1.7;
+    margin: 0;
+}
+
+/* ============================================
+   RELATED MOVIES - GRID
+   ============================================ */
+.related-section {
+    margin-top: 40px;
+}
+
+.related-section .section-header-modern {
+    margin-bottom: 20px;
+}
+
+.related-movies-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 20px;
+}
+
+.related-movie-card-modern {
+    position: relative;
+    border-radius: 14px;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.related-movie-card-modern:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+    border-color: rgba(255, 255, 255, 0.12);
+}
+
+.related-movie-poster {
+    position: relative;
+    aspect-ratio: 2/3;
+    overflow: hidden;
+}
+
+.related-movie-poster img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+}
+
+.related-movie-card-modern:hover .related-movie-poster img {
+    transform: scale(1.08);
+}
+
+.related-movie-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.8) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.related-movie-card-modern:hover .related-movie-overlay {
+    opacity: 1;
+}
+
+.play-icon-overlay {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #ec4899, #f43f5e);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    color: #ffffff;
+}
+
+.related-movie-info {
+    padding: 14px;
+}
+
+.related-movie-title {
+    color: #ffffff;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+    line-height: 1.3;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.related-movie-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.75rem;
+}
+
+.related-movie-year {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.related-movie-rating {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: #fbbf24;
+    font-weight: 600;
+}
+
+/* ============================================
+   REPORT MODAL - MODERN
+   ============================================ */
+.report-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(8px);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.report-modal-overlay.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.report-modal-content {
+    background: rgba(30, 35, 50, 0.95);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 24px;
+    padding: 32px;
+    max-width: 500px;
+    width: 100%;
+    transform: scale(0.9);
+    transition: transform 0.3s ease;
+}
+
+.report-modal-overlay.show .report-modal-content {
+    transform: scale(1);
+}
+
+.report-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.report-modal-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #ffffff;
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+.close-modal-btn {
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 2rem;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0;
+    transition: color 0.3s ease;
+}
+
+.close-modal-btn:hover {
+    color: #ffffff;
+}
+
+.form-group-modern {
+    margin-bottom: 20px;
+}
+
+.form-label-modern {
+    display: block;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.form-select-modern,
+.form-textarea-modern {
+    width: 100%;
+    background: rgba(55, 65, 81, 0.6);
+    border: 2px solid rgba(75, 85, 99, 0.4);
+    border-radius: 12px;
+    padding: 12px 16px;
+    color: #ffffff;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+}
+
+.form-select-modern:focus,
+.form-textarea-modern:focus {
+    outline: none;
+    border-color: rgba(139, 92, 246, 0.6);
+    background: rgba(55, 65, 81, 0.8);
+}
+
+.form-textarea-modern {
+    resize: none;
+    font-family: inherit;
+}
+
+.form-actions {
+    display: flex;
+    gap: 12px;
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+
+/* Tablets and below */
+@media (max-width: 991px) {
+    .movie-info-header {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .movie-poster-compact {
+        width: 140px;
+    }
+
+    .movie-meta-row {
+        justify-content: center;
+    }
+
+    .genres-inline {
+        justify-content: center;
+    }
+}
+
+/* Mobile devices */
+@media (max-width: 767px) {
+    .player-wrapper {
+        padding: 12px 0;
+    }
+
+    .video-container-modern {
+        border-radius: 16px;
+    }
+
+    .quick-actions-bar {
+        gap: 8px;
+    }
+
+    .action-pill {
+        padding: 10px 16px;
+        font-size: 0.85rem;
+    }
+
+    .sources-tabs {
+        gap: 8px;
+    }
+
+    .source-tab {
+        padding: 10px 16px;
+        font-size: 0.85rem;
+    }
+
+    .movie-info-compact {
+        padding: 20px;
+    }
+
+    .movie-title-compact {
+        font-size: 1.2rem;
+    }
+
+    .related-movies-grid {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 12px;
+    }
+
+    .report-modal-content {
+        padding: 24px;
+    }
+}
+
+/* Small mobile */
+@media (max-width: 575px) {
+    .movie-poster-compact {
+        width: 100px;
+    }
+
+    .movie-title-compact {
+        font-size: 1.1rem;
+    }
+
+    .synopsis-text {
+        font-size: 0.9rem;
+    }
+
+    .action-pill {
+        font-size: 0.8rem;
+        padding: 8px 14px;
+    }
+}
