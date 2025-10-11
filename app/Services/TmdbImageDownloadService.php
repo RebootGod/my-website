@@ -221,8 +221,22 @@ class TmdbImageDownloadService
             // Full storage path
             $storagePath = "public/tmdb_images/{$directory}/{$filename}";
 
+            // Ensure directory exists
+            $directoryPath = "public/tmdb_images/{$directory}";
+            if (!Storage::exists($directoryPath)) {
+                Storage::makeDirectory($directoryPath, 0755, true);
+            }
+
             // Store image
-            Storage::put($storagePath, $imageContent);
+            $saved = Storage::put($storagePath, $imageContent);
+
+            if (!$saved) {
+                Log::error('Failed to save TMDB image to storage', [
+                    'path' => $storagePath,
+                    'url' => $tmdbUrl
+                ]);
+                return null;
+            }
 
             // Return public URL path
             $publicPath = "tmdb_images/{$directory}/{$filename}";
