@@ -238,16 +238,13 @@ class TmdbImageDownloadService
                 return null;
             }
 
-            // Return public URL path
-            $publicPath = "tmdb_images/{$directory}/{$filename}";
-
             Log::info('TMDB image downloaded successfully', [
                 'tmdb_url' => $tmdbUrl,
-                'local_path' => $publicPath,
+                'local_path' => $storagePath,
                 'size' => strlen($imageContent)
             ]);
 
-            return $publicPath;
+            return $storagePath;
 
         } catch (\Exception $e) {
             Log::error('TMDB image download exception', [
