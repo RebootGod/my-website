@@ -312,6 +312,27 @@ class Movie extends Model
     }
 
     /**
+     * Get download URL from sources
+     * Returns the embed_url from the second source (download source)
+     */
+    public function getDownloadUrlAttribute(): ?string
+    {
+        // Get the second source (priority 2 = download source)
+        $downloadSource = $this->sources()->where('priority', 2)->first();
+        
+        if ($downloadSource) {
+            return $downloadSource->embed_url;
+        }
+        
+        // Fallback: Check for source with "Download" in name
+        $downloadSource = $this->sources()
+            ->where('source_name', 'LIKE', '%Download%')
+            ->first();
+            
+        return $downloadSource ? $downloadSource->embed_url : null;
+    }
+
+    /**
      * Get formatted rating
      */
     public function getFormattedRating(): string
