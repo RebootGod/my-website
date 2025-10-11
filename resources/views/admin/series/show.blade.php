@@ -27,7 +27,7 @@
             {{-- Poster --}}
             <div class="lg:col-span-1">
                 <img 
-                    src="{{ $series->poster_path ? 'https://image.tmdb.org/t/p/w500' . $series->poster_path : ($series->poster_url ?: 'https://via.placeholder.com/300x450') }}" 
+                    src="{{ $series->poster_url }}" 
                     alt="{{ $series->title }}" 
                     class="w-full rounded-lg"
                 >

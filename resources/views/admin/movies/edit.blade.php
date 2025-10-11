@@ -98,12 +98,12 @@
                 <input 
                     type="url" 
                     name="poster_url" 
-                    value="{{ old('poster_url', $movie->poster_path ? 'https://image.tmdb.org/t/p/w500' . $movie->poster_path : '') }}"
-                    placeholder="https://image.tmdb.org/..."
+                    value="{{ old('poster_url', $movie->poster_url) }}"
+                    placeholder="https://..."
                     class="w-full px-4 py-2 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400"
                 >
-                @if($movie->poster_path)
-                    <img src="https://image.tmdb.org/t/p/w500{{ $movie->poster_path }}" alt="Current poster" class="mt-2 h-32 rounded">
+                @if($movie->poster_url)
+                    <img src="{{ $movie->poster_url }}" alt="Current poster" class="mt-2 h-32 rounded">
                 @endif
                 @error('poster_url')
                     <p class="text-red-400 text-sm mt-1">{{ $message }}</p>
@@ -116,12 +116,12 @@
                 <input 
                     type="url" 
                     name="backdrop_url" 
-                    value="{{ old('backdrop_url', $movie->backdrop_path ? 'https://image.tmdb.org/t/p/w1280' . $movie->backdrop_path : '') }}"
-                    placeholder="https://image.tmdb.org/..."
+                    value="{{ old('backdrop_url', $movie->backdrop_url) }}"
+                    placeholder="https://..."
                     class="w-full px-4 py-2 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400"
                 >
-                @if($movie->backdrop_path)
-                    <img src="https://image.tmdb.org/t/p/w1280{{ $movie->backdrop_path }}" alt="Current backdrop" class="mt-2 h-32 rounded">
+                @if($movie->backdrop_url)
+                    <img src="{{ $movie->backdrop_url }}" alt="Current backdrop" class="mt-2 h-32 rounded">
                 @endif
                 @error('backdrop_url')
                     <p class="text-red-400 text-sm mt-1">{{ $message }}</p>

@@ -66,7 +66,7 @@
                 <tr class="hover:bg-gray-700">
                     <td class="px-6 py-4">
                         <div class="flex items-center">
-                            <img src="{{ $item->poster_path ? 'https://image.tmdb.org/t/p/w200' . $item->poster_path : ($item->poster_url ?: 'https://via.placeholder.com/50x75') }}" alt="{{ $item->title }}" class="w-12 h-16 rounded mr-4">
+                            <img src="{{ $item->poster_url }}" alt="{{ $item->title }}" class="w-12 h-16 rounded mr-4">
                             <div>
                                 <div class="text-white font-medium">{{ $item->title }}</div>
                                 <div class="text-gray-400 text-sm">{{ Str::limit($item->description, 50) }}</div>
