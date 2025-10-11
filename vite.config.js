@@ -55,8 +55,9 @@ export default defineConfig({
                 'resources/css/components/player-controls-v2.css',
                 'resources/css/components/player-mobile.css',
                 'resources/css/components/skeleton-loader.css',  // Phase 6.1
-                'resources/css/components/loading-states.css',   // Phase 6.1
+                'resources/css/components/loading-states.css', // Phase 6.1
                 'resources/css/components/micro-interactions.css', // Phase 6.2
+                'resources/css/components/accessibility.css', // Phase 6.4
                 'resources/css/components/loading.css',
                 'resources/css/components/animations.css',
                 'resources/css/components/mobile.css',
@@ -69,6 +70,8 @@ export default defineConfig({
                 'resources/js/components/lazy-load.js', // Phase 6.3
                 'resources/js/components/performance-monitor.js', // Phase 6.3
                 'resources/js/components/cache-strategy.js', // Phase 6.3
+                'resources/js/components/keyboard-nav.js', // Phase 6.4
+                'resources/js/components/aria-labels.js', // Phase 6.4
             ],
             refresh: true,
         }),

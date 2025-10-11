@@ -1,0 +1,342 @@
+/* ======================================== */
+/* ACCESSIBILITY COMPONENT */
+/* ======================================== */
+/* Phase 6.4: Accessibility Audit (WCAG 2.1 AA) */
+/* Keyboard focus, color contrast, screen reader support */
+
+/* ======================================== */
+/* SKIP TO CONTENT */
+/* ======================================== */
+.skip-to-content {
+    position: absolute;
+    top: -100px;
+    left: 10px;
+    z-index: 9999;
+    padding: 12px 24px;
+    background: #1a1a1a;
+    color: #fff;
+    border: 2px solid #3b82f6;
+    border-radius: 8px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: top 0.3s ease;
+}
+
+.skip-to-content:focus {
+    top: 10px;
+    outline: 3px solid #3b82f6;
+    outline-offset: 2px;
+}
+
+/* ======================================== */
+/* KEYBOARD FOCUS INDICATORS */
+/* ======================================== */
+/* High visibility focus for all interactive elements */
+*:focus {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+}
+
+/* Remove focus for mouse users, keep for keyboard */
+*:focus:not(:focus-visible) {
+    outline: none;
+}
+
+*:focus-visible {
+    outline: 3px solid #3b82f6;
+    outline-offset: 2px;
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+}
+
+/* Enhanced focus for buttons */
+button:focus-visible,
+a:focus-visible,
+[role="button"]:focus-visible {
+    outline: 3px solid #3b82f6;
+    outline-offset: 3px;
+    box-shadow: 0 0 0 6px rgba(59, 130, 246, 0.15);
+}
+
+/* Form input focus */
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+    outline: 2px solid #3b82f6;
+    outline-offset: 0;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Card focus */
+.movie-card:focus-visible,
+.series-card:focus-visible,
+[class*="card"]:focus-visible {
+    outline: 3px solid #3b82f6;
+    outline-offset: 4px;
+    transform: translateY(-4px);
+}
+
+/* ======================================== */
+/* SCREEN READER ONLY */
+/* ======================================== */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}
+
+.sr-only-focusable:active,
+.sr-only-focusable:focus {
+    position: static;
+    width: auto;
+    height: auto;
+    overflow: visible;
+    clip: auto;
+    white-space: normal;
+}
+
+/* ======================================== */
+/* HIGH CONTRAST MODE */
+/* ======================================== */
+@media (prefers-contrast: high) {
+    * {
+        border-color: currentColor !important;
+    }
+
+    button,
+    a,
+    [role="button"] {
+        border: 2px solid currentColor;
+    }
+
+    *:focus-visible {
+        outline: 4px solid currentColor;
+        outline-offset: 4px;
+    }
+}
+
+/* ======================================== */
+/* REDUCED MOTION */
+/* ======================================== */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+/* ======================================== */
+/* COLOR CONTRAST UTILITIES */
+/* ======================================== */
+/* WCAG AA: Text 4.5:1, Large text 3:1, UI 3:1 */
+
+/* Ensure text has sufficient contrast */
+.text-low-contrast {
+    color: #a0a0a0; /* Fails WCAG */
+}
+
+.text-aa-contrast {
+    color: #e0e0e0; /* Passes WCAG AA on dark bg */
+}
+
+.text-aaa-contrast {
+    color: #ffffff; /* Passes WCAG AAA */
+}
+
+/* Background contrast helpers */
+.bg-dark-high-contrast {
+    background: #0a0a0a;
+    color: #ffffff;
+}
+
+.bg-dark-medium-contrast {
+    background: #1a1a1a;
+    color: #f0f0f0;
+}
+
+/* Link contrast */
+a.link-high-contrast {
+    color: #60a5fa; /* Higher contrast blue */
+    text-decoration: underline;
+}
+
+a.link-high-contrast:hover {
+    color: #93c5fd;
+}
+
+/* ======================================== */
+/* TOUCH TARGET SIZES */
+/* ======================================== */
+/* WCAG 2.5.5: Minimum 44x44px touch targets */
+
+button,
+a,
+[role="button"],
+input[type="checkbox"],
+input[type="radio"] {
+    min-width: 44px;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Icon buttons */
+.icon-button,
+button.icon-only {
+    width: 48px;
+    height: 48px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Small buttons still need proper touch targets */
+button.btn-sm,
+a.btn-sm {
+    min-width: 44px;
+    min-height: 44px;
+    padding: 8px 16px;
+}
+
+/* ======================================== */
+/* KEYBOARD NAVIGATION HINTS */
+/* ======================================== */
+[data-keyboard-hint]::after {
+    content: attr(data-keyboard-hint);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-8px);
+    padding: 6px 12px;
+    background: #1a1a1a;
+    color: #fff;
+    border: 1px solid #3b82f6;
+    border-radius: 6px;
+    font-size: 12px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+    z-index: 100;
+}
+
+[data-keyboard-hint]:focus-visible::after {
+    opacity: 1;
+}
+
+/* ======================================== */
+/* FOCUS WITHIN */
+/* ======================================== */
+/* Highlight parent when child is focused */
+.card:focus-within {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+.form-group:focus-within label {
+    color: #3b82f6;
+}
+
+/* ======================================== */
+/* ARIA LIVE REGIONS */
+/* ======================================== */
+.aria-live-region {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}
+
+/* ======================================== */
+/* FORM VALIDATION ACCESSIBILITY */
+/* ======================================== */
+.form-error {
+    color: #ef4444;
+    font-size: 14px;
+    margin-top: 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.form-error::before {
+    content: "⚠";
+    font-size: 16px;
+}
+
+input:invalid:not(:placeholder-shown) {
+    border-color: #ef4444;
+}
+
+input:invalid:not(:placeholder-shown):focus {
+    outline-color: #ef4444;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+input:valid:not(:placeholder-shown) {
+    border-color: #10b981;
+}
+
+/* ======================================== */
+/* LOADING STATE ACCESSIBILITY */
+/* ======================================== */
+[aria-busy="true"] {
+    position: relative;
+    pointer-events: none;
+    opacity: 0.6;
+}
+
+[aria-busy="true"]::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 24px;
+    height: 24px;
+    margin: -12px 0 0 -12px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ======================================== */
+/* FOCUS TRAP FOR MODALS */
+/* ======================================== */
+.modal[aria-hidden="false"] {
+    display: flex;
+}
+
+.modal[aria-hidden="true"] {
+    display: none;
+}
+
+/* Prevent focus outside modal */
+body:has(.modal[aria-hidden="false"]) > *:not(.modal) {
+    pointer-events: none;
+}
+
+body:has(.modal[aria-hidden="false"]) .modal {
+    pointer-events: all;
+}
