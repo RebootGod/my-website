@@ -38,48 +38,39 @@
     @stack('styles')
 </head>
 <body>
-    {{-- Navigation --}}
-    <nav class="navbar navbar-expand-lg navbar-redesign" id="mainNavbar">
-        <div class="container">
-            {{-- Logo --}}
-            <a href="{{ route('home') }}" class="navbar-brand navbar-brand-redesign">
-                <img src="{{ asset('Removal.png') }}"
-                     alt="Noobz Cinema"
-                     height="40"
-                     class="d-inline-block align-top">
+    {{-- Modern Compact Navigation --}}
+    <nav class="modern-navbar" id="mainNavbar">
+        <div class="navbar-container">
+            {{-- Left: Logo --}}
+            <a href="{{ route('home') }}" class="navbar-logo">
+                <img src="{{ asset('Removal.png') }}" alt="Noobz Cinema" height="36">
             </a>
             
-            {{-- Navigation Items --}}
-            <div class="d-flex align-items-center gap-2 nav-actions">
+            {{-- Right: Actions --}}
+            <div class="navbar-actions">
                 @auth
-                    {{-- Watchlist Link --}}
-                    <a href="{{ route('profile.watchlist') }}" 
-                       class="btn btn-nav btn-nav-outline">
-                        <i class="fas fa-bookmark me-1"></i> 
-                        <span class="d-none d-md-inline">Watchlist</span>
+                    {{-- Watchlist --}}
+                    <a href="{{ route('profile.watchlist') }}" class="nav-btn" title="Watchlist">
+                        <i class="fas fa-bookmark"></i>
+                        <span class="nav-label">Watchlist</span>
                     </a>
                     
-                    {{-- Admin Dashboard (if admin) --}}
+                    {{-- Admin (if admin) --}}
                     @if(auth()->user()->isAdmin())
-                        <a href="{{ route('admin.dashboard') }}" 
-                           class="btn btn-nav btn-nav-warning">
-                            <i class="fas fa-tools me-1"></i> 
-                            <span class="d-none d-lg-inline">Admin</span>
+                        <a href="{{ route('admin.dashboard') }}" class="nav-btn nav-btn-admin" title="Admin Dashboard">
+                            <i class="fas fa-tools"></i>
+                            <span class="nav-label">Admin</span>
                         </a>
                     @endif
                     
-                    {{-- Notifications Bell --}}
-                    <div class="dropdown notification-dropdown">
-                        <button class="btn btn-nav btn-nav-icon position-relative" 
-                                type="button" 
-                                id="notificationDropdown"
-                                data-bs-toggle="dropdown" 
-                                aria-expanded="false">
+                    {{-- Notifications --}}
+                    <div class="dropdown">
+                        <button class="nav-btn" type="button" id="notificationDropdown" 
+                                data-bs-toggle="dropdown" aria-expanded="false" title="Notifications">
                             <i class="fas fa-bell"></i>
                             @if(auth()->user()->unreadNotifications->count() > 0)
-                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                <span class="notification-badge">
                                     {{ auth()->user()->unreadNotifications->count() > 9 ? '9+' : auth()->user()->unreadNotifications->count() }}
-                                    <span class="visually-hidden">unread notifications</span>
                                 </span>
                             @endif
                         </button>
@@ -146,15 +137,12 @@
                     </div>
                     
                     {{-- User Dropdown --}}
-                    <div class="dropdown user-dropdown">
-                        <button class="btn btn-nav btn-nav-user dropdown-toggle" 
-                                type="button" 
-                                id="userDropdown"
-                                data-bs-toggle="dropdown" 
-                                data-bs-auto-close="true"
-                                aria-expanded="false">
-                            <i class="fas fa-user-circle me-2"></i>
-                            <span class="d-none d-sm-inline">{{ auth()->user()->username }}</span>
+                    <div class="dropdown">
+                        <button class="nav-btn nav-btn-user" type="button" id="userDropdown"
+                                data-bs-toggle="dropdown" data-bs-auto-close="true" 
+                                aria-expanded="false" title="Account">
+                            <i class="fas fa-user-circle"></i>
+                            <span class="nav-label">{{ auth()->user()->username }}</span>
                         </button>
                         
                         {{-- Dropdown Menu with better positioning --}}
@@ -217,14 +205,14 @@
                         </ul>
                     </div>
                 @else
-                    {{-- Guest Links --}}
-                    <a href="{{ route('login') }}" 
-                       class="btn btn-nav btn-nav-primary">
-                        <i class="fas fa-sign-in-alt me-1"></i> Login
+                    {{-- Guest Actions --}}
+                    <a href="{{ route('login') }}" class="nav-btn nav-btn-login">
+                        <i class="fas fa-sign-in-alt"></i>
+                        <span class="nav-label">Login</span>
                     </a>
-                    <a href="{{ route('register') }}" 
-                       class="btn btn-nav btn-nav-secondary">
-                        <i class="fas fa-user-plus me-1"></i> Register
+                    <a href="{{ route('register') }}" class="nav-btn nav-btn-register">
+                        <i class="fas fa-user-plus"></i>
+                        <span class="nav-label">Register</span>
                     </a>
                 @endauth
             </div>
