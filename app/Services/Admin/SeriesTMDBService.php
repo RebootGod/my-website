@@ -5,6 +5,7 @@ namespace App\Services\Admin;
 use App\Models\Series;
 use App\Models\Genre;
 use App\Services\TMDBService;
+use App\Jobs\DownloadTmdbImageJob;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
@@ -135,6 +136,35 @@ class SeriesTMDBService
             // Sync genres
             $this->syncSeriesGenres($series, $tmdbData['genres'] ?? []);
 
+            // Dispatch jobs to download images to local storage
+            if (!empty($tmdbData['poster_path'])) {
+                DownloadTmdbImageJob::dispatch(
+                    'series',
+                    $series->id,
+                    'poster',
+                    $tmdbData['poster_path']
+                )->onQueue('image-downloads');
+                
+                Log::info('Dispatched series poster download job', [
+                    'series_id' => $series->id,
+                    'tmdb_path' => $tmdbData['poster_path']
+                ]);
+            }
+
+            if (!empty($tmdbData['backdrop_path'])) {
+                DownloadTmdbImageJob::dispatch(
+                    'series',
+                    $series->id,
+                    'backdrop',
+                    $tmdbData['backdrop_path']
+                )->onQueue('image-downloads');
+                
+                Log::info('Dispatched series backdrop download job', [
+                    'series_id' => $series->id,
+                    'tmdb_path' => $tmdbData['backdrop_path']
+                ]);
+            }
+
             Log::info('Series imported from TMDB', [
                 'tmdb_id' => $tmdbId,
                 'series_id' => $series->id,
@@ -143,7 +173,7 @@ class SeriesTMDBService
 
             return [
                 'success' => true,
-                'message' => 'Series imported successfully',
+                'message' => 'Series imported successfully! Images are being downloaded in the background.',
                 'data' => $series->load('genres')
             ];
 
@@ -169,14 +199,8 @@ class SeriesTMDBService
             'original_title' => $tmdbData['original_name'] ?? ($tmdbData['name'] ?? $tmdbData['title']),
             'description' => $tmdbData['overview'] ?? '',
             'overview' => $tmdbData['overview'] ?? '',
-            'poster_path' => $tmdbData['poster_path'] ?
-                'https://image.tmdb.org/t/p/w500' . $tmdbData['poster_path'] : null,
-            'backdrop_path' => $tmdbData['backdrop_path'] ?
-                'https://image.tmdb.org/t/p/original' . $tmdbData['backdrop_path'] : null,
-            'poster_url' => $tmdbData['poster_path'] ?
-                'https://image.tmdb.org/t/p/w500' . $tmdbData['poster_path'] : null,
-            'backdrop_url' => $tmdbData['backdrop_path'] ?
-                'https://image.tmdb.org/t/p/original' . $tmdbData['backdrop_path'] : null,
+            'poster_path' => $tmdbData['poster_path'], // Store TMDB path only
+            'backdrop_path' => $tmdbData['backdrop_path'], // Store TMDB path only
             'first_air_date' => $tmdbData['first_air_date'] ?? null,
             'last_air_date' => $tmdbData['last_air_date'] ?? null,
             'year' => $tmdbData['first_air_date'] ?

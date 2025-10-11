@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Movie;
 use App\Models\Genre;
 use App\Services\NewTMDBService;
+use App\Jobs\DownloadTmdbImageJob;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -244,18 +245,8 @@ class NewTMDBController extends Controller
                 'slug' => $slug,
                 'description' => $data['overview'], // Use description field
                 'embed_url' => encrypt($request->embed_url),
-                'poster_path' => $data['poster_path'] 
-                    ? 'https://image.tmdb.org/t/p/w500' . $data['poster_path'] 
-                    : null,
-                'poster_url' => $data['poster_path'] 
-                    ? 'https://image.tmdb.org/t/p/w500' . $data['poster_path'] 
-                    : null,
-                'backdrop_path' => $data['backdrop_path']
-                    ? 'https://image.tmdb.org/t/p/w1280' . $data['backdrop_path'] 
-                    : null,
-                'backdrop_url' => $data['backdrop_path']
-                    ? 'https://image.tmdb.org/t/p/w1280' . $data['backdrop_path'] 
-                    : null,
+                'poster_path' => $data['poster_path'], // Store TMDB path for reference
+                'backdrop_path' => $data['backdrop_path'], // Store TMDB path for reference
                 'release_date' => $data['release_date'],
                 'year' => $data['release_date'] 
                     ? Carbon::parse($data['release_date'])->year 
@@ -288,9 +279,38 @@ class NewTMDBController extends Controller
                 $movie->genres()->attach($genreIds);
             }
 
+            // Dispatch jobs to download images to local storage
+            if (!empty($data['poster_path'])) {
+                DownloadTmdbImageJob::dispatch(
+                    'movie',
+                    $movie->id,
+                    'poster',
+                    $data['poster_path']
+                )->onQueue('image-downloads');
+                
+                Log::info('Dispatched poster download job', [
+                    'movie_id' => $movie->id,
+                    'tmdb_path' => $data['poster_path']
+                ]);
+            }
+
+            if (!empty($data['backdrop_path'])) {
+                DownloadTmdbImageJob::dispatch(
+                    'movie',
+                    $movie->id,
+                    'backdrop',
+                    $data['backdrop_path']
+                )->onQueue('image-downloads');
+                
+                Log::info('Dispatched backdrop download job', [
+                    'movie_id' => $movie->id,
+                    'tmdb_path' => $data['backdrop_path']
+                ]);
+            }
+
             return response()->json([
                 'success' => true,
-                'message' => 'Movie imported successfully!',
+                'message' => 'Movie imported successfully! Images are being downloaded in the background.',
                 'movie' => $movie->load('genres')
             ]);
             
