@@ -57,6 +57,15 @@ class SeriesSeason extends Model
     // Accessors
     public function getPosterUrlAttribute(): string
     {
-        return $this->poster_path ?: 'https://via.placeholder.com/500x750?text=No+Poster';
+        if (!empty($this->attributes['poster_path'])) {
+            // If poster_path starts with http, it's already a full URL
+            if (str_starts_with($this->attributes['poster_path'], 'http')) {
+                return $this->attributes['poster_path'];
+            }
+            // Otherwise, construct TMDB image URL
+            return config('services.tmdb.image_url', 'https://image.tmdb.org/t/p') . '/w500' . $this->attributes['poster_path'];
+        }
+        
+        return 'https://placehold.co/500x750?text=No+Poster';
     }
 }

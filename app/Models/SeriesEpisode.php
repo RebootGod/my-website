@@ -60,11 +60,16 @@ class SeriesEpisode extends Model
     // Accessors
     public function getStillUrlAttribute(): string
     {
-        if ($this->still_path) {
-            return 'https://image.tmdb.org/t/p/w500' . $this->still_path;
+        if (!empty($this->attributes['still_path'])) {
+            // If still_path starts with http, it's already a full URL
+            if (str_starts_with($this->attributes['still_path'], 'http')) {
+                return $this->attributes['still_path'];
+            }
+            // Otherwise, construct TMDB image URL (16:9 aspect ratio for episode stills)
+            return config('services.tmdb.image_url', 'https://image.tmdb.org/t/p') . '/w500' . $this->attributes['still_path'];
         }
 
-        return 'https://via.placeholder.com/500x281?text=No+Still';
+        return 'https://placehold.co/500x281?text=No+Still';
     }
 
     public function getFormattedRuntime(): string
