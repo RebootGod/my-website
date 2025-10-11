@@ -42,6 +42,14 @@ Schedule::job(new CleanupExpiredInviteCodesJob())
     ->name('cleanup-expired-invite-codes')
     ->description('Delete expired invite codes and notify admins');
 
+// Cleanup Old User Activities - Daily at 2:30 AM (keep last 14 days)
+Schedule::command('activities:cleanup --days=14')
+    ->dailyAt('02:30')
+    ->withoutOverlapping()
+    ->onOneServer()
+    ->name('cleanup-old-user-activities')
+    ->description('Delete user activity records older than 14 days');
+
 // Cache Warmup - Every 2 hours
 Schedule::job(new CacheWarmupJob())
     ->everyTwoHours()
