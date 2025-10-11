@@ -63,9 +63,12 @@ export default defineConfig({
                 'resources/js/components/search.js',
                 'resources/js/components/watchlist.js',
                 'resources/js/components/player-gestures.js',
-                'resources/js/components/page-transitions.js',   // Phase 6.1
+                'resources/js/components/page-transitions.js', // Phase 6.1
                 'resources/js/components/toast-notifications.js', // Phase 6.2
-                'resources/js/components/scroll-animations.js',  // Phase 6.2
+                'resources/js/components/scroll-animations.js', // Phase 6.2
+                'resources/js/components/lazy-load.js', // Phase 6.3
+                'resources/js/components/performance-monitor.js', // Phase 6.3
+                'resources/js/components/cache-strategy.js', // Phase 6.3
             ],
             refresh: true,
         }),
