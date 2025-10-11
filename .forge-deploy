@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+
+# Laravel Forge Deployment Script
+# This script runs automatically when code is pushed to production
+
+set -e
+
+echo "Starting deployment..."
+
+# Pull latest changes
+git pull origin main
+
+# Install/update composer dependencies (production mode)
+composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev
+
+# Clear all caches
+echo "Clearing caches..."
+php artisan config:clear
+php artisan route:clear
+php artisan view:clear
+php artisan cache:clear
+
+# Cache optimizations for production
+echo "Optimizing for production..."
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+
+# Run database migrations (if any)
+php artisan migrate --force
+
+# Restart queue workers
+# php artisan queue:restart
+
+# Build assets (if needed)
+# npm install
+# npm run build
+
+echo "Deployment completed successfully!"
