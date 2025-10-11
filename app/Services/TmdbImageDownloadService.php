@@ -159,6 +159,18 @@ class TmdbImageDownloadService
         string $size = 'w500'
     ): ?string {
         try {
+            // Handle full URLs (extract path from URL)
+            if (str_starts_with($tmdbPath, 'http')) {
+                // Extract path from full URL: https://image.tmdb.org/t/p/w500/abc123.jpg -> /abc123.jpg
+                preg_match('/\/([a-zA-Z0-9]+\.(jpg|png|webp))$/i', $tmdbPath, $matches);
+                if (!empty($matches[1])) {
+                    $tmdbPath = '/' . $matches[1];
+                } else {
+                    Log::warning('Cannot extract TMDB path from URL', ['url' => $tmdbPath]);
+                    return null;
+                }
+            }
+
             // Sanitize TMDB path (security: prevent path traversal)
             $tmdbPath = ltrim($tmdbPath, '/');
             $tmdbPath = str_replace(['..', '\\'], '', $tmdbPath);
