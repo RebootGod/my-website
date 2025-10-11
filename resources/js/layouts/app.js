@@ -32,7 +32,10 @@ function initNavbar() {
 
 // Global watchlist function
 function addToWatchlist(movieId) {
-    if (!csrfToken) {
+    // Get CSRF token from meta tag or global variable
+    const token = csrfToken || document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+    
+    if (!token) {
         console.error('CSRF token not available');
         showNotification('Security token missing. Please refresh the page.', 'error');
         return;
@@ -41,8 +44,9 @@ function addToWatchlist(movieId) {
     fetch(`/watchlist/add/${movieId}`, {
         method: 'POST',
         headers: {
-            'X-CSRF-TOKEN': csrfToken,
-            'Content-Type': 'application/json'
+            'X-CSRF-TOKEN': token,
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
         }
     })
     .then(response => response.json())
@@ -50,27 +54,31 @@ function addToWatchlist(movieId) {
         if (data.success) {
             // Update button
             if (event && event.target) {
-                const button = event.target;
-                button.innerHTML = '<i class="fas fa-check"></i>';
+                const button = event.target.closest('button') || event.target;
+                button.innerHTML = '<i class="fas fa-check me-2"></i>In Watchlist';
                 button.classList.remove('btn-outline-light');
-                button.classList.add('btn-success');
+                button.classList.add('btn-success', 'disabled');
+                button.disabled = true;
                 button.onclick = null;
                 button.title = 'In Watchlist';
             }
             showNotification(data.message, 'success');
         } else {
-            showNotification(data.message, 'error');
+            showNotification(data.message || 'Failed to add movie to watchlist', 'error');
         }
     })
     .catch(error => {
         console.error('Error:', error);
-        showNotification('An error occurred', 'error');
+        showNotification('An error occurred. Please try again.', 'error');
     });
 }
 
 // Global series watchlist function
 function addSeriesToWatchlist(seriesId) {
-    if (!csrfToken) {
+    // Get CSRF token from meta tag or global variable
+    const token = csrfToken || document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+    
+    if (!token) {
         console.error('CSRF token not available');
         showNotification('Security token missing. Please refresh the page.', 'error');
         return;
@@ -79,27 +87,30 @@ function addSeriesToWatchlist(seriesId) {
     fetch(`/watchlist/series/add/${seriesId}`, {
         method: 'POST',
         headers: {
-            'X-CSRF-TOKEN': csrfToken,
-            'Content-Type': 'application/json'
+            'X-CSRF-TOKEN': token,
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
         }
     })
     .then(response => response.json())
     .then(data => {
         if (data.success) {
             // Update button
-            const button = event.target;
-            button.innerHTML = '<i class="fas fa-check me-2"></i>In Watchlist';
-            button.classList.add('disabled');
-            button.disabled = true;
-            button.onclick = null;
+            const button = event.target.closest('button');
+            if (button) {
+                button.innerHTML = '<i class="fas fa-check me-2"></i>In Watchlist';
+                button.classList.add('disabled');
+                button.disabled = true;
+                button.onclick = null;
+            }
             showNotification(data.message, 'success');
         } else {
-            showNotification(data.message, 'error');
+            showNotification(data.message || 'Failed to add series to watchlist', 'error');
         }
     })
     .catch(error => {
         console.error('Error:', error);
-        showNotification('An error occurred', 'error');
+        showNotification('An error occurred. Please try again.', 'error');
     });
 }
 
