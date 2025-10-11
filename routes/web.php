@@ -123,12 +123,12 @@ Route::middleware(['auth', 'check.user.status'])->group(function () {
     Route::get('/movie/{movie:slug}/watch', [MoviePlayerController::class, 'play'])
         ->name('movies.play');
 
-    // Movie view tracking (AJAX endpoint)
-    Route::post('/movie/{movie}/track-view', [MovieController::class, 'trackView'])
+    // Movie view tracking (AJAX endpoint) - uses ID binding
+    Route::post('/movie/{movie:id}/track-view', [MovieController::class, 'trackView'])
         ->name('movies.track-view');
 
-    // Get movie sources for player
-    Route::get('/movie/{movie}/sources', [MoviePlayerController::class, 'getSources'])
+    // Get movie sources for player - uses ID binding
+    Route::get('/movie/{movie:id}/sources', [MoviePlayerController::class, 'getSources'])
         ->name('movies.sources');
 
     // Series Episode Player (Members Only)
@@ -143,8 +143,8 @@ Route::middleware(['auth', 'check.user.status'])->group(function () {
     Route::post('/series/{series}/episode/{episode}/track-view', [SeriesPlayerController::class, 'trackEpisodeView'])
         ->name('series.episode.track-view');
 
-    // Report broken link - rate limited to prevent spam
-    Route::post('/movie/{movie}/report', [ReportsController::class, 'store'])
+    // Report broken link - rate limited to prevent spam - uses ID binding
+    Route::post('/movie/{movie:id}/report', [ReportsController::class, 'store'])
         ->name('movies.report')
         ->middleware('throttle:5,1');
 
