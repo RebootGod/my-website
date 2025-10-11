@@ -91,11 +91,57 @@
         pointer-events: auto !important;
     }
 
-    /* Ensure links in cards work */
-    .movie-card-modern a,
-    .series-card a {
+    /* CRITICAL FIX: movie-overlay blocking clicks! */
+    .movie-overlay {
+        pointer-events: none !important;
+        display: none !important; /* Remove overlay completely on mobile */
+    }
+
+    /* Ensure poster is clickable */
+    .movie-poster {
+        pointer-events: none !important;
+    }
+
+    .movie-poster img {
+        pointer-events: none !important;
+    }
+
+    /* Ensure info section and buttons are clickable */
+    .movie-info,
+    .movie-actions,
+    .btn-watch,
+    .btn-bookmark {
         pointer-events: auto !important;
         cursor: pointer !important;
+        position: relative !important;
+        z-index: 10 !important;
+    }
+
+    /* Ensure links in cards work */
+    .movie-card-modern a,
+    .series-card a,
+    .btn-watch,
+    a.btn-watch {
+        pointer-events: auto !important;
+        cursor: pointer !important;
+        display: block !important;
+        position: relative !important;
+        z-index: 100 !important;
+    }
+
+    /* CRITICAL: Make entire card clickable through wrapper */
+    .movie-card-modern {
+        cursor: pointer !important;
+    }
+
+    /* Remove hover effects on mobile (they block clicks) */
+    .movie-card-modern:hover .movie-overlay {
+        opacity: 0 !important;
+        pointer-events: none !important;
+    }
+
+    .movie-card-modern:hover .movie-poster img {
+        transform: none !important;
     }
 
     /* CRITICAL: Remove any overlays blocking clicks */
@@ -112,16 +158,9 @@
     }
 
     /* Fix any absolute positioned overlays */
-    *[style*="position: absolute"],
-    *[style*="position: fixed"] {
+    *[style*="position: absolute"]:not(.movie-rating):not(.content-type-badge),
+    *[style*="position: fixed"]:not(.dropdown-menu) {
         pointer-events: none !important;
-    }
-
-    *[style*="position: absolute"] a,
-    *[style*="position: fixed"] a,
-    *[style*="position: absolute"] button,
-    *[style*="position: fixed"] button {
-        pointer-events: auto !important;
     }
 
     /* Ensure movie grid is clickable */
@@ -129,6 +168,12 @@
     .content-section {
         position: relative !important;
         z-index: auto !important;
+        pointer-events: auto !important;
+    }
+
+    /* Remove any transform that might block clicks */
+    .movie-card-modern * {
+        transform: none !important;
     }
 }
 
