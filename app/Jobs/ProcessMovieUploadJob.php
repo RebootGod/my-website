@@ -102,28 +102,6 @@ class ProcessMovieUploadJob implements ShouldQueue
             // Create movie
             $movie = Movie::create($movieData);
 
-            // Create movie source
-            MovieSource::create([
-                'movie_id' => $movie->id,
-                'source_name' => 'Bot Upload - Embed',
-                'embed_url' => $this->embedUrl,
-                'quality' => 'HD',
-                'is_active' => true,
-                'priority' => 1
-            ]);
-
-            // Create download source if provided
-            if ($this->downloadUrl) {
-                MovieSource::create([
-                    'movie_id' => $movie->id,
-                    'source_name' => 'Bot Upload - Download',
-                    'embed_url' => $this->downloadUrl,
-                    'quality' => 'HD',
-                    'is_active' => true,
-                    'priority' => 2
-                ]);
-            }
-
             DB::commit();
 
             Log::info('Movie created successfully via bot', [

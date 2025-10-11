@@ -196,6 +196,7 @@ class ContentUploadService
             'slug' => $this->generateSlug($tmdbData['title'], $year, Movie::class),
             'description' => $tmdbData['overview'] ?? null,
             'embed_url' => $embedUrl,
+            'download_url' => $downloadUrl,
             'poster_path' => $tmdbData['poster_path'] ?? null,
             'backdrop_path' => $tmdbData['backdrop_path'] ?? null,
             'year' => $year,
