@@ -47,7 +47,9 @@
     aspect-ratio: 2 / 3;
     overflow: hidden;
     background: linear-gradient(145deg, #1a1f3a 0%, #141b34 100%);
-    min-height: 200px;
+    /* Don't let poster grow too large on mobile */
+    max-height: 280px;
+    flex-shrink: 0;
 }
 
 .movie-poster img {
@@ -120,20 +122,21 @@
 }
 
 .movie-info {
-    padding: 12px;
+    padding: 10px;
     display: flex;
     flex-direction: column;
-    flex: 1;
+    flex: 0 0 auto;
     background: linear-gradient(180deg, rgba(20, 27, 52, 0.95) 0%, rgba(10, 14, 39, 0.98) 100%);
-    gap: 8px;
+    gap: 6px;
+    min-height: 0;
 }
 
 .movie-title {
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     font-weight: 700;
-    margin-bottom: 4px;
+    margin-bottom: 2px;
     color: #ffffff;
-    line-height: 1.3;
+    line-height: 1.2;
     /* Limit to 2 lines on mobile */
     display: -webkit-box;
     -webkit-line-clamp: 2;
@@ -145,12 +148,12 @@
 
 .movie-meta {
     display: flex;
-    gap: 8px;
+    gap: 6px;
     flex-wrap: wrap;
     align-items: center;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
     color: rgba(203, 213, 225, 0.9);
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     font-weight: 500;
 }
 
@@ -162,9 +165,9 @@
 
 .movie-description {
     color: rgba(203, 213, 225, 0.85);
-    font-size: 0.8rem;
-    line-height: 1.4;
-    margin-bottom: 10px;
+    font-size: 0.75rem;
+    line-height: 1.3;
+    margin-bottom: 8px;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     line-clamp: 2;
@@ -184,21 +187,21 @@
 .btn-watch {
     background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
     border: none;
-    border-radius: 10px;
-    padding: 10px 12px;
+    border-radius: 8px;
+    padding: 8px 10px;
     color: white;
     font-weight: 700;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     flex: 1;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     text-decoration: none;
     text-align: center;
     /* Touch-friendly minimum height on mobile */
-    min-height: 42px;
+    min-height: 38px;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 6px;
+    gap: 4px;
     box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
     position: relative;
     overflow: hidden;
@@ -245,21 +248,22 @@
 .btn-bookmark {
     background: linear-gradient(145deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.08) 100%);
     border: 1px solid rgba(255, 255, 255, 0.15);
-    border-radius: 10px;
+    border-radius: 8px;
     padding: 0;
     color: rgba(203, 213, 225, 0.9);
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     backdrop-filter: blur(8px);
     /* Touch-friendly size on mobile */
-    width: 42px;
-    height: 42px;
-    min-width: 42px;
-    min-height: 42px;
+    width: 38px;
+    height: 38px;
+    min-width: 38px;
+    min-height: 38px;
     display: flex;
     align-items: center;
     justify-content: center;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    font-size: 0.9rem;
 }
 
 .btn-bookmark:active {
@@ -330,24 +334,29 @@
         gap: 14px;
     }
     
+    .movie-poster {
+        max-height: 300px;
+    }
+    
     .movie-title {
-        font-size: 1rem;
+        font-size: 0.95rem;
     }
     
     .movie-info {
-        padding: 12px;
+        padding: 11px;
     }
     
     .btn-watch {
-        min-height: 44px;
-        font-size: 0.9rem;
+        min-height: 40px;
+        font-size: 0.85rem;
+        padding: 9px 11px;
     }
     
     .btn-bookmark {
-        width: 44px;
-        height: 44px;
-        min-width: 44px;
-        min-height: 44px;
+        width: 40px;
+        height: 40px;
+        min-width: 40px;
+        min-height: 40px;
     }
 }
 
@@ -356,6 +365,10 @@
     .movie-grid {
         grid-template-columns: repeat(3, 1fr);
         gap: 16px;
+    }
+    
+    .movie-poster {
+        max-height: none;
     }
     
     /* Show description on larger phones */
