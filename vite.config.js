@@ -54,12 +54,15 @@ export default defineConfig({
                 'resources/css/components/share-modal.css',
                 'resources/css/components/player-controls-v2.css',
                 'resources/css/components/player-mobile.css',
+                'resources/css/components/skeleton-loader.css',  // Phase 6.1
+                'resources/css/components/loading-states.css',   // Phase 6.1
                 'resources/css/components/loading.css',
                 'resources/css/components/animations.css',
                 'resources/css/components/mobile.css',
                 'resources/js/components/search.js',
                 'resources/js/components/watchlist.js',
                 'resources/js/components/player-gestures.js',
+                'resources/js/components/page-transitions.js',   // Phase 6.1
             ],
             refresh: true,
         }),

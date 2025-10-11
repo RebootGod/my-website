@@ -1,0 +1,326 @@
+/* ======================================== */
+/* SKELETON LOADER COMPONENT */
+/* ======================================== */
+/* Phase 6.1: Loading States & Animations */
+/* Reusable skeleton screens for better perceived performance */
+
+/* Base Skeleton Styles */
+.skeleton {
+    background: linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0.05) 25%,
+        rgba(255, 255, 255, 0.1) 50%,
+        rgba(255, 255, 255, 0.05) 75%
+    );
+    background-size: 200% 100%;
+    animation: skeleton-loading 1.5s ease-in-out infinite;
+    border-radius: 8px;
+}
+
+@keyframes skeleton-loading {
+    0% {
+        background-position: 200% 0;
+    }
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+/* Skeleton Variants */
+.skeleton-text {
+    height: 16px;
+    margin-bottom: 8px;
+    width: 100%;
+}
+
+.skeleton-text-short {
+    width: 60%;
+}
+
+.skeleton-text-medium {
+    width: 80%;
+}
+
+.skeleton-title {
+    height: 24px;
+    margin-bottom: 12px;
+    width: 70%;
+}
+
+.skeleton-circle {
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+}
+
+.skeleton-avatar-sm {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+}
+
+.skeleton-avatar-md {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+}
+
+.skeleton-avatar-lg {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+}
+
+.skeleton-button {
+    height: 40px;
+    width: 120px;
+    border-radius: 8px;
+}
+
+.skeleton-badge {
+    height: 24px;
+    width: 80px;
+    border-radius: 12px;
+}
+
+/* Movie Card Skeleton */
+.skeleton-movie-card {
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.skeleton-movie-poster {
+    aspect-ratio: 2 / 3;
+    width: 100%;
+    background: linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0.05) 25%,
+        rgba(255, 255, 255, 0.1) 50%,
+        rgba(255, 255, 255, 0.05) 75%
+    );
+    background-size: 200% 100%;
+    animation: skeleton-loading 1.5s ease-in-out infinite;
+}
+
+.skeleton-movie-content {
+    padding: 16px;
+}
+
+.skeleton-movie-title {
+    height: 20px;
+    width: 80%;
+    margin-bottom: 12px;
+}
+
+.skeleton-movie-meta {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.skeleton-movie-badge {
+    height: 20px;
+    width: 50px;
+    border-radius: 4px;
+}
+
+/* List Item Skeleton */
+.skeleton-list-item {
+    display: flex;
+    gap: 16px;
+    padding: 16px;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 12px;
+    margin-bottom: 12px;
+}
+
+.skeleton-list-thumbnail {
+    width: 80px;
+    height: 120px;
+    border-radius: 8px;
+    flex-shrink: 0;
+}
+
+.skeleton-list-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 8px;
+}
+
+/* Table Skeleton */
+.skeleton-table-row {
+    display: flex;
+    gap: 16px;
+    padding: 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.skeleton-table-cell {
+    flex: 1;
+    height: 16px;
+}
+
+/* Grid Skeleton */
+.skeleton-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 24px;
+}
+
+/* Form Skeleton */
+.skeleton-form-group {
+    margin-bottom: 24px;
+}
+
+.skeleton-form-label {
+    height: 16px;
+    width: 120px;
+    margin-bottom: 8px;
+}
+
+.skeleton-form-input {
+    height: 48px;
+    width: 100%;
+    border-radius: 8px;
+}
+
+.skeleton-form-textarea {
+    height: 120px;
+    width: 100%;
+    border-radius: 8px;
+}
+
+/* Player Skeleton */
+.skeleton-player {
+    aspect-ratio: 16 / 9;
+    width: 100%;
+    border-radius: 20px;
+    background: linear-gradient(
+        45deg,
+        rgba(255, 255, 255, 0.03) 0%,
+        rgba(255, 255, 255, 0.08) 50%,
+        rgba(255, 255, 255, 0.03) 100%
+    );
+    background-size: 200% 200%;
+    animation: skeleton-player 2s ease-in-out infinite;
+}
+
+@keyframes skeleton-player {
+    0%, 100% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+}
+
+/* Hero Skeleton */
+.skeleton-hero {
+    height: 500px;
+    width: 100%;
+    border-radius: 24px;
+    position: relative;
+    overflow: hidden;
+}
+
+.skeleton-hero-content {
+    position: absolute;
+    bottom: 40px;
+    left: 40px;
+    right: 40px;
+}
+
+.skeleton-hero-title {
+    height: 48px;
+    width: 60%;
+    margin-bottom: 16px;
+}
+
+.skeleton-hero-description {
+    height: 16px;
+    width: 80%;
+    margin-bottom: 8px;
+}
+
+/* Stats Skeleton */
+.skeleton-stat-card {
+    background: rgba(255, 255, 255, 0.02);
+    padding: 24px;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.skeleton-stat-value {
+    height: 32px;
+    width: 100px;
+    margin-bottom: 12px;
+}
+
+.skeleton-stat-label {
+    height: 16px;
+    width: 120px;
+}
+
+/* Chart Skeleton */
+.skeleton-chart {
+    height: 300px;
+    width: 100%;
+    border-radius: 12px;
+    background: linear-gradient(
+        180deg,
+        transparent 0%,
+        rgba(255, 255, 255, 0.02) 20%,
+        rgba(255, 255, 255, 0.05) 50%,
+        rgba(255, 255, 255, 0.02) 80%,
+        transparent 100%
+    );
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .skeleton-grid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 16px;
+    }
+
+    .skeleton-hero {
+        height: 300px;
+    }
+
+    .skeleton-hero-content {
+        bottom: 20px;
+        left: 20px;
+        right: 20px;
+    }
+
+    .skeleton-list-thumbnail {
+        width: 60px;
+        height: 90px;
+    }
+}
+
+/* Fade Out Animation (when content loads) */
+.skeleton-fade-out {
+    animation: skeleton-fade-out 0.3s ease-out forwards;
+}
+
+@keyframes skeleton-fade-out {
+    to {
+        opacity: 0;
+        transform: scale(0.98);
+    }
+}
+
+/* Utility Classes */
+.skeleton-container {
+    pointer-events: none;
+    user-select: none;
+}
+
+.skeleton-hidden {
+    display: none;
+}
