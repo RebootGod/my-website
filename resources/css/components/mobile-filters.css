@@ -189,11 +189,29 @@
 
 /* Tablets in portrait */
 @media (min-width: 769px) and (max-width: 1024px) {
-    /* Hide mobile filters on tablets */
-    .filter-toggle-btn,
-    .filter-bottom-sheet,
-    .filter-bottom-sheet-overlay {
-        display: none !important;
+    /* Show mobile filters on all screens now */
+    .filter-toggle-btn {
+        display: flex !important;
+    }
+}
+
+/* Desktop - show filter button */
+@media (min-width: 1025px) {
+    .filter-toggle-btn {
+        display: flex !important;
+        bottom: 32px;
+        right: 32px;
+        width: 64px;
+        height: 64px;
+    }
+    
+    .filter-toggle-btn i {
+        font-size: 1.4rem;
+    }
+    
+    .filter-bottom-sheet {
+        max-width: 480px;
+        border-radius: 24px 24px 0 0;
     }
 }
 

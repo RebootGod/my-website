@@ -441,19 +441,19 @@
     }
 }
 
-/* 1024px - 1279px: 4-5 columns (Tablets landscape / Laptops) */
+/* 1024px - 1279px: 5-6 columns (Full width - no sidebar) */
 @media (min-width: 1024px) {
     .movie-grid {
-        grid-template-columns: repeat(4, 1fr);
-        gap: 22px;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 20px;
     }
 }
 
-/* 1280px - 1535px: 5 columns (Desktop) */
+/* 1280px - 1535px: 6-7 columns (Desktop) */
 @media (min-width: 1280px) {
     .movie-grid {
-        grid-template-columns: repeat(5, 1fr);
-        gap: 24px;
+        grid-template-columns: repeat(6, 1fr);
+        gap: 22px;
     }
     
     .movie-title {
@@ -461,18 +461,26 @@
     }
 }
 
-/* 1536px - 1919px: 6 columns (Large Desktop) */
+/* 1536px - 1919px: 7-8 columns (Large Desktop) */
 @media (min-width: 1536px) {
     .movie-grid {
-        grid-template-columns: repeat(6, 1fr);
+        grid-template-columns: repeat(7, 1fr);
+        gap: 24px;
+    }
+}
+
+/* 1920px+: 8-10 columns (4K / TV) */
+@media (min-width: 1920px) {
+    .movie-grid {
+        grid-template-columns: repeat(8, 1fr);
         gap: 26px;
     }
 }
 
-/* 1920px+: 6-8 columns (4K / TV) */
-@media (min-width: 1920px) {
+/* 2560px+: Ultra-wide */
+@media (min-width: 2560px) {
     .movie-grid {
-        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        grid-template-columns: repeat(10, 1fr);
         gap: 28px;
     }
 }

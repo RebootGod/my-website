@@ -198,8 +198,8 @@
         </div>
         </div>
 
-        {{-- Main Content --}}
-        <div class="col-lg-9 col-md-8">
+        {{-- Main Content - Full Width --}}
+        <div class="col-12">
             {{-- All Movies Section --}}
             <div class="content-section">
                 <h2 class="section-title">
@@ -208,6 +208,7 @@
                     @else
                         All Movies & TV Series
                     @endif
+                </h2>
                 </h2>
 
                 @if($contents->count() > 0)
