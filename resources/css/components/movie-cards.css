@@ -55,8 +55,7 @@
     aspect-ratio: 2 / 3;
     overflow: hidden;
     background: linear-gradient(145deg, #1a1f3a 0%, #141b34 100%);
-    /* Limit poster height on small screens to leave room for info */
-    max-height: 240px;
+    /* Remove max-height for full poster display */
     flex-shrink: 0;
 }
 
@@ -136,7 +135,7 @@
 
 .movie-info {
     padding: 12px;
-    display: flex;
+    display: none; /* Hide all info - poster only mode */
     flex-direction: column;
     flex: 1 1 auto;
     background: linear-gradient(180deg, rgba(20, 27, 52, 0.95) 0%, rgba(10, 14, 39, 0.98) 100%);
@@ -353,10 +352,6 @@
         gap: 18px;
     }
     
-    .movie-poster {
-        max-height: 260px;
-    }
-    
     .movie-title {
         font-size: 0.95rem;
     }
@@ -384,10 +379,6 @@
     .movie-grid {
         grid-template-columns: repeat(3, 1fr);
         gap: 16px;
-    }
-    
-    .movie-poster {
-        max-height: 260px;
     }
     
     .movie-title {
