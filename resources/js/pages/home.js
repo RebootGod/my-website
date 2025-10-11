@@ -17,7 +17,17 @@ function initializeMobileFilters() {
     const overlay = document.getElementById('filterOverlay');
     const closeBtn = document.getElementById('filterCloseBtn');
 
-    if (!toggleBtn || !bottomSheet || !overlay) return;
+    if (!toggleBtn || !bottomSheet || !overlay) {
+        console.warn('⚠️ Filter elements not found');
+        return;
+    }
+
+    // Add loaded class for entrance animation
+    setTimeout(() => {
+        toggleBtn.classList.add('loaded');
+    }, 100);
+
+    console.log('✅ Mobile filters initialized');
 
     // Open bottom sheet
     toggleBtn.addEventListener('click', openFilterSheet);
@@ -69,6 +79,7 @@ function initializeMobileFilters() {
     }
     
     function openFilterSheet() {
+        console.log('🔍 Opening filter sheet');
         bottomSheet.classList.add('active');
         overlay.classList.add('active');
         disableBodyScroll();
@@ -80,6 +91,7 @@ function initializeMobileFilters() {
     }
     
     function closeFilterSheet() {
+        console.log('🔍 Closing filter sheet');
         bottomSheet.classList.remove('active');
         overlay.classList.remove('active');
         bottomSheet.style.transform = '';
