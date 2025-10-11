@@ -3,7 +3,7 @@
     display: grid;
     /* Mobile: 2 columns for small phones */
     grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
+    gap: 16px;
     padding: 16px 0;
 }
 
@@ -56,7 +56,7 @@
     overflow: hidden;
     background: linear-gradient(145deg, #1a1f3a 0%, #141b34 100%);
     /* Limit poster height on small screens to leave room for info */
-    max-height: 200px;
+    max-height: 240px;
     flex-shrink: 0;
 }
 
@@ -135,17 +135,17 @@
 }
 
 .movie-info {
-    padding: 10px;
+    padding: 12px;
     display: flex;
     flex-direction: column;
     flex: 1 1 auto;
     background: linear-gradient(180deg, rgba(20, 27, 52, 0.95) 0%, rgba(10, 14, 39, 0.98) 100%);
-    gap: 6px;
-    min-height: 120px;
+    gap: 8px;
+    min-height: 110px;
 }
 
 .movie-title {
-    font-size: 0.85rem;
+    font-size: 0.9rem;
     font-weight: 700;
     margin: 0;
     color: #ffffff;
@@ -161,12 +161,12 @@
 
 .movie-meta {
     display: flex;
-    gap: 6px;
+    gap: 8px;
     flex-wrap: wrap;
     align-items: center;
     margin: 0;
     color: rgba(203, 213, 225, 0.9);
-    font-size: 0.7rem;
+    font-size: 0.75rem;
     font-weight: 500;
 }
 
@@ -206,16 +206,16 @@
     background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
     border: none;
     border-radius: 8px;
-    padding: 6px 8px;
+    padding: 8px 10px;
     color: white;
     font-weight: 700;
-    font-size: 0.7rem;
+    font-size: 0.75rem;
     flex: 1;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     text-decoration: none;
     text-align: center;
     /* Touch-friendly minimum height on mobile */
-    min-height: 32px;
+    min-height: 36px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -273,15 +273,15 @@
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     backdrop-filter: blur(8px);
     /* Touch-friendly size on mobile */
-    width: 32px;
-    height: 32px;
-    min-width: 32px;
-    min-height: 32px;
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    min-height: 36px;
     display: flex;
     align-items: center;
     justify-content: center;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-    font-size: 0.8rem;
+    font-size: 0.85rem;
 }
 
 .btn-bookmark:active {
@@ -350,32 +350,32 @@
 @media (min-width: 375px) {
     .movie-grid {
         grid-template-columns: repeat(2, 1fr);
-        gap: 14px;
+        gap: 18px;
     }
     
     .movie-poster {
-        max-height: 220px;
+        max-height: 260px;
     }
     
     .movie-title {
-        font-size: 0.9rem;
+        font-size: 0.95rem;
     }
     
     .movie-info {
-        padding: 11px;
+        padding: 14px;
     }
     
     .btn-watch {
-        min-height: 34px;
-        font-size: 0.75rem;
-        padding: 7px 9px;
+        min-height: 38px;
+        font-size: 0.8rem;
+        padding: 9px 11px;
     }
     
     .btn-bookmark {
-        width: 34px;
-        height: 34px;
-        min-width: 34px;
-        min-height: 34px;
+        width: 38px;
+        height: 38px;
+        min-width: 38px;
+        min-height: 38px;
     }
 }
 
@@ -387,7 +387,7 @@
     }
     
     .movie-poster {
-        max-height: 240px;
+        max-height: 260px;
     }
     
     .movie-title {
@@ -395,15 +395,15 @@
     }
     
     .btn-watch {
-        min-height: 36px;
-        font-size: 0.75rem;
+        min-height: 38px;
+        font-size: 0.8rem;
     }
     
     .btn-bookmark {
-        width: 36px;
-        height: 36px;
-        min-width: 36px;
-        min-height: 36px;
+        width: 38px;
+        height: 38px;
+        min-width: 38px;
+        min-height: 38px;
     }
     
     /* Show description on larger phones */
