@@ -16,8 +16,8 @@
                 <div class="watchlist-title-text">
                     <h1>My Watchlist</h1>
                     <p class="watchlist-count">
-                        <span class="count-number">{{ $movies->total() }}</span> 
-                        {{ $movies->total() === 1 ? 'movie' : 'movies' }} saved
+                        <span class="count-number">{{ $watchlist->total() }}</span> 
+                        {{ $watchlist->total() === 1 ? 'item' : 'items' }} saved
                     </p>
                 </div>
             </div>
@@ -46,52 +46,96 @@
         </div>
     @endif
     
-    {{-- Movie Grid --}}
-    @if($movies->count() > 0)
+    {{-- Movie & Series Grid --}}
+    @if($watchlist->count() > 0)
         <div class="watchlist-grid">
-            @foreach($movies as $movie)
-                <div class="watchlist-movie-card">
-                    {{-- Poster with Watch Overlay --}}
-                    <a href="{{ route('movies.show', $movie->id) }}" class="watchlist-poster-container">
-                        <img src="{{ $movie->poster_url }}" 
-                             class="watchlist-poster-img" 
-                             alt="{{ $movie->title }}"
-                             onerror="this.src='https://via.placeholder.com/400x600/2d3748/ffffff?text=No+Image'">
+            @foreach($watchlist as $item)
+                @if($item->movie)
+                    {{-- Movie Card --}}
+                    <div class="watchlist-movie-card">
+                        {{-- Poster with Watch Overlay --}}
+                        <a href="{{ route('movies.show', $item->movie->id) }}" class="watchlist-poster-container">
+                            <img src="{{ $item->movie->poster_url }}" 
+                                 class="watchlist-poster-img" 
+                                 alt="{{ $item->movie->title }}"
+                                 onerror="this.src='https://via.placeholder.com/400x600/2d3748/ffffff?text=No+Image'">
+                            
+                            <div class="watch-overlay">
+                                <div class="watch-icon">▶</div>
+                                <div class="watch-text">Watch Now</div>
+                            </div>
+                        </a>
                         
-                        <div class="watch-overlay">
-                            <div class="watch-icon">▶</div>
-                            <div class="watch-text">Watch Now</div>
+                        {{-- Remove Button --}}
+                        <form action="{{ route('watchlist.remove', $item->movie->id) }}" 
+                              method="POST" 
+                              class="remove-watchlist-btn-form"
+                              onsubmit="return confirm('Remove from watchlist?')">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="remove-watchlist-btn" title="Remove from watchlist">
+                                ×
+                            </button>
+                        </form>
+                        
+                        {{-- Card Info --}}
+                        <div class="watchlist-card-info">
+                            <h6 class="watchlist-movie-title">{{ $item->movie->title }}</h6>
+                            @if($item->movie->overview)
+                                <p class="watchlist-movie-overview">
+                                    {{ Str::limit($item->movie->overview, 120) }}
+                                </p>
+                            @endif
                         </div>
-                    </a>
-                    
-                    {{-- Remove Button --}}
-                    <form action="{{ route('watchlist.remove', $movie->id) }}" 
-                          method="POST" 
-                          class="remove-watchlist-btn-form"
-                          onsubmit="return confirm('Remove from watchlist?')">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="remove-watchlist-btn" title="Remove from watchlist">
-                            ×
-                        </button>
-                    </form>
-                    
-                    {{-- Card Info --}}
-                    <div class="watchlist-card-info">
-                        <h6 class="watchlist-movie-title">{{ $movie->title }}</h6>
-                        @if($movie->overview)
-                            <p class="watchlist-movie-overview">
-                                {{ Str::limit($movie->overview, 120) }}
-                            </p>
-                        @endif
                     </div>
-                </div>
+                @elseif($item->series)
+                    {{-- Series Card --}}
+                    <div class="watchlist-movie-card">
+                        {{-- Poster with Watch Overlay --}}
+                        <a href="{{ route('series.show', $item->series->id) }}" class="watchlist-poster-container">
+                            <img src="{{ $item->series->poster_url }}" 
+                                 class="watchlist-poster-img" 
+                                 alt="{{ $item->series->title }}"
+                                 onerror="this.src='https://via.placeholder.com/400x600/2d3748/ffffff?text=No+Image'">
+                            
+                            <div class="watch-overlay">
+                                <div class="watch-icon">▶</div>
+                                <div class="watch-text">Watch Now</div>
+                            </div>
+                            
+                            {{-- Series Badge --}}
+                            <div class="series-badge">SERIES</div>
+                        </a>
+                        
+                        {{-- Remove Button --}}
+                        <form action="{{ route('watchlist.series.remove', $item->series->id) }}" 
+                              method="POST" 
+                              class="remove-watchlist-btn-form"
+                              onsubmit="return confirm('Remove from watchlist?')">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="remove-watchlist-btn" title="Remove from watchlist">
+                                ×
+                            </button>
+                        </form>
+                        
+                        {{-- Card Info --}}
+                        <div class="watchlist-card-info">
+                            <h6 class="watchlist-movie-title">{{ $item->series->title }}</h6>
+                            @if($item->series->overview)
+                                <p class="watchlist-movie-overview">
+                                    {{ Str::limit($item->series->overview, 120) }}
+                                </p>
+                            @endif
+                        </div>
+                    </div>
+                @endif
             @endforeach
         </div>
         
         {{-- Pagination --}}
         <div class="pagination-modern">
-            {{ $movies->links() }}
+            {{ $watchlist->links() }}
         </div>
     @else
         {{-- Empty State --}}
@@ -99,12 +143,12 @@
             <div class="empty-icon">📽️</div>
             <h3 class="empty-title">Your Watchlist is Empty</h3>
             <p class="empty-description">
-                Start adding movies you want to watch later!<br>
+                Start adding movies and series you want to watch later!<br>
                 Discover amazing content and build your collection.
             </p>
             <a href="{{ route('home') }}" class="explore-btn">
                 <span>🎬</span>
-                <span>Explore Movies</span>
+                <span>Explore Content</span>
             </a>
         </div>
     @endif

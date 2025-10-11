@@ -245,6 +245,22 @@
     transform: scale(0.95) rotate(90deg);
 }
 
+/* Series Badge */
+.series-badge {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    background: linear-gradient(135deg, #8b5cf6, #6366f1);
+    color: #ffffff;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    padding: 4px 10px;
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(139, 92, 246, 0.4);
+    z-index: 5;
+}
+
 /* Watch Overlay */
 .watch-overlay {
     position: absolute;
