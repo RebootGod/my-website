@@ -105,22 +105,22 @@ class ProcessMovieUploadJob implements ShouldQueue
             // Create movie source
             MovieSource::create([
                 'movie_id' => $movie->id,
-                'type' => 'embed',
-                'url' => $this->embedUrl,
+                'source_name' => 'Bot Upload - Embed',
+                'embed_url' => $this->embedUrl,
                 'quality' => 'HD',
-                'language' => 'en',
-                'is_primary' => true
+                'is_active' => true,
+                'priority' => 1
             ]);
 
             // Create download source if provided
             if ($this->downloadUrl) {
                 MovieSource::create([
                     'movie_id' => $movie->id,
-                    'type' => 'download',
-                    'url' => $this->downloadUrl,
+                    'source_name' => 'Bot Upload - Download',
+                    'embed_url' => $this->downloadUrl,
                     'quality' => 'HD',
-                    'language' => 'en',
-                    'is_primary' => false
+                    'is_active' => true,
+                    'priority' => 2
                 ]);
             }
 
