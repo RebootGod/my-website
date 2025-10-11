@@ -66,14 +66,15 @@
 
             {{-- Poster URL --}}
             <div>
-                <label class="block text-sm font-medium text-gray-400 mb-2">Poster URL</label>
+                <label class="block text-sm font-medium text-gray-400 mb-2">Poster URL (Optional)</label>
                 <input 
-                    type="url" 
+                    type="text" 
                     name="poster_url" 
                     value="{{ old('poster_url') }}"
-                    placeholder="https://image.tmdb.org/..."
+                    placeholder="Optional - Use TMDB import for auto images"
                     class="w-full px-4 py-2 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400"
                 >
+                <p class="text-xs text-gray-500 mt-1">💡 Tip: Use "Import from TMDB" to auto-download poster</p>
                 @error('poster_url')
                     <p class="text-red-400 text-sm mt-1">{{ $message }}</p>
                 @enderror
@@ -81,14 +82,15 @@
 
             {{-- Backdrop URL --}}
             <div>
-                <label class="block text-sm font-medium text-gray-400 mb-2">Backdrop URL</label>
+                <label class="block text-sm font-medium text-gray-400 mb-2">Backdrop URL (Optional)</label>
                 <input 
-                    type="url" 
+                    type="text" 
                     name="backdrop_url" 
                     value="{{ old('backdrop_url') }}"
-                    placeholder="https://image.tmdb.org/..."
+                    placeholder="Optional - Use TMDB import for auto images"
                     class="w-full px-4 py-2 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400"
                 >
+                <p class="text-xs text-gray-500 mt-1">💡 Tip: Use "Import from TMDB" to auto-download backdrop</p>
                 @error('backdrop_url')
                     <p class="text-red-400 text-sm mt-1">{{ $message }}</p>
                 @enderror

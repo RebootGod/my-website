@@ -31,6 +31,8 @@ class StoreMovieRequest extends FormRequest
             'release_date' => 'nullable|date|before_or_equal:today',
             'runtime' => 'nullable|integer|min:1|max:1000',
             'poster' => 'nullable|image|mimes:jpeg,png,webp|max:5120', // 5MB
+            'poster_url' => 'nullable|string|max:500', // Allow text, not just URL
+            'backdrop_url' => 'nullable|string|max:500', // Allow text, not just URL
             'backdrop_path' => 'nullable|string|max:255',
             'vote_average' => 'nullable|numeric|min:0|max:10',
             'vote_count' => 'nullable|integer|min:0',

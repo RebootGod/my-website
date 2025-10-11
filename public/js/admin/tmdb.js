@@ -101,7 +101,6 @@ async function searchMovies(query, page = 1) {
     currentType = 'search';
     currentPage = page;
 
-    }&page=${page}`);
     showLoading();
 
     try {

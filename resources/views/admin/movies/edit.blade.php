@@ -96,12 +96,13 @@
             <div>
                 <label class="block text-sm font-medium text-gray-400 mb-2">Poster URL</label>
                 <input 
-                    type="url" 
+                    type="text" 
                     name="poster_url" 
-                    value="{{ old('poster_url', $movie->poster_url) }}"
-                    placeholder="https://..."
+                    value="{{ old('poster_url', $movie->getRawOriginal('poster_url')) }}"
+                    placeholder="Optional - Leave empty to use TMDB poster"
                     class="w-full px-4 py-2 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400"
                 >
+                <p class="text-xs text-gray-500 mt-1">Current: {{ $movie->local_poster_path ? 'Local TMDB image' : ($movie->getRawOriginal('poster_url') ?: 'Placeholder') }}</p>
                 @if($movie->poster_url)
                     <img src="{{ $movie->poster_url }}" alt="Current poster" class="mt-2 h-32 rounded">
                 @endif
@@ -114,12 +115,13 @@
             <div>
                 <label class="block text-sm font-medium text-gray-400 mb-2">Backdrop URL</label>
                 <input 
-                    type="url" 
+                    type="text" 
                     name="backdrop_url" 
-                    value="{{ old('backdrop_url', $movie->backdrop_url) }}"
-                    placeholder="https://..."
+                    value="{{ old('backdrop_url', $movie->getRawOriginal('backdrop_url')) }}"
+                    placeholder="Optional - Leave empty to use TMDB backdrop"
                     class="w-full px-4 py-2 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400"
                 >
+                <p class="text-xs text-gray-500 mt-1">Current: {{ $movie->local_backdrop_path ? 'Local TMDB image' : ($movie->getRawOriginal('backdrop_url') ?: 'Placeholder') }}</p>
                 @if($movie->backdrop_url)
                     <img src="{{ $movie->backdrop_url }}" alt="Current backdrop" class="mt-2 h-32 rounded">
                 @endif
