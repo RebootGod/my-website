@@ -42,6 +42,8 @@ export default defineConfig({
                 'resources/css/components/buttons.css',
                 'resources/css/components/cards.css',
                 'resources/css/components/movie-cards.css',
+                'resources/css/components/skeleton-loading.css',
+                'resources/css/components/mobile-filters.css',
                 'resources/css/components/loading.css',
                 'resources/css/components/animations.css',
                 'resources/css/components/mobile.css',

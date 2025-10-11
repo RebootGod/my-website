@@ -1,0 +1,239 @@
+/* ======================================== */
+/* MOBILE FILTER BOTTOM SHEET */
+/* ======================================== */
+/* File: resources/css/components/mobile-filters.css */
+/* Purpose: Mobile filter bottom sheet and floating action button */
+
+/* Mobile Filter Button (Floating Action Button) */
+.filter-toggle-btn {
+    display: none; /* Hidden on desktop */
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--gradient-primary, linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%));
+    color: white;
+    border: none;
+    box-shadow: 0 4px 20px rgba(99, 102, 241, 0.5);
+    z-index: 999;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.filter-toggle-btn:active {
+    transform: scale(0.9);
+}
+
+.filter-toggle-btn:hover {
+    box-shadow: 0 6px 24px rgba(99, 102, 241, 0.6);
+}
+
+.filter-toggle-btn i {
+    font-size: 1.5rem;
+}
+
+/* Mobile Filter Bottom Sheet */
+.filter-bottom-sheet {
+    display: none;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--secondary-bg, #1a1a2e);
+    border-radius: 24px 24px 0 0;
+    padding: 24px;
+    max-height: 85vh;
+    overflow-y: auto;
+    z-index: 1000;
+    transform: translateY(100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.5);
+}
+
+.filter-bottom-sheet.active {
+    transform: translateY(0);
+}
+
+/* Smooth scrolling for bottom sheet */
+.filter-bottom-sheet {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+}
+
+/* Bottom Sheet Overlay */
+.filter-bottom-sheet-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(4px);
+    z-index: 999;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+.filter-bottom-sheet-overlay.active {
+    opacity: 1;
+    pointer-events: all;
+}
+
+/* Bottom Sheet Handle (drag indicator) */
+.filter-bottom-sheet-handle {
+    width: 40px;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 2px;
+    margin: 0 auto 16px;
+}
+
+/* Bottom Sheet Header */
+.filter-bottom-sheet-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.filter-bottom-sheet .filter-title {
+    font-size: 1.3rem;
+    margin-bottom: 0;
+}
+
+/* Close Button */
+.filter-close-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    color: var(--text-primary, #ffffff);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.filter-close-btn:active {
+    transform: scale(0.9);
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.filter-close-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    /* Show mobile filter elements */
+    .filter-toggle-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .filter-bottom-sheet {
+        display: block;
+    }
+    
+    .filter-bottom-sheet-overlay {
+        display: block;
+    }
+    
+    /* Adjust FAB position for safe area (iOS notch) */
+    .filter-toggle-btn {
+        bottom: calc(24px + env(safe-area-inset-bottom));
+        right: calc(24px + env(safe-area-inset-right));
+    }
+    
+    /* Adjust bottom sheet for safe area */
+    .filter-bottom-sheet {
+        padding-bottom: calc(24px + env(safe-area-inset-bottom));
+    }
+}
+
+/* Small phones */
+@media (max-width: 375px) {
+    .filter-toggle-btn {
+        width: 52px;
+        height: 52px;
+        bottom: 20px;
+        right: 20px;
+    }
+    
+    .filter-toggle-btn i {
+        font-size: 1.3rem;
+    }
+    
+    .filter-bottom-sheet {
+        padding: 20px 16px;
+        max-height: 90vh;
+    }
+    
+    .filter-bottom-sheet-header {
+        margin-bottom: 20px;
+    }
+    
+    .filter-bottom-sheet .filter-title {
+        font-size: 1.2rem;
+    }
+}
+
+/* Tablets in portrait */
+@media (min-width: 769px) and (max-width: 1024px) {
+    /* Hide mobile filters on tablets */
+    .filter-toggle-btn,
+    .filter-bottom-sheet,
+    .filter-bottom-sheet-overlay {
+        display: none !important;
+    }
+}
+
+/* Animation for FAB entrance */
+@keyframes fabEntrance {
+    from {
+        transform: scale(0) rotate(-180deg);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1) rotate(0deg);
+        opacity: 1;
+    }
+}
+
+.filter-toggle-btn.loaded {
+    animation: fabEntrance 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+/* Badge for active filters */
+.filter-toggle-btn .filter-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    background: #ef4444;
+    color: white;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    font-size: 0.7rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid var(--primary-bg, #0f0f23);
+}
+
+/* Accessibility */
+.filter-toggle-btn:focus-visible,
+.filter-close-btn:focus-visible {
+    outline: 2px solid #6366f1;
+    outline-offset: 2px;
+}

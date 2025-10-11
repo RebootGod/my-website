@@ -4,10 +4,92 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Initialize components
     initializeFilters();
+    initializeMobileFilters();
     initializeSearch();
     initializeLoadingStates();
     initializeImageLoading();
 });
+
+// Mobile Filter Bottom Sheet
+function initializeMobileFilters() {
+    const toggleBtn = document.getElementById('filterToggleBtn');
+    const bottomSheet = document.getElementById('filterBottomSheet');
+    const overlay = document.getElementById('filterOverlay');
+    const closeBtn = document.getElementById('filterCloseBtn');
+
+    if (!toggleBtn || !bottomSheet || !overlay) return;
+
+    // Open bottom sheet
+    toggleBtn.addEventListener('click', openFilterSheet);
+    
+    // Close bottom sheet
+    closeBtn?.addEventListener('click', closeFilterSheet);
+    overlay.addEventListener('click', closeFilterSheet);
+    
+    // Swipe down to close (touch gesture)
+    let startY = 0;
+    let currentY = 0;
+    
+    bottomSheet.addEventListener('touchstart', (e) => {
+        startY = e.touches[0].clientY;
+    });
+    
+    bottomSheet.addEventListener('touchmove', (e) => {
+        currentY = e.touches[0].clientY;
+        const diff = currentY - startY;
+        
+        // Only allow dragging down
+        if (diff > 0) {
+            bottomSheet.style.transform = `translateY(${diff}px)`;
+        }
+    });
+    
+    bottomSheet.addEventListener('touchend', () => {
+        const diff = currentY - startY;
+        
+        // Close if dragged down more than 100px
+        if (diff > 100) {
+            closeFilterSheet();
+        } else {
+            // Snap back
+            bottomSheet.style.transform = 'translateY(0)';
+        }
+        
+        startY = 0;
+        currentY = 0;
+    });
+    
+    // Prevent body scroll when sheet is open
+    function disableBodyScroll() {
+        document.body.style.overflow = 'hidden';
+    }
+    
+    function enableBodyScroll() {
+        document.body.style.overflow = '';
+    }
+    
+    function openFilterSheet() {
+        bottomSheet.classList.add('active');
+        overlay.classList.add('active');
+        disableBodyScroll();
+        
+        // Add haptic feedback on mobile
+        if (navigator.vibrate) {
+            navigator.vibrate(10);
+        }
+    }
+    
+    function closeFilterSheet() {
+        bottomSheet.classList.remove('active');
+        overlay.classList.remove('active');
+        bottomSheet.style.transform = '';
+        enableBodyScroll();
+    }
+    
+    // Export for global access
+    window.openFilterSheet = openFilterSheet;
+    window.closeFilterSheet = closeFilterSheet;
+}
 
 // Filter functionality
 function initializeFilters() {

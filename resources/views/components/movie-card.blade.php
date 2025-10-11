@@ -36,8 +36,8 @@
         
         {{-- Info --}}
         <div class="card-body">
-            <h6 class="card-title text-truncate" title="{{ $movie->title }}">{{ $movie->title }}</h6>
-            <div class="small text-muted">
+            <h6 class="card-title text-truncate mb-2" title="{{ $movie->title }}">{{ $movie->title }}</h6>
+            <div class="small text-muted mb-3">
                 <div class="mb-1">
                     <i class="fas fa-calendar me-1"></i>{{ $movie->year ?? 'N/A' }}
                 </div>
@@ -51,18 +51,15 @@
                 @endif
             </div>
             
-            <div class="mt-2">
+            <div class="d-flex align-items-center justify-content-between mt-auto">
                 <small class="text-success">
-                    <i class="fas fa-eye me-1"></i>{{ number_format($movie->view_count ?? 0) }} views
+                    <i class="fas fa-eye me-1"></i>{{ number_format($movie->view_count ?? 0) }}
                 </small>
+                <button class="btn btn-sm btn-primary btn-play-quick" 
+                        onclick="event.preventDefault(); event.stopPropagation(); window.location.href='{{ route('movies.show', $movie->slug) }}'">
+                    <i class="fas fa-play"></i>
+                </button>
             </div>
-        </div>
-        
-        {{-- Hover Effect --}}
-        <div class="card-hover-overlay position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center" style="background: rgba(0,0,0,0.8); opacity: 0; transition: opacity 0.3s;">
-            <button class="btn btn-primary">
-                <i class="fas fa-play me-2"></i>Watch Now
-            </button>
         </div>
     </div>
 </a>
