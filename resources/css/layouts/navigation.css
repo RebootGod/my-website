@@ -254,6 +254,64 @@
     margin: 0.5rem 0;
 }
 
+/* Notification Dropdown Specific Styles */
+.dropdown-menu-redesign {
+    max-width: 380px;
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+.dropdown-header-redesign {
+    padding: 0.75rem 1rem;
+    color: #ffffff;
+    font-weight: 600;
+}
+
+.dropdown-header-redesign .btn-link {
+    color: rgba(139, 192, 246, 0.9);
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.dropdown-header-redesign .btn-link:hover {
+    color: #a78bfa;
+}
+
+/* Override Bootstrap text colors in notifications */
+.dropdown-menu .text-dark {
+    color: #ffffff !important;
+    font-weight: 600;
+}
+
+.dropdown-menu .text-muted {
+    color: rgba(255, 255, 255, 0.7) !important;
+}
+
+.dropdown-menu .bg-light {
+    background: rgba(99, 102, 241, 0.15) !important;
+}
+
+/* Notification badge dot */
+.dropdown-menu .badge.bg-primary {
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%) !important;
+}
+
+/* Empty state */
+.dropdown-menu .fa-inbox {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+/* View All link */
+.dropdown-menu a.text-center {
+    color: #a78bfa;
+    font-weight: 600;
+}
+
+.dropdown-menu a.text-center:hover {
+    color: #c4b5fd;
+    background: rgba(99, 102, 241, 0.2);
+}
+
 /* ========================================
    RESPONSIVE
    ======================================== */
