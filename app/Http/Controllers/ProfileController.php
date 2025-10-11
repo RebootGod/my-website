@@ -151,12 +151,13 @@ class ProfileController extends Controller
     {
         $user = Auth::user();
         
-        $movies = $user->watchlistMovies()
-            ->with('genres')
-            ->latest('watchlist.created_at')
+        // Get both movies and series from watchlist
+        $watchlist = \App\Models\Watchlist::where('user_id', $user->id)
+            ->with(['movie.genres', 'series.genres'])
+            ->orderBy('created_at', 'desc')
             ->paginate(20);
         
-        return view('profile.watchlist', compact('movies'));
+        return view('profile.watchlist', compact('watchlist'));
     }
 
     /**
