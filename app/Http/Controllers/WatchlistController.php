@@ -63,8 +63,9 @@ class WatchlistController extends Controller
      */
     public function addSeries(Series $series)
     {
-        $this->authorize('create', Watchlist::class);
         try {
+            $this->authorize('create', Watchlist::class);
+            
             $exists = Watchlist::where('user_id', Auth::id())
                 ->where('series_id', $series->id)
                 ->exists();
@@ -86,9 +87,16 @@ class WatchlistController extends Controller
                 'message' => 'Series added to watchlist successfully.',
             ]);
         } catch (\Exception $e) {
+            \Log::error('Failed to add series to watchlist', [
+                'user_id' => Auth::id(),
+                'series_id' => $series->id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to add series to watchlist.',
+                'message' => 'Failed to add series to watchlist: ' . $e->getMessage(),
             ], 500);
         }
     }
