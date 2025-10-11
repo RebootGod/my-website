@@ -60,15 +60,12 @@ class SeriesEpisode extends Model
     // Accessors
     public function getStillUrlAttribute(): string
     {
-        if (!empty($this->attributes['still_path'])) {
-            // If still_path starts with http, it's already a full URL
-            if (str_starts_with($this->attributes['still_path'], 'http')) {
-                return $this->attributes['still_path'];
-            }
-            // Otherwise, construct TMDB image URL (16:9 aspect ratio for episode stills)
-            return config('services.tmdb.image_url', 'https://image.tmdb.org/t/p') . '/w500' . $this->attributes['still_path'];
+        // Priority 1: Local storage (from downloaded TMDB images)
+        if (!empty($this->attributes['local_still_path'])) {
+            return \Storage::url($this->attributes['local_still_path']);
         }
 
+        // Priority 2: Placeholder (no TMDB fallback per requirement)
         return 'https://placehold.co/500x281?text=No+Still';
     }
 

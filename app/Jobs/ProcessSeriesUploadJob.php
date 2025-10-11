@@ -5,6 +5,7 @@ namespace App\Jobs;
 use App\Models\Series;
 use App\Services\TmdbDataService;
 use App\Services\ContentUploadService;
+use App\Jobs\DownloadTmdbImageJob;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -92,6 +93,25 @@ class ProcessSeriesUploadJob implements ShouldQueue
             $series = Series::create($seriesData);
 
             DB::commit();
+
+            // Dispatch image download jobs (after commit)
+            if (!empty($seriesData['poster_path'])) {
+                DownloadTmdbImageJob::dispatch(
+                    'series',
+                    $series->id,
+                    'poster',
+                    $seriesData['poster_path']
+                );
+            }
+
+            if (!empty($seriesData['backdrop_path'])) {
+                DownloadTmdbImageJob::dispatch(
+                    'series',
+                    $series->id,
+                    'backdrop',
+                    $seriesData['backdrop_path']
+                );
+            }
 
             Log::info('Series created successfully via bot', [
                 'series_id' => $series->id,

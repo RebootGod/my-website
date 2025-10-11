@@ -237,21 +237,17 @@ class Series extends Model
      */
     public function getPosterUrlAttribute(): string
     {
-        // If poster_path is already a full URL, return it directly
-        if ($this->poster_path && str_starts_with($this->poster_path, 'http')) {
-            return $this->poster_path;
+        // Priority 1: Local storage (from downloaded TMDB images)
+        if (!empty($this->attributes['local_poster_path'])) {
+            return \Storage::url($this->attributes['local_poster_path']);
         }
 
-        // If poster_path is a relative path, add base URL
-        if ($this->poster_path) {
-            return 'https://image.tmdb.org/t/p/w500' . $this->poster_path;
-        }
-
-        // Check poster_url column as fallback
-        if (isset($this->attributes['poster_url']) && $this->attributes['poster_url']) {
+        // Priority 2: Direct poster_url field (custom uploads)
+        if (!empty($this->attributes['poster_url'])) {
             return $this->attributes['poster_url'];
         }
 
+        // Priority 3: Placeholder (no TMDB fallback per requirement)
         return 'https://placehold.co/500x750?text=No+Poster';
     }
 
@@ -260,21 +256,17 @@ class Series extends Model
      */
     public function getBackdropUrlAttribute(): string
     {
-        // If backdrop_path is already a full URL, return it directly
-        if ($this->backdrop_path && str_starts_with($this->backdrop_path, 'http')) {
-            return $this->backdrop_path;
+        // Priority 1: Local storage (from downloaded TMDB images)
+        if (!empty($this->attributes['local_backdrop_path'])) {
+            return \Storage::url($this->attributes['local_backdrop_path']);
         }
 
-        // If backdrop_path is a relative path, add base URL
-        if ($this->backdrop_path) {
-            return 'https://image.tmdb.org/t/p/original' . $this->backdrop_path;
-        }
-
-        // Check backdrop_url column as fallback
-        if (isset($this->attributes['backdrop_url']) && $this->attributes['backdrop_url']) {
+        // Priority 2: Direct backdrop_url field (custom uploads)
+        if (!empty($this->attributes['backdrop_url'])) {
             return $this->attributes['backdrop_url'];
         }
 
+        // Priority 3: Placeholder (no TMDB fallback per requirement)
         return 'https://placehold.co/1920x1080?text=No+Backdrop';
     }
 

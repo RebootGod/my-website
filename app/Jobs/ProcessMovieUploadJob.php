@@ -6,6 +6,7 @@ use App\Models\Movie;
 use App\Models\MovieSource;
 use App\Services\TmdbDataService;
 use App\Services\ContentUploadService;
+use App\Jobs\DownloadTmdbImageJob;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -103,6 +104,25 @@ class ProcessMovieUploadJob implements ShouldQueue
             $movie = Movie::create($movieData);
 
             DB::commit();
+
+            // Dispatch image download jobs (after commit)
+            if (!empty($movieData['poster_path'])) {
+                DownloadTmdbImageJob::dispatch(
+                    'movie',
+                    $movie->id,
+                    'poster',
+                    $movieData['poster_path']
+                );
+            }
+
+            if (!empty($movieData['backdrop_path'])) {
+                DownloadTmdbImageJob::dispatch(
+                    'movie',
+                    $movie->id,
+                    'backdrop',
+                    $movieData['backdrop_path']
+                );
+            }
 
             Log::info('Movie created successfully via bot', [
                 'movie_id' => $movie->id,

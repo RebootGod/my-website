@@ -7,6 +7,7 @@ use App\Models\SeriesSeason;
 use App\Models\SeriesEpisode;
 use App\Services\TmdbDataService;
 use App\Services\ContentUploadService;
+use App\Jobs\DownloadTmdbImageJob;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -132,6 +133,18 @@ class ProcessEpisodeUploadJob implements ShouldQueue
             $episode = SeriesEpisode::create($episodeData);
 
             DB::commit();
+
+            // Dispatch image download job (after commit)
+            if (!empty($episodeData['still_path'])) {
+                DownloadTmdbImageJob::dispatch(
+                    'episode',
+                    $episode->id,
+                    'still',
+                    $episodeData['still_path'],
+                    $season->season_number,
+                    $episode->episode_number
+                );
+            }
 
             Log::info('Episode created successfully via bot', [
                 'episode_id' => $episode->id,

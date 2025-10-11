@@ -299,20 +299,17 @@ class Movie extends Model
      */
     public function getPosterUrlAttribute(): string
     {
-        // Priority: poster_url field -> construct from poster_path -> placeholder
+        // Priority 1: Local storage (from downloaded TMDB images)
+        if (!empty($this->attributes['local_poster_path'])) {
+            return \Storage::url($this->attributes['local_poster_path']);
+        }
+
+        // Priority 2: Direct poster_url field (custom uploads)
         if (!empty($this->attributes['poster_url'])) {
             return $this->attributes['poster_url'];
         }
         
-        if (!empty($this->attributes['poster_path'])) {
-            // If poster_path starts with http, it's already a full URL
-            if (str_starts_with($this->attributes['poster_path'], 'http')) {
-                return $this->attributes['poster_path'];
-            }
-            // Otherwise, construct TMDB image URL
-            return config('services.tmdb.image_url', 'https://image.tmdb.org/t/p') . '/w500' . $this->attributes['poster_path'];
-        }
-        
+        // Priority 3: Placeholder (no TMDB fallback per requirement)
         return 'https://placehold.co/500x750?text=No+Poster';
     }
 
@@ -321,20 +318,17 @@ class Movie extends Model
      */
     public function getBackdropUrlAttribute(): string
     {
-        // Priority: backdrop_url field -> construct from backdrop_path -> placeholder
+        // Priority 1: Local storage (from downloaded TMDB images)
+        if (!empty($this->attributes['local_backdrop_path'])) {
+            return \Storage::url($this->attributes['local_backdrop_path']);
+        }
+
+        // Priority 2: Direct backdrop_url field (custom uploads)
         if (!empty($this->attributes['backdrop_url'])) {
             return $this->attributes['backdrop_url'];
         }
         
-        if (!empty($this->attributes['backdrop_path'])) {
-            // If backdrop_path starts with http, it's already a full URL
-            if (str_starts_with($this->attributes['backdrop_path'], 'http')) {
-                return $this->attributes['backdrop_path'];
-            }
-            // Otherwise, construct TMDB image URL
-            return config('services.tmdb.image_url', 'https://image.tmdb.org/t/p') . '/original' . $this->attributes['backdrop_path'];
-        }
-        
+        // Priority 3: Placeholder (no TMDB fallback per requirement)
         return 'https://placehold.co/1920x1080?text=No+Backdrop';
     }
 

@@ -57,15 +57,12 @@ class SeriesSeason extends Model
     // Accessors
     public function getPosterUrlAttribute(): string
     {
-        if (!empty($this->attributes['poster_path'])) {
-            // If poster_path starts with http, it's already a full URL
-            if (str_starts_with($this->attributes['poster_path'], 'http')) {
-                return $this->attributes['poster_path'];
-            }
-            // Otherwise, construct TMDB image URL
-            return config('services.tmdb.image_url', 'https://image.tmdb.org/t/p') . '/w500' . $this->attributes['poster_path'];
+        // Priority 1: Local storage (from downloaded TMDB images)
+        if (!empty($this->attributes['local_poster_path'])) {
+            return \Storage::url($this->attributes['local_poster_path']);
         }
-        
+
+        // Priority 2: Placeholder (no TMDB fallback per requirement)
         return 'https://placehold.co/500x750?text=No+Poster';
     }
 }
