@@ -68,6 +68,45 @@ function addToWatchlist(movieId) {
     });
 }
 
+// Global series watchlist function
+function addSeriesToWatchlist(seriesId) {
+    if (!csrfToken) {
+        console.error('CSRF token not available');
+        showNotification('Security token missing. Please refresh the page.', 'error');
+        return;
+    }
+    
+    fetch(`/watchlist/series/add/${seriesId}`, {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': csrfToken,
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Update button
+            const button = event.target;
+            button.innerHTML = '<i class="fas fa-check me-2"></i>In Watchlist';
+            button.classList.add('disabled');
+            button.disabled = true;
+            button.onclick = null;
+            showNotification(data.message, 'success');
+        } else {
+            showNotification(data.message, 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showNotification('An error occurred', 'error');
+    });
+}
+
+// Make functions globally available
+window.addToWatchlist = addToWatchlist;
+window.addSeriesToWatchlist = addSeriesToWatchlist;
+
 // Notification function using Bootstrap Toast
 function showNotification(message, type = 'info') {
     // Check if Bootstrap is available

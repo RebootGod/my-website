@@ -17,7 +17,8 @@ class Watchlist extends Model
 
     protected $fillable = [
         'user_id',
-        'movie_id'
+        'movie_id',
+        'series_id'
     ];
 
     // Relationships
@@ -30,12 +31,25 @@ class Watchlist extends Model
     {
         return $this->belongsTo(Movie::class);
     }
+
+    public function series()
+    {
+        return $this->belongsTo(Series::class);
+    }
     
     // Static methods
-    public static function isInWatchlist($userId, $movieId)
+    public static function isInWatchlist($userId, $movieId = null, $seriesId = null)
     {
-        return self::where('user_id', $userId)
-            ->where('movie_id', $movieId)
-            ->exists();
+        $query = self::where('user_id', $userId);
+        
+        if ($movieId) {
+            $query->where('movie_id', $movieId);
+        }
+        
+        if ($seriesId) {
+            $query->where('series_id', $seriesId);
+        }
+        
+        return $query->exists();
     }
 }

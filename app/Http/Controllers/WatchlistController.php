@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Watchlist;
 use App\Models\Movie;
+use App\Models\Series;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -15,7 +16,7 @@ class WatchlistController extends Controller
     public function index()
     {
         $watchlist = Watchlist::where('user_id', Auth::id())
-            ->with(['movie.genres'])
+            ->with(['movie.genres', 'series.genres'])
             ->orderBy('created_at', 'desc')
             ->paginate(12);
 
@@ -58,6 +59,41 @@ class WatchlistController extends Controller
     }
 
     /**
+     * Add series to watchlist
+     */
+    public function addSeries(Series $series)
+    {
+        $this->authorize('create', Watchlist::class);
+        try {
+            $exists = Watchlist::where('user_id', Auth::id())
+                ->where('series_id', $series->id)
+                ->exists();
+
+            if ($exists) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Series is already in your watchlist.',
+                ]);
+            }
+
+            Watchlist::create([
+                'user_id' => Auth::id(),
+                'series_id' => $series->id,
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Series added to watchlist successfully.',
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to add series to watchlist.',
+            ], 500);
+        }
+    }
+
+    /**
      * Remove movie from watchlist
      */
     public function remove($movieId)
@@ -93,12 +129,61 @@ class WatchlistController extends Controller
     }
 
     /**
+     * Remove series from watchlist
+     */
+    public function removeSeries($seriesId)
+    {
+        $watchlistItem = Watchlist::where('user_id', Auth::id())
+            ->where('series_id', $seriesId)
+            ->first();
+
+        if ($watchlistItem) {
+            $this->authorize('delete', $watchlistItem);
+        }
+        
+        try {
+            $series = Series::find($seriesId);
+
+            if (!$series) {
+                return back()->with('error', 'Series not found.');
+            }
+
+            if (!$watchlistItem) {
+                return back()->with('error', 'Series is not in your watchlist.');
+            }
+
+            $watchlistItem->delete();
+            
+            return back()->with('success', 'Series removed from watchlist successfully.');
+            
+        } catch (\Exception $e) {
+            \Log::error("Error removing series from watchlist: " . $e->getMessage());
+            
+            return back()->with('error', 'Failed to remove series from watchlist.');
+        }
+    }
+
+    /**
      * Check if movie is in user's watchlist
      */
     public function check(Movie $movie)
     {
         $inWatchlist = Watchlist::where('user_id', Auth::id())
             ->where('movie_id', $movie->id)
+            ->exists();
+
+        return response()->json([
+            'in_watchlist' => $inWatchlist,
+        ]);
+    }
+
+    /**
+     * Check if series is in user's watchlist
+     */
+    public function checkSeries(Series $series)
+    {
+        $inWatchlist = Watchlist::where('user_id', Auth::id())
+            ->where('series_id', $series->id)
             ->exists();
 
         return response()->json([

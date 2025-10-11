@@ -69,8 +69,30 @@
                                 {{-- Description --}}
                                 <p class="series-description">{{ $series->description ?: 'No description available.' }}</p>
 
-                                {{-- Share Button --}}
+                                {{-- Action Buttons --}}
                                 <div class="d-flex flex-wrap gap-3 mt-4">
+                                    @auth
+                                        {{-- Watchlist Button --}}
+                                        @php
+                                            $inWatchlist = \App\Models\Watchlist::where('user_id', auth()->id())
+                                                ->where('series_id', $series->id)
+                                                ->exists();
+                                        @endphp
+
+                                        @if($inWatchlist)
+                                            <button class="action-btn outline" disabled>
+                                                <i class="fas fa-check me-2"></i>In Watchlist
+                                            </button>
+                                        @else
+                                            <button onclick="addSeriesToWatchlist('{{ $series->slug }}')"
+                                                    id="watchlist-btn-{{ $series->slug }}"
+                                                    class="action-btn outline">
+                                                <i class="fas fa-plus me-2"></i>Add to Watchlist
+                                            </button>
+                                        @endif
+                                    @endauth
+
+                                    {{-- Share Button --}}
                                     <button class="action-btn share" 
                                             data-share-btn
                                             data-share-title="{{ $series->title }}"

@@ -188,13 +188,25 @@ Route::middleware(['auth', 'check.user.status'])->group(function () {
     // Watchlist (moved inside auth middleware group)
     Route::prefix('watchlist')->name('watchlist.')->group(function () {
         Route::get('/', [WatchlistController::class, 'index'])->name('index');
+        
+        // Movies
         Route::post('/add/{movie}', [WatchlistController::class, 'add'])
             ->name('add')
-            ->middleware('throttle:30,1'); // 30 watchlist additions per minute
+            ->middleware('throttle:30,1');
         Route::delete('/remove/{movieId}', [WatchlistController::class, 'remove'])
             ->name('remove')
-            ->middleware('throttle:30,1'); // 30 watchlist removals per minute
+            ->middleware('throttle:30,1');
         Route::get('/check/{movie}', [WatchlistController::class, 'check'])->name('check');
+        
+        // Series
+        Route::post('/series/add/{series}', [WatchlistController::class, 'addSeries'])
+            ->name('series.add')
+            ->middleware('throttle:30,1');
+        Route::delete('/series/remove/{seriesId}', [WatchlistController::class, 'removeSeries'])
+            ->name('series.remove')
+            ->middleware('throttle:30,1');
+        Route::get('/series/check/{series}', [WatchlistController::class, 'checkSeries'])
+            ->name('series.check');
     });
     
     // Notifications
