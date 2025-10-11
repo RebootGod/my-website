@@ -80,15 +80,16 @@
     padding: 0 1rem;
     font-size: 0.9rem;
     font-weight: 600;
-    color: white;
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.25);
     border-radius: 10px;
     text-decoration: none;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     cursor: pointer;
     position: relative;
     backdrop-filter: blur(8px);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 .nav-btn i {
@@ -96,12 +97,12 @@
 }
 
 .nav-btn:hover {
-    background: rgba(99, 102, 241, 0.2);
-    border-color: rgba(99, 102, 241, 0.4);
+    background: rgba(99, 102, 241, 0.35);
+    border-color: rgba(99, 102, 241, 0.6);
     transform: translateY(-2px);
-    color: white;
+    color: #ffffff;
     text-decoration: none;
-    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
 }
 
 .nav-btn:active {
@@ -121,50 +122,62 @@
 
 /* Admin Button */
 .nav-btn-admin {
-    background: rgba(245, 158, 11, 0.15);
-    border-color: rgba(245, 158, 11, 0.3);
+    background: rgba(245, 158, 11, 0.25);
+    border-color: rgba(245, 158, 11, 0.5);
+    color: #ffffff;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
 }
 
 .nav-btn-admin:hover {
-    background: rgba(245, 158, 11, 0.25);
-    border-color: rgba(245, 158, 11, 0.5);
-    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+    background: rgba(245, 158, 11, 0.4);
+    border-color: rgba(245, 158, 11, 0.7);
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.5);
+    color: #ffffff;
 }
 
 /* User Button */
 .nav-btn-user {
-    background: rgba(255, 255, 255, 0.12);
-    border-color: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.18);
+    border-color: rgba(255, 255, 255, 0.3);
+    color: #ffffff;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 .nav-btn-user:hover {
-    background: rgba(99, 102, 241, 0.25);
-    border-color: rgba(99, 102, 241, 0.5);
+    background: rgba(99, 102, 241, 0.35);
+    border-color: rgba(99, 102, 241, 0.6);
+    color: #ffffff;
 }
 
 /* Login Button */
 .nav-btn-login {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.85) 100%);
-    color: #6366f1;
-    border-color: rgba(255, 255, 255, 0.3);
+    background: linear-gradient(135deg, #ffffff 0%, #f3f4f6 100%);
+    color: #4f46e5;
+    border-color: rgba(255, 255, 255, 0.5);
+    font-weight: 700;
+    text-shadow: none;
 }
 
 .nav-btn-login:hover {
-    background: linear-gradient(135deg, #ffffff 0%, #f3f4f6 100%);
-    color: #6366f1;
-    box-shadow: 0 4px 16px rgba(255, 255, 255, 0.3);
+    background: linear-gradient(135deg, #ffffff 0%, #e5e7eb 100%);
+    color: #4338ca;
+    box-shadow: 0 4px 16px rgba(255, 255, 255, 0.4);
 }
 
 /* Register Button */
 .nav-btn-register {
     background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-    border-color: rgba(99, 102, 241, 0.3);
-    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+    border-color: rgba(99, 102, 241, 0.5);
+    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.4);
+    color: #ffffff;
+    font-weight: 700;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
 .nav-btn-register:hover {
     background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
-    box-shadow: 0 4px 16px rgba(139, 92, 246, 0.5);
+    box-shadow: 0 4px 16px rgba(139, 92, 246, 0.6);
+    color: #ffffff;
 }
 
 /* ========================================
@@ -207,11 +220,12 @@
 }
 
 .dropdown-item {
-    color: rgba(255, 255, 255, 0.9);
+    color: #ffffff;
     padding: 0.75rem 1rem;
     border-radius: 8px;
     transition: all 0.3s ease;
     font-size: 0.9rem;
+    font-weight: 500;
     display: flex;
     align-items: center;
     gap: 0.5rem;
@@ -221,16 +235,18 @@
     font-size: 1rem;
     width: 20px;
     text-align: center;
+    opacity: 0.9;
 }
 
 .dropdown-item:hover {
-    background: linear-gradient(145deg, rgba(99, 102, 241, 0.2) 0%, rgba(139, 92, 246, 0.2) 100%);
-    color: white;
+    background: linear-gradient(145deg, rgba(99, 102, 241, 0.3) 0%, rgba(139, 92, 246, 0.3) 100%);
+    color: #ffffff;
     transform: translateX(4px);
 }
 
 .dropdown-item:active {
-    background: linear-gradient(145deg, rgba(99, 102, 241, 0.3) 0%, rgba(139, 92, 246, 0.3) 100%);
+    background: linear-gradient(145deg, rgba(99, 102, 241, 0.4) 0%, rgba(139, 92, 246, 0.4) 100%);
+    color: #ffffff;
 }
 
 .dropdown-divider {
