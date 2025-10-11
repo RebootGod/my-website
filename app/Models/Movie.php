@@ -299,8 +299,21 @@ class Movie extends Model
      */
     public function getPosterUrlAttribute(): string
     {
-        // Priority: poster_url field -> poster_path field -> placeholder
-        return $this->attributes['poster_url'] ?: $this->poster_path ?: 'https://placehold.co/500x750?text=No+Poster';
+        // Priority: poster_url field -> construct from poster_path -> placeholder
+        if (!empty($this->attributes['poster_url'])) {
+            return $this->attributes['poster_url'];
+        }
+        
+        if (!empty($this->attributes['poster_path'])) {
+            // If poster_path starts with http, it's already a full URL
+            if (str_starts_with($this->attributes['poster_path'], 'http')) {
+                return $this->attributes['poster_path'];
+            }
+            // Otherwise, construct TMDB image URL
+            return config('services.tmdb.image_url', 'https://image.tmdb.org/t/p') . '/w500' . $this->attributes['poster_path'];
+        }
+        
+        return 'https://placehold.co/500x750?text=No+Poster';
     }
 
     /**
@@ -308,7 +321,21 @@ class Movie extends Model
      */
     public function getBackdropUrlAttribute(): string
     {
-        return $this->backdrop_path ?: 'https://placehold.co/1920x1080?text=No+Backdrop';
+        // Priority: backdrop_url field -> construct from backdrop_path -> placeholder
+        if (!empty($this->attributes['backdrop_url'])) {
+            return $this->attributes['backdrop_url'];
+        }
+        
+        if (!empty($this->attributes['backdrop_path'])) {
+            // If backdrop_path starts with http, it's already a full URL
+            if (str_starts_with($this->attributes['backdrop_path'], 'http')) {
+                return $this->attributes['backdrop_path'];
+            }
+            // Otherwise, construct TMDB image URL
+            return config('services.tmdb.image_url', 'https://image.tmdb.org/t/p') . '/original' . $this->attributes['backdrop_path'];
+        }
+        
+        return 'https://placehold.co/1920x1080?text=No+Backdrop';
     }
 
     /**
