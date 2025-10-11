@@ -221,7 +221,7 @@
                                 <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6">
                                     <a href="{{ route('movies.show', $related->slug) }}" class="card bg-dark border-secondary h-100 text-decoration-none hover-card">
                                         {{-- EXACT same structure as movie details page - single img element --}}
-                                        <img src="{{ $related->poster_path ? (str_starts_with($related->poster_path, 'http') ? $related->poster_path : 'https://image.tmdb.org/t/p/w300' . $related->poster_path) : ($related->poster_url ?: 'https://placehold.co/200x300/343a40/ffffff?text=No+Poster') }}"
+                                        <img src="{{ $related->poster_url }}"
                                              alt="{{ $related->title }}"
                                              class="card-img-top"
                                              style="height: 280px; object-fit: cover;"

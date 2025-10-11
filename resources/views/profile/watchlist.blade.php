@@ -26,7 +26,7 @@
             @foreach($movies as $movie)
                                 <div class="col-md-3 mb-4">
                     <div class="card bg-dark text-white h-100">
-                        <img src="https://image.tmdb.org/t/p/w400{{ $movie->poster_path }}" 
+                        <img src="{{ $movie->poster_url }}" 
                              class="card-img-top" 
                              alt="{{ $movie->title }}"
                              style="height: 300px; object-fit: cover;"

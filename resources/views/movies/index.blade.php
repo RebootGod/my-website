@@ -263,20 +263,7 @@
                         {{-- Poster --}}
                         <div class="aspect-[2/3] bg-gray-700">
                             @php
-                                $posterUrl = '';
-                                if ($movie->poster_path) {
-                                    // If poster_path starts with http, use as is, otherwise prepend TMDB base URL
-                                    $posterUrl = str_starts_with($movie->poster_path, 'http') 
-                                        ? $movie->poster_path 
-                                        : 'https://image.tmdb.org/t/p/w500' . $movie->poster_path;
-                                } elseif ($movie->poster_url) {
-                                    // If poster_url starts with http, use as is, otherwise prepend TMDB base URL  
-                                    $posterUrl = str_starts_with($movie->poster_url, 'http') 
-                                        ? $movie->poster_url 
-                                        : 'https://image.tmdb.org/t/p/w500' . $movie->poster_url;
-                                } else {
-                                    $posterUrl = 'https://via.placeholder.com/400x600/343a40/ffffff?text=' . urlencode($movie->title);
-                                }
+                                $posterUrl = $movie->poster_url;
                             @endphp
                             <img src="{{ $posterUrl }}" 
                                  alt="{{ $movie->title }}"
