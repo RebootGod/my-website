@@ -18,6 +18,25 @@ body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
+/* Container improvements for large screens */
+@media (min-width: 1400px) {
+    .container {
+        max-width: 1400px;
+    }
+}
+
+@media (min-width: 1600px) {
+    .container {
+        max-width: 1600px;
+    }
+}
+
+@media (min-width: 1920px) {
+    .container {
+        max-width: 1800px;
+    }
+}
+
 /* Filter Sidebar */
 .filter-sidebar {
     background: var(--card-bg);
@@ -251,5 +270,80 @@ body {
     
     .section-title {
         font-size: 1.75rem;
+    }
+}
+
+/* Desktop optimizations (1025px+) */
+@media (min-width: 1025px) {
+    .filter-sidebar {
+        padding: 32px;
+        border-radius: 24px;
+        top: 24px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+    
+    .filter-title {
+        font-size: 1.75rem;
+        margin-bottom: 28px;
+    }
+    
+    .filter-group {
+        margin-bottom: 24px;
+    }
+    
+    .filter-label {
+        font-size: 1rem;
+        margin-bottom: 10px;
+    }
+    
+    .modern-select {
+        padding: 14px 18px;
+        font-size: 1rem;
+        border-radius: 12px;
+    }
+    
+    .filter-actions {
+        gap: 14px;
+        margin-top: 32px;
+    }
+    
+    .btn-modern,
+    .btn-outline-modern {
+        padding: 14px 28px;
+        font-size: 1rem;
+        border-radius: 14px;
+    }
+    
+    .section-title {
+        font-size: 2rem;
+        margin-bottom: 32px;
+    }
+}
+
+/* Large desktop optimizations (1440px+) */
+@media (min-width: 1440px) {
+    .filter-sidebar {
+        padding: 36px;
+        border-radius: 28px;
+    }
+    
+    .filter-title {
+        font-size: 2rem;
+        margin-bottom: 32px;
+    }
+    
+    .filter-group {
+        margin-bottom: 28px;
+    }
+    
+    .modern-select {
+        padding: 16px 20px;
+        font-size: 1.05rem;
+        border-radius: 14px;
+    }
+    
+    .section-title {
+        font-size: 2.25rem;
+        margin-bottom: 36px;
     }
 }
