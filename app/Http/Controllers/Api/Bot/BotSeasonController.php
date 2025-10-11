@@ -89,19 +89,15 @@ class BotSeasonController extends Controller
                 ], 200);
             }
 
-            // Generate unique job ID for tracking
-            $jobId = Str::uuid()->toString();
-
             // Dispatch job to queue
             ProcessSeasonUploadJob::dispatch(
                 $tmdbId,
                 $seasonNumber,
-                $telegramUsername,
-                $jobId
+                null, // telegramUserId (not provided by bot)
+                $telegramUsername
             )->onQueue('bot-uploads');
 
             Log::info('Season upload job dispatched', [
-                'job_id' => $jobId,
                 'series_tmdb_id' => $tmdbId,
                 'series_id' => $series->id,
                 'season_number' => $seasonNumber,

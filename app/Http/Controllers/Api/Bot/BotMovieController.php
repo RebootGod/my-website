@@ -80,8 +80,8 @@ class BotMovieController extends Controller
                 $tmdbId,
                 $embedUrl,
                 $downloadUrl,
-                $telegramUsername,
-                $jobId
+                null, // telegramUserId (not provided by bot)
+                $telegramUsername
             )->onQueue('bot-uploads');
 
             Log::info('Movie upload job dispatched', [
