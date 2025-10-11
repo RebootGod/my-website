@@ -18,6 +18,8 @@
     flex-direction: column;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     cursor: pointer;
+    text-decoration: none;
+    color: inherit;
 }
 
 /* Active/Tap state for mobile */

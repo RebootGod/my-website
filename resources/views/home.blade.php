@@ -214,7 +214,12 @@
                     <div class="movie-grid">
                         {{-- Display All Contents (Movies & Series) --}}
                         @foreach($contents as $item)
-                            <div class="movie-card-modern">
+                            @php
+                                $detailUrl = $item instanceof \App\Models\Series 
+                                    ? route('series.show', $item) 
+                                    : route('movies.show', $item->slug);
+                            @endphp
+                            <a href="{{ $detailUrl }}" class="movie-card-modern">
                                 <div class="movie-poster">
                                     @php
                                         $posterUrl = $item->poster_url ?? 'https://placehold.co/500x750/1a1f3a/8b5cf6?text=' . urlencode($item->title);
@@ -264,7 +269,7 @@
                                         @endif
                                     </div>
                                 </div>
-                            </div>
+                            </a>
                         @endforeach
                     </div>
 
