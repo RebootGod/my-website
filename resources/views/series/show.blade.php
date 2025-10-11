@@ -4,9 +4,15 @@
 
 @push('styles')
 @vite([
-    'resources/css/pages/series-detail.css',
-    'resources/css/components/animations.css',
-    'resources/css/components/mobile.css'
+    'resources/css/pages/series-detail-v2.css',
+    'resources/css/components/share-modal.css',
+    'resources/css/components/animations.css'
+])
+@endpush
+
+@push('scripts')
+@vite([
+    'resources/js/pages/detail-share.js'
 ])
 @endpush
 
@@ -62,6 +68,17 @@
 
                                 {{-- Description --}}
                                 <p class="series-description">{{ $series->description ?: 'No description available.' }}</p>
+
+                                {{-- Share Button --}}
+                                <div class="d-flex flex-wrap gap-3 mt-4">
+                                    <button class="action-btn share" 
+                                            data-share-btn
+                                            data-share-title="{{ $series->title }}"
+                                            data-share-url="{{ route('series.show', $series->slug) }}"
+                                            data-share-text="Check out {{ $series->title }} on Noobz Cinema">
+                                        <i class="fas fa-share-alt me-2"></i>Share
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>

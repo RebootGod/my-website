@@ -31,11 +31,14 @@ export default defineConfig({
                 // Page-specific styles and scripts
                 'resources/css/pages/home.css',
                 'resources/css/pages/movie-detail.css',
+                'resources/css/pages/movie-detail-v2.css',
                 'resources/css/pages/series-detail.css',
+                'resources/css/pages/series-detail-v2.css',
                 'resources/css/pages/player.css',
                 'resources/js/pages/home.js',
                 'resources/js/pages/movie-detail.js',
                 'resources/js/pages/series-detail.js',
+                'resources/js/pages/detail-share.js',
                 'resources/js/pages/player.js',
 
                 // Component styles and scripts (v2.0)
@@ -44,6 +47,7 @@ export default defineConfig({
                 'resources/css/components/movie-cards.css',
                 'resources/css/components/skeleton-loading.css',
                 'resources/css/components/mobile-filters.css',
+                'resources/css/components/share-modal.css',
                 'resources/css/components/loading.css',
                 'resources/css/components/animations.css',
                 'resources/css/components/mobile.css',

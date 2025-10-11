@@ -1,0 +1,339 @@
+/* Series Detail Page V2 - Mobile First (Phase 4) */
+
+.series-detail-page {
+    background: var(--bg-primary, #0a0e27);
+    color: var(--text-primary, #f8fafc);
+    min-height: 100vh;
+}
+
+/* Series Hero */
+.series-hero {
+    position: relative;
+    min-height: 50vh;
+    overflow: hidden;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.series-hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        180deg,
+        rgba(10, 14, 39, 0.7) 0%,
+        rgba(10, 14, 39, 0.9) 50%,
+        rgba(10, 14, 39, 0.95) 100%
+    );
+    z-index: 1;
+}
+
+.series-hero > .container {
+    position: relative;
+    z-index: 2;
+    padding-top: 24px;
+    padding-bottom: 32px;
+}
+
+/* Series Poster - Mobile centered */
+.series-poster {
+    max-width: 200px;
+    width: 100%;
+    height: auto;
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    margin: 0 auto 20px;
+    display: block;
+}
+
+/* Series Info */
+.series-info {
+    text-align: center;
+}
+
+/* Series Badges */
+.series-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    margin-bottom: 16px;
+}
+
+.series-type-badge {
+    background: var(--gradient-primary, linear-gradient(135deg, #6366f1, #8b5cf6));
+    color: white;
+    font-weight: 600;
+    font-size: 0.75rem;
+    padding: 6px 14px;
+    border-radius: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.status-badge {
+    padding: 6px 14px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: capitalize;
+}
+
+.status-badge.status-ongoing {
+    background: #10b981;
+    color: white;
+}
+
+.status-badge.status-completed {
+    background: #6366f1;
+    color: white;
+}
+
+.status-badge.status-upcoming {
+    background: #f59e0b;
+    color: white;
+}
+
+/* Series Title */
+.series-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--text-primary, #f8fafc);
+    margin-bottom: 16px;
+    line-height: 1.2;
+}
+
+/* Series Meta */
+.series-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    justify-content: center;
+    margin-bottom: 16px;
+}
+
+.meta-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--text-secondary, #cbd5e1);
+    font-size: 0.9rem;
+}
+
+.meta-item i {
+    color: var(--accent-primary, #6366f1);
+}
+
+/* Series Genres */
+.series-genres {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+}
+
+.genre-badge {
+    background: var(--bg-tertiary, #1e2849);
+    color: var(--text-primary, #f8fafc);
+    padding: 8px 16px;
+    border-radius: 16px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Series Description */
+.series-description {
+    color: var(--text-secondary, #cbd5e1);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* Seasons Section */
+.seasons-section {
+    padding: 32px 0;
+}
+
+.section-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary, #f8fafc);
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* Season Navigation - Mobile: Horizontal scroll */
+.seasons-nav {
+    background: var(--bg-secondary, #141b34);
+    border-radius: 12px;
+    padding: 12px;
+    margin-bottom: 24px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.seasons-nav-list {
+    display: flex;
+    gap: 8px;
+    min-width: min-content;
+}
+
+.season-nav-item {
+    padding: 10px 16px;
+    border-radius: 10px;
+    background: transparent;
+    color: var(--text-secondary, #cbd5e1);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.9rem;
+    white-space: nowrap;
+    transition: all 0.3s ease;
+    border: 1px solid transparent;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.season-nav-item.active {
+    background: var(--gradient-primary, linear-gradient(135deg, #6366f1, #8b5cf6));
+    color: white;
+}
+
+.season-nav-item:active {
+    transform: scale(0.96);
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .season-nav-item:hover {
+        background: rgba(99, 102, 241, 0.1);
+        border-color: var(--accent-primary, #6366f1);
+        color: var(--text-primary, #f8fafc);
+    }
+}
+
+/* Season Card */
+.season-card {
+    background: var(--bg-secondary, #141b34);
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    overflow: hidden;
+}
+
+.season-header {
+    padding: 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.season-header h3 {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--text-primary, #f8fafc);
+    margin: 0;
+}
+
+/* Episode List */
+.episode-list {
+    padding: 16px;
+}
+
+.episode-item {
+    background: var(--bg-tertiary, #1e2849);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 12px;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.episode-item:active {
+    transform: scale(0.98);
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .episode-item:hover {
+        background: var(--bg-tertiary, #1e2849);
+        border-color: var(--accent-primary, #6366f1);
+        transform: translateY(-2px);
+    }
+}
+
+.episode-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary, #f8fafc);
+    margin-bottom: 8px;
+}
+
+.episode-meta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    color: var(--text-secondary, #cbd5e1);
+    font-size: 0.85rem;
+}
+
+/* Tablet (768px+) */
+@media (min-width: 768px) {
+    .series-hero {
+        min-height: 60vh;
+    }
+    
+    .series-poster {
+        max-width: 250px;
+    }
+    
+    .series-info {
+        text-align: left;
+    }
+    
+    .series-badges {
+        justify-content: flex-start;
+    }
+    
+    .series-title {
+        font-size: 2.5rem;
+    }
+    
+    .series-meta {
+        justify-content: flex-start;
+    }
+    
+    .series-genres {
+        justify-content: flex-start;
+    }
+    
+    .series-description {
+        margin: 0;
+        text-align: left;
+    }
+}
+
+/* Desktop (1024px+) */
+@media (min-width: 1024px) {
+    .series-hero {
+        min-height: 70vh;
+    }
+    
+    .series-poster {
+        max-width: 300px;
+    }
+    
+    .series-title {
+        font-size: 3rem;
+    }
+    
+    .series-description {
+        font-size: 1.05rem;
+    }
+    
+    .season-nav-item {
+        font-size: 1rem;
+        padding: 12px 20px;
+    }
+}

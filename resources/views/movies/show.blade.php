@@ -4,9 +4,15 @@
 
 @push('styles')
 @vite([
-    'resources/css/pages/movie-detail.css',
-    'resources/css/components/animations.css',
-    'resources/css/components/mobile.css'
+    'resources/css/pages/movie-detail-v2.css',
+    'resources/css/components/share-modal.css',
+    'resources/css/components/animations.css'
+])
+@endpush
+
+@push('scripts')
+@vite([
+    'resources/js/pages/detail-share.js'
 ])
 @endpush
 
@@ -199,6 +205,15 @@
                                 <i class="fas fa-plus me-2"></i>Add to Watchlist
                             </button>
                         @endif
+
+                        {{-- Share Button --}}
+                        <button class="action-btn share" 
+                                data-share-btn
+                                data-share-title="{{ $movie->title }}"
+                                data-share-url="{{ route('movies.show', $movie->slug) }}"
+                                data-share-text="Check out {{ $movie->title }} on Noobz Cinema">
+                            <i class="fas fa-share-alt me-2"></i>Share
+                        </button>
                     @else
                         {{-- Guest Buttons --}}
                         <a href="{{ route('login') }}" class="action-btn primary">
