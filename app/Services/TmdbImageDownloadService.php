@@ -218,17 +218,17 @@ class TmdbImageDownloadService
             $hash = substr(md5($imageContent), 0, 8);
             $filename = "{$filenamePrefix}_{$hash}.{$extension}";
 
-            // Full storage path
-            $storagePath = "public/tmdb_images/{$directory}/{$filename}";
+            // Full storage path (without 'public/' prefix for public disk)
+            $storagePath = "tmdb_images/{$directory}/{$filename}";
 
-            // Ensure directory exists
-            $directoryPath = "public/tmdb_images/{$directory}";
-            if (!Storage::exists($directoryPath)) {
-                Storage::makeDirectory($directoryPath, 0755, true);
+            // Ensure directory exists on public disk
+            $directoryPath = "tmdb_images/{$directory}";
+            if (!Storage::disk('public')->exists($directoryPath)) {
+                Storage::disk('public')->makeDirectory($directoryPath, 0755, true);
             }
 
-            // Store image
-            $saved = Storage::put($storagePath, $imageContent);
+            // Store image on public disk
+            $saved = Storage::disk('public')->put($storagePath, $imageContent);
 
             if (!$saved) {
                 Log::error('Failed to save TMDB image to storage', [
