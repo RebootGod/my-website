@@ -15,11 +15,11 @@
     <div class="row">
         <div class="col-12">
             {{-- Series Hero Section --}}
-            <div class="series-hero" style="background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.8)), url('{{ $series->backdrop_path ? (str_starts_with($series->backdrop_path, 'http') ? $series->backdrop_path : 'https://image.tmdb.org/t/p/w1280' . $series->backdrop_path) : ($series->backdrop_url ?: 'https://placehold.co/1920x1080?text=No+Backdrop') }}')">
+            <div class="series-hero" style="background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.8)), url('{{ $series->backdrop_url }}')">
                 <div class="container">
                     <div class="row align-items-center">
                         <div class="col-lg-4">
-                            <img src="{{ $series->poster_path ? (str_starts_with($series->poster_path, 'http') ? $series->poster_path : 'https://image.tmdb.org/t/p/w500' . $series->poster_path) : ($series->poster_url ?: 'https://placehold.co/300x450?text=No+Poster') }}"
+                            <img src="{{ $series->poster_url }}"
                                  alt="{{ $series->title }}"
                                  class="series-poster">
                         </div>

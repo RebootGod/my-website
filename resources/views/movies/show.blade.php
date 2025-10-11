@@ -14,10 +14,10 @@
 @section('content')
 <div class="movie-detail-page">
     {{-- Hero Section with Backdrop --}}
-    @if($movie->backdrop_path)
+    @if($movie->backdrop_url)
     <div class="hero-backdrop">
         <img
-            src="{{ $movie->backdrop_path ? (str_starts_with($movie->backdrop_path, 'http') ? $movie->backdrop_path : 'https://image.tmdb.org/t/p/w1280' . $movie->backdrop_path) : $movie->backdrop_url }}"
+            src="{{ $movie->backdrop_url }}"
             alt="{{ $movie->title }} backdrop"
             class="hero-backdrop-img"
         >
@@ -26,7 +26,7 @@
                 <div class="col-md-3">
                     <div class="poster-container">
                         <img
-                            src="{{ $movie->poster_path ? (str_starts_with($movie->poster_path, 'http') ? $movie->poster_path : 'https://image.tmdb.org/t/p/w500' . $movie->poster_path) : ($movie->poster_url ?: 'https://placehold.co/300x450/343a40/ffffff?text=No+Poster') }}"
+                            src="{{ $movie->poster_url }}"
                             alt="{{ $movie->title }}"
                             class="poster-img"
                         >
@@ -54,7 +54,7 @@
             <div class="col-md-3">
                 <div class="poster-container">
                     <img
-                        src="{{ $movie->poster_path ? (str_starts_with($movie->poster_path, 'http') ? $movie->poster_path : 'https://image.tmdb.org/t/p/w500' . $movie->poster_path) : ($movie->poster_url ?: 'https://placehold.co/300x450/343a40/ffffff?text=No+Poster') }}"
+                        src="{{ $movie->poster_url }}"
                         alt="{{ $movie->title }}"
                         class="poster-img"
                     >
@@ -85,7 +85,7 @@
             <div class="col-12 d-md-none mb-4">
                 <div class="poster-container mx-auto" style="max-width: 250px;">
                     <img
-                        src="{{ $movie->poster_path ? (str_starts_with($movie->poster_path, 'http') ? $movie->poster_path : 'https://image.tmdb.org/t/p/w500' . $movie->poster_path) : ($movie->poster_url ?: 'https://placehold.co/300x450/343a40/ffffff?text=No+Poster') }}"
+                        src="{{ $movie->poster_url }}"
                         alt="{{ $movie->title }}"
                         class="poster-img"
                     >
@@ -102,12 +102,12 @@
 
             {{-- Movie Info --}}
             <div class="col-12">
-                @if(!$movie->backdrop_path)
+                @if(!$movie->backdrop_url)
                 <div class="row">
                     <div class="col-md-3 d-none d-md-block">
                         <div class="poster-container sticky-top" style="top: 2rem;">
                             <img
-                                src="{{ $movie->poster_path ? (str_starts_with($movie->poster_path, 'http') ? $movie->poster_path : 'https://image.tmdb.org/t/p/w500' . $movie->poster_path) : ($movie->poster_url ?: 'https://placehold.co/300x450/343a40/ffffff?text=No+Poster') }}"
+                                src="{{ $movie->poster_url }}"
                                 alt="{{ $movie->title }}"
                                 class="poster-img"
                             >
@@ -283,7 +283,7 @@
 
                             <a href="{{ route('movies.show', $related->slug) }}" class="text-decoration-none">
                                 <img
-                                    src="{{ $related->poster_path ? (str_starts_with($related->poster_path, 'http') ? $related->poster_path : 'https://image.tmdb.org/t/p/w300' . $related->poster_path) : ($related->poster_url ?: 'https://placehold.co/200x300/343a40/ffffff?text=No+Poster') }}"
+                                    src="{{ $related->poster_url }}"
                                     alt="{{ $related->title }}"
                                     class="movie-card-img w-100"
                                     loading="lazy"
