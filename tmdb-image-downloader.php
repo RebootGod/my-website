@@ -225,6 +225,18 @@ class TmdbImageDownloaderCli {
         $totalDownloaded += $result['success'];
         $totalFailed += $result['failed'];
         
+        // Download season posters
+        echo Color::CYAN . "📥 Downloading season posters...\n" . Color::RESET;
+        $result = $this->downloadSeasonPosters();
+        $totalDownloaded += $result['success'];
+        $totalFailed += $result['failed'];
+        
+        // Download episode stills
+        echo Color::CYAN . "📥 Downloading episode stills...\n" . Color::RESET;
+        $result = $this->downloadEpisodeStills();
+        $totalDownloaded += $result['success'];
+        $totalFailed += $result['failed'];
+        
         // Final summary
         echo "\n";
         echo "╔════════════════════════════════════════════════════════╗\n";
@@ -334,6 +346,69 @@ class TmdbImageDownloaderCli {
             } else {
                 $failed++;
                 echo Color::RED . "   ✗ " . Color::RESET . $item->title . "\n";
+            }
+        }
+        
+        echo "   Downloaded: " . Color::GREEN . $success . Color::RESET . " | Failed: " . Color::RED . $failed . Color::RESET . "\n\n";
+        
+        return ['success' => $success, 'failed' => $failed];
+    }
+    
+    private function downloadSeasonPosters() {
+        $seasons = SeriesSeason::whereNotNull('poster_path')
+            ->whereNull('local_poster_path')
+            ->with('series')
+            ->get();
+        
+        $success = 0;
+        $failed = 0;
+        
+        foreach ($seasons as $season) {
+            $path = $this->service->downloadSeasonPoster(
+                $season->poster_path, 
+                $season->series->tmdb_id, 
+                $season->season_number
+            );
+            
+            if ($path && Storage::disk('public')->exists($path)) {
+                $season->update(['local_poster_path' => $path]);
+                $success++;
+                echo Color::GREEN . "   ✓ " . Color::RESET . "{$season->series->title} - Season {$season->season_number}\n";
+            } else {
+                $failed++;
+                echo Color::RED . "   ✗ " . Color::RESET . "{$season->series->title} - Season {$season->season_number}\n";
+            }
+        }
+        
+        echo "   Downloaded: " . Color::GREEN . $success . Color::RESET . " | Failed: " . Color::RED . $failed . Color::RESET . "\n\n";
+        
+        return ['success' => $success, 'failed' => $failed];
+    }
+    
+    private function downloadEpisodeStills() {
+        $episodes = SeriesEpisode::whereNotNull('still_path')
+            ->whereNull('local_still_path')
+            ->with(['series', 'season'])
+            ->get();
+        
+        $success = 0;
+        $failed = 0;
+        
+        foreach ($episodes as $episode) {
+            $path = $this->service->downloadEpisodeStill(
+                $episode->still_path,
+                $episode->series->tmdb_id,
+                $episode->season->season_number,
+                $episode->episode_number
+            );
+            
+            if ($path && Storage::disk('public')->exists($path)) {
+                $episode->update(['local_still_path' => $path]);
+                $success++;
+                echo Color::GREEN . "   ✓ " . Color::RESET . "{$episode->series->title} S{$episode->season->season_number}E{$episode->episode_number}\n";
+            } else {
+                $failed++;
+                echo Color::RED . "   ✗ " . Color::RESET . "{$episode->series->title} S{$episode->season->season_number}E{$episode->episode_number}\n";
             }
         }
         
