@@ -1,0 +1,655 @@
+/* ============================================
+   MOVIE DETAIL PAGE V3 - MODERN REDESIGN
+   ============================================ */
+
+.movie-detail-page {
+    min-height: 100vh;
+    background: linear-gradient(180deg, #0a0e1a 0%, #151922 100%);
+    position: relative;
+}
+
+/* ============================================
+   HERO SECTION - CINEMATIC BACKDROP
+   ============================================ */
+.hero-section {
+    position: relative;
+    min-height: 85vh;
+    display: flex;
+    align-items: flex-end;
+    overflow: hidden;
+    margin-bottom: -80px;
+}
+
+/* Backdrop Image */
+.hero-backdrop-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 1;
+}
+
+/* Gradient Overlays */
+.hero-gradient-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+    background: linear-gradient(
+        180deg,
+        rgba(10, 14, 26, 0.3) 0%,
+        rgba(10, 14, 26, 0.7) 50%,
+        rgba(10, 14, 26, 0.95) 85%,
+        #0a0e1a 100%
+    );
+}
+
+.hero-side-gradients {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 3;
+    background: linear-gradient(
+        90deg,
+        rgba(10, 14, 26, 0.8) 0%,
+        transparent 30%,
+        transparent 70%,
+        rgba(10, 14, 26, 0.8) 100%
+    );
+}
+
+/* Hero Content Container */
+.hero-content-wrapper {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    padding: 60px 0 120px;
+}
+
+/* ============================================
+   POSTER SECTION - FLOATING CARD
+   ============================================ */
+.poster-column {
+    position: relative;
+    z-index: 11;
+}
+
+.poster-floating-card {
+    position: relative;
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: 
+        0 20px 60px rgba(0, 0, 0, 0.6),
+        0 0 0 1px rgba(255, 255, 255, 0.05);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    background: linear-gradient(135deg, rgba(30, 35, 50, 0.4), rgba(20, 25, 40, 0.6));
+    backdrop-filter: blur(10px);
+}
+
+.poster-floating-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 
+        0 30px 80px rgba(0, 0, 0, 0.8),
+        0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+.poster-image-wrapper {
+    position: relative;
+    aspect-ratio: 2/3;
+    overflow: hidden;
+}
+
+.poster-main-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.poster-floating-card:hover .poster-main-image {
+    transform: scale(1.05);
+}
+
+/* Poster Overlay with Play Button */
+.poster-play-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        180deg,
+        transparent 0%,
+        rgba(0, 0, 0, 0.3) 50%,
+        rgba(0, 0, 0, 0.8) 100%
+    );
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.poster-floating-card:hover .poster-play-overlay {
+    opacity: 1;
+}
+
+.poster-play-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #ec4899, #f43f5e);
+    border: 3px solid rgba(255, 255, 255, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    color: #ffffff;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 10px 30px rgba(236, 72, 153, 0.5);
+}
+
+.poster-play-button:hover {
+    transform: scale(1.15);
+    background: linear-gradient(135deg, #f43f5e, #ec4899);
+    box-shadow: 0 15px 40px rgba(236, 72, 153, 0.7);
+}
+
+.poster-play-button i {
+    margin-left: 4px;
+}
+
+/* Quality Badge on Poster */
+.poster-quality-badge {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: linear-gradient(135deg, #8b5cf6, #6366f1);
+    color: #ffffff;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 6px 14px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
+    z-index: 10;
+}
+
+/* ============================================
+   MOVIE INFO SECTION
+   ============================================ */
+.movie-info-column {
+    position: relative;
+    z-index: 10;
+}
+
+/* Title */
+.movie-main-title {
+    font-size: 3.5rem;
+    font-weight: 900;
+    color: #ffffff;
+    margin-bottom: 12px;
+    line-height: 1.1;
+    text-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+    letter-spacing: -0.02em;
+}
+
+.movie-original-title {
+    font-size: 1.25rem;
+    color: rgba(255, 255, 255, 0.6);
+    font-weight: 400;
+    margin-bottom: 24px;
+    font-style: italic;
+}
+
+/* Meta Badges - Horizontal Pills */
+.meta-badges-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 28px;
+}
+
+.meta-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border-radius: 50px;
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.meta-pill:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+}
+
+.meta-pill i {
+    font-size: 1rem;
+    opacity: 0.8;
+}
+
+/* Rating Pill - Special Styling */
+.meta-pill.rating-pill {
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    border-color: rgba(251, 191, 36, 0.3);
+    color: #ffffff;
+}
+
+.meta-pill.rating-pill i {
+    color: #ffffff;
+    opacity: 1;
+}
+
+/* Genres Pills */
+.genres-section {
+    margin-bottom: 32px;
+}
+
+.section-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+}
+
+.section-label i {
+    font-size: 1rem;
+}
+
+.genres-pills-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.genre-pill {
+    display: inline-block;
+    padding: 8px 20px;
+    border-radius: 50px;
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(99, 102, 241, 0.2));
+    border: 1.5px solid rgba(139, 92, 246, 0.3);
+    color: #a78bfa;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.genre-pill:hover {
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.3), rgba(99, 102, 241, 0.3));
+    border-color: rgba(139, 92, 246, 0.5);
+    color: #c4b5fd;
+    transform: translateY(-2px);
+}
+
+/* ============================================
+   ACTION BUTTONS - PRIMARY CTA
+   ============================================ */
+.action-buttons-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 40px;
+}
+
+.action-btn-modern {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 16px 36px;
+    border-radius: 16px;
+    font-size: 1rem;
+    font-weight: 700;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Primary Button - Watch Now */
+.action-btn-modern.primary {
+    background: linear-gradient(135deg, #ec4899, #f43f5e);
+    color: #ffffff;
+    box-shadow: 0 8px 24px rgba(236, 72, 153, 0.4);
+}
+
+.action-btn-modern.primary:hover {
+    background: linear-gradient(135deg, #f43f5e, #ec4899);
+    box-shadow: 0 12px 32px rgba(236, 72, 153, 0.6);
+    transform: translateY(-3px);
+}
+
+.action-btn-modern.primary i {
+    font-size: 1.1rem;
+}
+
+/* Secondary Button - Watchlist */
+.action-btn-modern.secondary {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+}
+
+.action-btn-modern.secondary:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: translateY(-3px);
+}
+
+/* Share Button */
+.action-btn-modern.share {
+    background: rgba(139, 92, 246, 0.15);
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(139, 92, 246, 0.3);
+    color: #a78bfa;
+}
+
+.action-btn-modern.share:hover {
+    background: rgba(139, 92, 246, 0.25);
+    border-color: rgba(139, 92, 246, 0.5);
+    transform: translateY(-3px);
+}
+
+/* Disabled State */
+.action-btn-modern:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+/* ============================================
+   CONTENT SECTION - SYNOPSIS & INFO
+   ============================================ */
+.content-section-wrapper {
+    position: relative;
+    z-index: 10;
+    padding: 80px 0 60px;
+}
+
+/* Glass Card - Info Card */
+.glass-info-card {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    margin-bottom: 24px;
+}
+
+.glass-card-header {
+    padding: 24px 32px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.glass-card-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #ffffff;
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+.glass-card-title i {
+    color: #ec4899;
+    font-size: 1.3rem;
+}
+
+.glass-card-body {
+    padding: 32px;
+}
+
+.synopsis-text {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 1.05rem;
+    line-height: 1.8;
+    margin: 0;
+}
+
+/* Download Section */
+.download-section-card {
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(99, 102, 241, 0.1));
+    border: 1.5px solid rgba(139, 92, 246, 0.2);
+}
+
+.download-section-card .glass-card-header {
+    background: rgba(139, 92, 246, 0.08);
+    border-bottom-color: rgba(139, 92, 246, 0.15);
+}
+
+.download-link-button {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 24px;
+    background: rgba(139, 92, 246, 0.15);
+    border: 2px solid rgba(139, 92, 246, 0.3);
+    border-radius: 12px;
+    color: #a78bfa;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.download-link-button:hover {
+    background: rgba(139, 92, 246, 0.25);
+    border-color: rgba(139, 92, 246, 0.5);
+    color: #c4b5fd;
+    transform: translateX(4px);
+}
+
+.download-link-button i {
+    font-size: 1.2rem;
+}
+
+/* ============================================
+   RELATED MOVIES SECTION
+   ============================================ */
+.related-movie-card {
+    position: relative;
+    border-radius: 16px;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    transition: all 0.3s ease;
+}
+
+.related-movie-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+.related-movie-link {
+    text-decoration: none;
+    display: block;
+}
+
+.related-movie-poster {
+    position: relative;
+    aspect-ratio: 2/3;
+    overflow: hidden;
+}
+
+.related-movie-poster img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+}
+
+.related-movie-card:hover .related-movie-poster img {
+    transform: scale(1.1);
+}
+
+.related-movie-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.related-movie-card:hover .related-movie-overlay {
+    opacity: 1;
+}
+
+.related-movie-overlay i {
+    font-size: 2rem;
+    color: #ffffff;
+}
+
+.related-movie-info {
+    padding: 16px;
+}
+
+.related-movie-title {
+    color: #ffffff;
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+    line-height: 1.3;
+}
+
+.related-movie-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.8rem;
+}
+
+.related-movie-year {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.related-movie-rating {
+    color: #fbbf24;
+    font-weight: 600;
+}
+
+.related-movie-rating i {
+    font-size: 0.75rem;
+    margin-right: 2px;
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+
+/* Tablets and below */
+@media (max-width: 991px) {
+    .hero-section {
+        min-height: 70vh;
+    }
+
+    .movie-main-title {
+        font-size: 2.5rem;
+    }
+
+    .poster-floating-card {
+        max-width: 300px;
+        margin: 0 auto 32px;
+    }
+
+    .poster-column {
+        text-align: center;
+    }
+}
+
+/* Mobile devices */
+@media (max-width: 767px) {
+    .hero-section {
+        min-height: 60vh;
+        margin-bottom: -40px;
+    }
+
+    .hero-content-wrapper {
+        padding: 40px 0 80px;
+    }
+
+    .movie-main-title {
+        font-size: 2rem;
+    }
+
+    .movie-original-title {
+        font-size: 1rem;
+    }
+
+    .meta-badges-row {
+        gap: 8px;
+    }
+
+    .meta-pill {
+        padding: 8px 16px;
+        font-size: 0.85rem;
+    }
+
+    .action-btn-modern {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .glass-card-header {
+        padding: 20px 24px;
+    }
+
+    .glass-card-body {
+        padding: 24px;
+    }
+
+    .content-section-wrapper {
+        padding: 40px 0 40px;
+    }
+}
+
+/* Small mobile */
+@media (max-width: 575px) {
+    .poster-floating-card {
+        max-width: 240px;
+    }
+
+    .movie-main-title {
+        font-size: 1.75rem;
+    }
+
+    .glass-card-title {
+        font-size: 1.1rem;
+    }
+
+    .synopsis-text {
+        font-size: 0.95rem;
+        line-height: 1.7;
+    }
+}

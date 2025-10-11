@@ -32,6 +32,7 @@ export default defineConfig({
                 'resources/css/pages/home.css',
                 'resources/css/pages/movie-detail.css',
                 'resources/css/pages/movie-detail-v2.css',
+                'resources/css/pages/movie-detail-v3.css',
                 'resources/css/pages/series-detail.css',
                 'resources/css/pages/series-detail-v2.css',
                 'resources/css/pages/series-player.css',
