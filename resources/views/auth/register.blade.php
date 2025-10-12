@@ -187,7 +187,7 @@
     document.addEventListener('DOMContentLoaded', function() {
         initializeRegisterForm({
             csrfToken: '{{ csrf_token() }}',
-            inviteCodeUrl: '{{ route('invite.validate') }}'
+            inviteCodeUrl: '{{ route('auth.validate-invite-code') }}'
         });
     });
 </script>
