@@ -192,9 +192,13 @@
                                 <div class="timeline-content">
                                     <div class="timeline-header">
                                         <h4 class="timeline-title">
-                                            <a href="{{ route('admin.users.show', $activity->user_id) }}" class="user-link">
-                                                {{ $activity->user->username ?? 'Unknown User' }}
-                                            </a>
+                                            @if($activity->user && $activity->user->id)
+                                                <a href="{{ route('admin.users.show', $activity->user) }}" class="user-link">
+                                                    {{ $activity->user->username ?? 'Unknown User' }}
+                                                </a>
+                                            @else
+                                                <span class="user-link-disabled">Unknown User</span>
+                                            @endif
                                         </h4>
                                         <span class="timeline-time">{{ $activity->activity_at->diffForHumans() }}</span>
                                     </div>

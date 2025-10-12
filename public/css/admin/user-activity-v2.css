@@ -322,6 +322,11 @@
     color: var(--primary-hover);
 }
 
+.user-link-disabled {
+    color: var(--text-secondary);
+    font-style: italic;
+}
+
 .timeline-time {
     font-size: 0.75rem;
     color: var(--text-secondary);
