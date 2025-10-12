@@ -108,16 +108,22 @@
                     <td class="px-6 py-4 text-gray-300">{{ number_format($item->view_count) }}</td>
                     <td class="px-6 py-4">
                         <div class="flex items-center space-x-2">
-                            <a href="{{ route('admin.series.show', $item) }}" class="text-green-400 hover:text-green-300">
-                                Manage
-                            </a>
-                            <a href="{{ route('admin.series.edit', $item) }}" class="text-blue-400 hover:text-blue-300">
-                                Edit
-                            </a>
-                            <form action="{{ route('admin.series.toggle-status', $item) }}" method="POST" class="inline">
-                                @csrf
-                                <button type="submit" class="text-yellow-400 hover:text-yellow-300">
-                                    {{ $item->status === 'published' ? 'Unpublish' : 'Publish' }}
+                            @if($item && $item->id)
+                                <a href="{{ route('admin.series.show', $item->id) }}" class="text-green-400 hover:text-green-300">
+                                    Manage
+                                </a>
+                                <a href="{{ route('admin.series.edit', $item->id) }}" class="text-blue-400 hover:text-blue-300">
+                                    Edit
+                                </a>
+                                <form action="{{ route('admin.series.toggle-status', $item->id) }}" method="POST" class="inline">
+                                    @csrf
+                                    <button type="submit" class="text-yellow-400 hover:text-yellow-300">
+                                        {{ $item->status === 'published' ? 'Unpublish' : 'Publish' }}
+                                    </button>
+                                </form>
+                            @else
+                                <span class="text-gray-500 text-sm">Invalid series</span>
+                            @endif
                                 </button>
                             </form>
                             <form action="{{ route('admin.series.destroy', $item) }}" method="POST" class="inline" onsubmit="return confirm('Are you sure you want to delete this series?');">

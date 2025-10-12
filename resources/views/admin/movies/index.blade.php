@@ -105,24 +105,28 @@
                     <td class="px-6 py-4 text-gray-300">{{ number_format($movie->view_count) }}</td>
                     <td class="px-6 py-4">
                         <div class="flex items-center space-x-2">
-                            <a href="{{ route('admin.movies.edit', $movie) }}" class="text-blue-400 hover:text-blue-300">
-                                Edit
-                            </a>
-                            <form action="{{ route('admin.movies.toggle-status', $movie) }}" method="POST" class="inline">
-                                @csrf
-                                @method('PATCH')
-                                <input type="hidden" name="status" value="{{ $movie->status == 'published' ? 'draft' : 'published' }}">
-                                <button type="submit" class="text-yellow-400 hover:text-yellow-300">
-                                    {{ $movie->status == 'published' ? 'Unpublish' : 'Publish' }}
-                                </button>
-                            </form>
-                            <form action="{{ route('admin.movies.destroy', $movie) }}" method="POST" class="inline" onsubmit="return confirm('Are you sure?')">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="text-red-400 hover:text-red-300">
-                                    Delete
-                                </button>
-                            </form>
+                            @if($movie && $movie->id)
+                                <a href="{{ route('admin.movies.edit', $movie->id) }}" class="text-blue-400 hover:text-blue-300">
+                                    Edit
+                                </a>
+                                <form action="{{ route('admin.movies.toggle-status', $movie->id) }}" method="POST" class="inline">
+                                    @csrf
+                                    @method('PATCH')
+                                    <input type="hidden" name="status" value="{{ $movie->status == 'published' ? 'draft' : 'published' }}">
+                                    <button type="submit" class="text-yellow-400 hover:text-yellow-300">
+                                        {{ $movie->status == 'published' ? 'Unpublish' : 'Publish' }}
+                                    </button>
+                                </form>
+                                <form action="{{ route('admin.movies.destroy', $movie->id) }}" method="POST" class="inline" onsubmit="return confirm('Are you sure?')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="text-red-400 hover:text-red-300">
+                                        Delete
+                                    </button>
+                                </form>
+                            @else
+                                <span class="text-gray-500 text-sm">Invalid movie</span>
+                            @endif
                         </div>
                     </td>
                 </tr>
