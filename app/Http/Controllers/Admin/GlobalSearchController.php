@@ -66,8 +66,8 @@ class GlobalSearchController extends Controller
         $series = $this->searchSeries($searchTerm);
         $results = array_merge($results, $series);
 
-        // Search Users (admin only)
-        if (auth()->user()->hasRole('admin')) {
+        // Search Users (super admin only for privacy)
+        if (auth()->user()->isSuperAdmin()) {
             $users = $this->searchUsers($searchTerm);
             $results = array_merge($results, $users);
         }
