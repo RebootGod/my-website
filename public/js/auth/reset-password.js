@@ -14,6 +14,26 @@ function resetPasswordHandler() {
         strengthClass: '',
         strengthText: '',
 
+        get hasMinLength() {
+            return this.password.length >= 8;
+        },
+
+        get hasUppercase() {
+            return /[A-Z]/.test(this.password);
+        },
+
+        get hasLowercase() {
+            return /[a-z]/.test(this.password);
+        },
+
+        get hasNumber() {
+            return /[0-9]/.test(this.password);
+        },
+
+        get hasSpecialChar() {
+            return /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(this.password);
+        },
+
         get canSubmit() {
             return this.password.length >= 8 &&
                    this.passwordsMatch &&

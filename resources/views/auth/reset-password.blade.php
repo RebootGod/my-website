@@ -73,11 +73,11 @@
                                 </div>
                                 <div class="strength-text" :class="strengthClass" x-text="strengthText"></div>
                                 <ul class="password-requirements">
-                                    <li :class="password.length >= 8 ? 'valid' : 'invalid'">Minimal 8 karakter</li>
-                                    <li :class="/[A-Z]/.test(password) ? 'valid' : 'invalid'">Huruf besar</li>
-                                    <li :class="/[a-z]/.test(password) ? 'valid' : 'invalid'">Huruf kecil</li>
-                                    <li :class="/[0-9]/.test(password) ? 'valid' : 'invalid'">Angka</li>
-                                    <li :class="/[!@#$%^&*()_+\-=\[\]{};':\"\\|,.<>\/?]/.test(password) ? 'valid' : 'invalid'">Karakter khusus</li>
+                                    <li :class="hasMinLength ? 'valid' : 'invalid'">Minimal 8 karakter</li>
+                                    <li :class="hasUppercase ? 'valid' : 'invalid'">Huruf besar</li>
+                                    <li :class="hasLowercase ? 'valid' : 'invalid'">Huruf kecil</li>
+                                    <li :class="hasNumber ? 'valid' : 'invalid'">Angka</li>
+                                    <li :class="hasSpecialChar ? 'valid' : 'invalid'">Karakter khusus</li>
                                 </ul>
                             </div>
                         </div>
