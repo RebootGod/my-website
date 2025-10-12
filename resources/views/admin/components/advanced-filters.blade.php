@@ -46,7 +46,9 @@
                         <option value="">All Status</option>
                         <option value="published" {{ request('status') == 'published' ? 'selected' : '' }}>Published</option>
                         <option value="draft" {{ request('status') == 'draft' ? 'selected' : '' }}>Draft</option>
+                        @if($contentType === 'movie')
                         <option value="archived" {{ request('status') == 'archived' ? 'selected' : '' }}>Archived</option>
+                        @endif
                     </select>
                 </div>
 
@@ -208,10 +210,10 @@
                     </label>
                     <select id="quality" name="quality" class="filter-select">
                         <option value="">All Qualities</option>
+                        <option value="CAM" {{ request('quality') == 'CAM' ? 'selected' : '' }}>CAM</option>
+                        <option value="HD" {{ request('quality') == 'HD' ? 'selected' : '' }}>HD</option>
+                        <option value="FHD" {{ request('quality') == 'FHD' ? 'selected' : '' }}>FHD</option>
                         <option value="4K" {{ request('quality') == '4K' ? 'selected' : '' }}>4K</option>
-                        <option value="1080p" {{ request('quality') == '1080p' ? 'selected' : '' }}>1080p</option>
-                        <option value="720p" {{ request('quality') == '720p' ? 'selected' : '' }}>720p</option>
-                        <option value="480p" {{ request('quality') == '480p' ? 'selected' : '' }}>480p</option>
                     </select>
                 </div>
                 @endif

@@ -101,9 +101,12 @@ class AdvancedFilterService
             $validated['search'] = strip_tags($filters['search']);
         }
 
-        // Status
-        if (isset($filters['status']) && in_array($filters['status'], ['published', 'draft', 'archived'])) {
-            $validated['status'] = $filters['status'];
+        // Status - Movies have archived, Series don't
+        if (isset($filters['status'])) {
+            $validStatuses = ['published', 'draft', 'archived'];
+            if (in_array($filters['status'], $validStatuses)) {
+                $validated['status'] = $filters['status'];
+            }
         }
 
         // Year range
@@ -140,9 +143,12 @@ class AdvancedFilterService
             $validated['has_tmdb'] = (bool) $filters['has_tmdb'];
         }
 
-        // Quality (for movies)
+        // Quality (for movies) - CAM, HD, FHD, 4K
         if (isset($filters['quality']) && is_string($filters['quality'])) {
-            $validated['quality'] = strip_tags($filters['quality']);
+            $validQualities = ['CAM', 'HD', 'FHD', '4K'];
+            if (in_array($filters['quality'], $validQualities)) {
+                $validated['quality'] = $filters['quality'];
+            }
         }
 
         return $validated;
