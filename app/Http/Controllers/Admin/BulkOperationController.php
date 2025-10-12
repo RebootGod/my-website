@@ -299,4 +299,116 @@ class BulkOperationController extends Controller
             'progress' => $progress
         ]);
     }
+
+    /**
+     * Refresh ALL items from TMDB (Movies or Series)
+     * WARNING: This can be resource-intensive for large datasets
+     */
+    public function refreshAllTMDB(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'type' => 'required|in:movie,series',
+            'status' => 'sometimes|in:published,draft,archived', // Optional: filter by status
+            'limit' => 'sometimes|integer|min:1|max:1000', // Optional: limit items to refresh
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        try {
+            // Get all IDs based on type
+            $modelClass = $request->type === 'movie' 
+                ? \App\Models\Movie::class 
+                : \App\Models\Series::class;
+
+            $query = $modelClass::query();
+
+            // Apply status filter if provided
+            if ($request->filled('status')) {
+                $query->where('status', $request->status);
+            }
+
+            // Apply limit if provided, otherwise get all
+            if ($request->filled('limit')) {
+                $query->limit($request->limit);
+            }
+
+            // Get IDs only (efficient)
+            $ids = $query->pluck('id')->toArray();
+
+            if (empty($ids)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No items found to refresh'
+                ], 404);
+            }
+
+            Log::info("Refresh ALL TMDB initiated", [
+                'type' => $request->type,
+                'total_items' => count($ids),
+                'status_filter' => $request->status ?? 'all',
+                'limit' => $request->limit ?? 'no limit',
+                'user_id' => auth()->id()
+            ]);
+
+            // Create progress tracking key
+            $progressKey = $this->bulkService->createProgressKey('tmdb_refresh_all', $request->type);
+            
+            // Initialize progress
+            $this->bulkService->updateProgress($progressKey, [
+                'total' => count($ids),
+                'processed' => 0,
+                'success' => 0,
+                'failed' => 0,
+                'status' => 'processing'
+            ]);
+
+            // Execute bulk refresh
+            $results = $this->bulkService->bulkRefreshFromTMDB(
+                $request->type,
+                $ids
+            );
+
+            // Update final progress
+            $this->bulkService->updateProgress($progressKey, [
+                'total' => count($ids),
+                'processed' => count($ids),
+                'success' => $results['success'],
+                'failed' => $results['failed'],
+                'status' => 'completed',
+                'errors' => $results['errors']
+            ]);
+
+            Log::info("Refresh ALL TMDB completed", [
+                'type' => $request->type,
+                'success' => $results['success'],
+                'failed' => $results['failed'],
+                'total' => count($ids)
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'results' => $results,
+                'progressKey' => $progressKey,
+                'message' => "Refreshed {$results['success']} out of " . count($ids) . " {$request->type}(s) from TMDB"
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Refresh ALL TMDB failed', [
+                'type' => $request->type ?? 'unknown',
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Refresh ALL failed: ' . $e->getMessage()
+            ], 500);
+        }
+    }
 }

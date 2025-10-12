@@ -23,6 +23,9 @@
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-3xl font-bold">Manage Series</h1>
         <div class="flex space-x-4">
+            <button id="refresh-all-tmdb-btn" class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold transition" title="Refresh TMDB data for ALL series">
+                <i class="fas fa-sync-alt"></i> Refresh All TMDB
+            </button>
             <a href="{{ route('admin.series.tmdb-new.index') }}" class="bg-purple-500 hover:bg-purple-600 text-white px-6 py-2 rounded-lg font-semibold transition">
                 Import Series from TMDB
             </a>
@@ -181,4 +184,5 @@
 @section('scripts')
 <script src="{{ asset('js/admin/bulk-operations.js') }}?v={{ filemtime(public_path('js/admin/bulk-operations.js')) }}" defer></script>
 <script src="{{ asset('js/admin/bulk-progress-tracker.js') }}?v={{ filemtime(public_path('js/admin/bulk-progress-tracker.js')) }}" defer></script>
+<script src="{{ asset('js/admin/refresh-all-tmdb.js') }}?v={{ filemtime(public_path('js/admin/refresh-all-tmdb.js')) }}" defer></script>
 @endsection
