@@ -48,32 +48,38 @@
                 @enderror
             </div>
 
-            {{-- Poster URL --}}
+            {{-- Poster Upload --}}
             <div>
-                <label class="block text-sm font-medium text-gray-400 mb-2">Poster URL</label>
+                <label class="block text-sm font-medium text-gray-400 mb-2">
+                    Poster Image (Optional)
+                    <span class="text-xs text-gray-500">- Max 5MB, JPG/PNG/WebP</span>
+                </label>
                 <input 
-                    type="url" 
-                    name="poster_url" 
-                    value="{{ old('poster_url') }}"
-                    class="w-full px-4 py-2 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400"
-                    placeholder="https://example.com/poster.jpg"
+                    type="file" 
+                    name="poster" 
+                    accept="image/jpeg,image/png,image/webp"
+                    class="w-full px-4 py-2 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-green-500 file:text-black hover:file:bg-green-600"
                 >
-                @error('poster_url')
+                <p class="text-xs text-gray-500 mt-1">💡 Tip: Use "Import from TMDB" for automatic poster download</p>
+                @error('poster')
                     <p class="text-red-400 text-sm mt-1">{{ $message }}</p>
                 @enderror
             </div>
 
-            {{-- Backdrop URL --}}
+            {{-- Backdrop Upload --}}
             <div>
-                <label class="block text-sm font-medium text-gray-400 mb-2">Backdrop URL</label>
+                <label class="block text-sm font-medium text-gray-400 mb-2">
+                    Backdrop Image (Optional)
+                    <span class="text-xs text-gray-500">- Max 5MB, JPG/PNG/WebP</span>
+                </label>
                 <input 
-                    type="url" 
-                    name="backdrop_url" 
-                    value="{{ old('backdrop_url') }}"
-                    class="w-full px-4 py-2 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400"
-                    placeholder="https://example.com/backdrop.jpg"
+                    type="file" 
+                    name="backdrop" 
+                    accept="image/jpeg,image/png,image/webp"
+                    class="w-full px-4 py-2 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-green-500 file:text-black hover:file:bg-green-600"
                 >
-                @error('backdrop_url')
+                <p class="text-xs text-gray-500 mt-1">💡 Tip: Use "Import from TMDB" for automatic backdrop download</p>
+                @error('backdrop')
                     <p class="text-red-400 text-sm mt-1">{{ $message }}</p>
                 @enderror
             </div>

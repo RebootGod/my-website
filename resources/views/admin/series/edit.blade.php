@@ -55,32 +55,84 @@
                 @enderror
             </div>
 
-            {{-- Poster URL --}}
+            {{-- Current Poster --}}
             <div>
-                <label class="block text-sm font-medium text-gray-400 mb-2">Poster URL</label>
+                <label class="block text-sm font-medium text-gray-400 mb-2">Current Poster</label>
+                <div class="flex items-center gap-4">
+                    @if($series->poster_url)
+                        <img src="{{ $series->poster_url }}" alt="Current Poster" class="w-24 h-32 object-cover rounded-lg">
+                        <div class="text-sm">
+                            <p class="text-gray-400">Source: 
+                                @if($series->local_poster_path)
+                                    <span class="text-green-400">Local (Downloaded from TMDB)</span>
+                                @elseif($series->getRawOriginal('poster_url'))
+                                    <span class="text-blue-400">Custom Upload</span>
+                                @else
+                                    <span class="text-gray-500">Placeholder</span>
+                                @endif
+                            </p>
+                        </div>
+                    @else
+                        <p class="text-gray-500">No poster available</p>
+                    @endif
+                </div>
+            </div>
+
+            {{-- Upload New Poster --}}
+            <div>
+                <label class="block text-sm font-medium text-gray-400 mb-2">
+                    Upload New Poster (Optional)
+                    <span class="text-xs text-gray-500">- Max 5MB, JPG/PNG/WebP</span>
+                </label>
                 <input 
-                    type="url" 
-                    name="poster_url" 
-                    value="{{ old('poster_url', $series->poster_url) }}"
-                    class="w-full px-4 py-2 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400"
-                    placeholder="https://example.com/poster.jpg"
+                    type="file" 
+                    name="poster" 
+                    accept="image/jpeg,image/png,image/webp"
+                    class="w-full px-4 py-2 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-green-500 file:text-black hover:file:bg-green-600"
                 >
-                @error('poster_url')
+                <p class="text-xs text-gray-500 mt-1">Leave empty to keep current poster</p>
+                @error('poster')
                     <p class="text-red-400 text-sm mt-1">{{ $message }}</p>
                 @enderror
             </div>
 
-            {{-- Backdrop URL --}}
+            {{-- Current Backdrop --}}
             <div>
-                <label class="block text-sm font-medium text-gray-400 mb-2">Backdrop URL</label>
+                <label class="block text-sm font-medium text-gray-400 mb-2">Current Backdrop</label>
+                <div class="flex items-center gap-4">
+                    @if($series->backdrop_url)
+                        <img src="{{ $series->backdrop_url }}" alt="Current Backdrop" class="w-32 h-18 object-cover rounded-lg">
+                        <div class="text-sm">
+                            <p class="text-gray-400">Source: 
+                                @if($series->local_backdrop_path)
+                                    <span class="text-green-400">Local (Downloaded from TMDB)</span>
+                                @elseif($series->getRawOriginal('backdrop_url'))
+                                    <span class="text-blue-400">Custom Upload</span>
+                                @else
+                                    <span class="text-gray-500">Placeholder</span>
+                                @endif
+                            </p>
+                        </div>
+                    @else
+                        <p class="text-gray-500">No backdrop available</p>
+                    @endif
+                </div>
+            </div>
+
+            {{-- Upload New Backdrop --}}
+            <div>
+                <label class="block text-sm font-medium text-gray-400 mb-2">
+                    Upload New Backdrop (Optional)
+                    <span class="text-xs text-gray-500">- Max 5MB, JPG/PNG/WebP</span>
+                </label>
                 <input 
-                    type="url" 
-                    name="backdrop_url" 
-                    value="{{ old('backdrop_url', $series->backdrop_url) }}"
-                    class="w-full px-4 py-2 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400"
-                    placeholder="https://example.com/backdrop.jpg"
+                    type="file" 
+                    name="backdrop" 
+                    accept="image/jpeg,image/png,image/webp"
+                    class="w-full px-4 py-2 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-green-500 file:text-black hover:file:bg-green-600"
                 >
-                @error('backdrop_url')
+                <p class="text-xs text-gray-500 mt-1">Leave empty to keep current backdrop</p>
+                @error('backdrop')
                     <p class="text-red-400 text-sm mt-1">{{ $message }}</p>
                 @enderror
             </div>

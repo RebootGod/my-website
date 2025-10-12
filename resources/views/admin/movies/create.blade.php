@@ -16,7 +16,7 @@
         </a>
     </div>
 
-    <form action="{{ route('admin.movies.store') }}" method="POST" class="bg-gray-800 rounded-lg p-6">
+    <form action="{{ route('admin.movies.store') }}" method="POST" class="bg-gray-800 rounded-lg p-6" enctype="multipart/form-data">
         @csrf
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -64,34 +64,38 @@
                 @enderror
             </div>
 
-            {{-- Poster URL --}}
+            {{-- Poster Upload --}}
             <div>
-                <label class="block text-sm font-medium text-gray-400 mb-2">Poster URL (Optional)</label>
+                <label class="block text-sm font-medium text-gray-400 mb-2">
+                    Poster Image (Optional)
+                    <span class="text-xs text-gray-500">- Max 5MB, JPG/PNG/WebP</span>
+                </label>
                 <input 
-                    type="text" 
-                    name="poster_url" 
-                    value="{{ old('poster_url') }}"
-                    placeholder="Optional - Use TMDB import for auto images"
-                    class="w-full px-4 py-2 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400"
+                    type="file" 
+                    name="poster" 
+                    accept="image/jpeg,image/png,image/webp"
+                    class="w-full px-4 py-2 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-green-500 file:text-black hover:file:bg-green-600"
                 >
-                <p class="text-xs text-gray-500 mt-1">💡 Tip: Use "Import from TMDB" to auto-download poster</p>
-                @error('poster_url')
+                <p class="text-xs text-gray-500 mt-1">💡 Tip: Use "Import from TMDB" for automatic poster download</p>
+                @error('poster')
                     <p class="text-red-400 text-sm mt-1">{{ $message }}</p>
                 @enderror
             </div>
 
-            {{-- Backdrop URL --}}
+            {{-- Backdrop Upload --}}
             <div>
-                <label class="block text-sm font-medium text-gray-400 mb-2">Backdrop URL (Optional)</label>
+                <label class="block text-sm font-medium text-gray-400 mb-2">
+                    Backdrop Image (Optional)
+                    <span class="text-xs text-gray-500">- Max 5MB, JPG/PNG/WebP</span>
+                </label>
                 <input 
-                    type="text" 
-                    name="backdrop_url" 
-                    value="{{ old('backdrop_url') }}"
-                    placeholder="Optional - Use TMDB import for auto images"
-                    class="w-full px-4 py-2 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400"
+                    type="file" 
+                    name="backdrop" 
+                    accept="image/jpeg,image/png,image/webp"
+                    class="w-full px-4 py-2 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-green-500 file:text-black hover:file:bg-green-600"
                 >
-                <p class="text-xs text-gray-500 mt-1">💡 Tip: Use "Import from TMDB" to auto-download backdrop</p>
-                @error('backdrop_url')
+                <p class="text-xs text-gray-500 mt-1">💡 Tip: Use "Import from TMDB" for automatic backdrop download</p>
+                @error('backdrop')
                     <p class="text-red-400 text-sm mt-1">{{ $message }}</p>
                 @enderror
             </div>
