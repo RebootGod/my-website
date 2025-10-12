@@ -268,29 +268,19 @@ class BulkOperationsManager {
      * Refresh from TMDB
      */
     async refreshTMDB() {
-        console.log('🔄 refreshTMDB called');
-        console.log('📦 Selected IDs size:', this.selectedIds.size);
-        console.log('📦 Selected IDs:', Array.from(this.selectedIds));
-        console.log('📦 Content type:', this.contentType);
-        
         if (this.selectedIds.size === 0) {
             window.showToast('Please select items first', 'warning');
             return;
         }
 
         if (!confirm(`Refresh ${this.selectedIds.size} items from TMDB? This may take a while.`)) {
-            console.log('❌ User cancelled refresh');
             return;
         }
 
-        console.log('✅ User confirmed, executing bulk action...');
-        const payload = {
+        await this.executeBulkAction('refresh-tmdb', {
             type: this.contentType,
             ids: Array.from(this.selectedIds)
-        };
-        console.log('📤 Payload to be sent:', JSON.stringify(payload, null, 2));
-
-        await this.executeBulkAction('refresh-tmdb', payload, true); // Enable progress tracking
+        }, true); // Enable progress tracking
     }
 
     /**
@@ -323,13 +313,7 @@ class BulkOperationsManager {
      * Execute bulk action
      */
     async executeBulkAction(action, data, trackProgress = false) {
-        console.log('🚀 executeBulkAction called');
-        console.log('📋 Action:', action);
-        console.log('📋 Data:', JSON.stringify(data, null, 2));
-        console.log('📋 Track Progress:', trackProgress);
-        
         if (this.isProcessing) {
-            console.warn('⚠️ Already processing another action');
             window.showToast('Another operation is in progress', 'warning');
             return;
         }
@@ -337,14 +321,9 @@ class BulkOperationsManager {
         this.isProcessing = true;
         const loadingToast = window.showToast('Processing...', 'info', 0);
 
-        const url = `/admin/bulk/${action}`;
-        const method = action === 'delete' ? 'DELETE' : 'POST';
-        console.log('🌐 Request URL:', url);
-        console.log('🌐 Request Method:', method);
-
         try {
-            const response = await fetch(url, {
-                method: method,
+            const response = await fetch(`/admin/bulk/${action}`, {
+                method: action === 'delete' ? 'DELETE' : 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
@@ -353,11 +332,7 @@ class BulkOperationsManager {
                 body: JSON.stringify(data)
             });
 
-            console.log('📥 Response status:', response.status);
-            console.log('📥 Response OK:', response.ok);
-
             const result = await response.json();
-            console.log('📥 Response data:', result);
 
             if (result.success) {
                 window.showToast(result.message, 'success');
@@ -372,20 +347,12 @@ class BulkOperationsManager {
                     }, 1500);
                 }
             } else {
-                console.error('❌ Operation failed:', result.message);
                 window.showToast(result.message || 'Operation failed', 'error');
-                
-                // Log validation errors if any
-                if (result.errors) {
-                    console.error('❌ Validation errors:', result.errors);
-                }
             }
         } catch (error) {
-            console.error('❌ Bulk operation error:', error);
-            console.error('❌ Error stack:', error.stack);
+            console.error('Bulk operation error:', error);
             window.showToast('Operation failed: ' + error.message, 'error');
         } finally {
-            console.log('✅ executeBulkAction completed, resetting isProcessing');
             this.isProcessing = false;
         }
     }
