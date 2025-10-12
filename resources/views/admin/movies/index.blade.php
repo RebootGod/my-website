@@ -143,12 +143,6 @@
                 <button id="bulk-draft" class="bulk-action-btn warning">
                     <i class="fas fa-file"></i> Draft
                 </button>
-                <button id="bulk-archive" class="bulk-action-btn secondary">
-                    <i class="fas fa-archive"></i> Archive
-                </button>
-                <button id="bulk-feature" class="bulk-action-btn primary">
-                    <i class="fas fa-star"></i> Feature
-                </button>
                 <button id="bulk-refresh-tmdb" class="bulk-action-btn secondary">
                     <i class="fas fa-sync"></i> Refresh TMDB
                 </button>

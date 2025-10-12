@@ -133,25 +133,6 @@ class BulkOperationsManager {
             draftBtn.addEventListener('click', () => this.changeStatus('draft'));
             buttonCount++;
         }
-        
-        const archiveBtn = document.getElementById('bulk-archive');
-        if (archiveBtn) {
-            archiveBtn.addEventListener('click', () => this.changeStatus('archived'));
-            buttonCount++;
-        }
-
-        // Toggle featured
-        const featureBtn = document.getElementById('bulk-feature');
-        if (featureBtn) {
-            featureBtn.addEventListener('click', () => this.toggleFeatured(true));
-            buttonCount++;
-        }
-        
-        const unfeatureBtn = document.getElementById('bulk-unfeature');
-        if (unfeatureBtn) {
-            unfeatureBtn.addEventListener('click', () => this.toggleFeatured(false));
-            buttonCount++;
-        }
 
         // Refresh TMDB
         const refreshBtn = document.getElementById('bulk-refresh-tmdb');
@@ -280,27 +261,6 @@ class BulkOperationsManager {
             type: this.contentType,
             ids: Array.from(this.selectedIds),
             status: status
-        });
-    }
-
-    /**
-     * Toggle featured
-     */
-    async toggleFeatured(featured) {
-        if (this.selectedIds.size === 0) {
-            window.showToast('Please select items first', 'warning');
-            return;
-        }
-
-        const action = featured ? 'feature' : 'unfeature';
-        if (!confirm(`Are you sure you want to ${action} ${this.selectedIds.size} items?`)) {
-            return;
-        }
-
-        await this.executeBulkAction('toggle-featured', {
-            type: this.contentType,
-            ids: Array.from(this.selectedIds),
-            featured: featured
         });
     }
 
