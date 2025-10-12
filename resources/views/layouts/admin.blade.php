@@ -164,17 +164,17 @@
     {{-- Toast Notification System --}}
     @include('admin.components.toast-container')
 
+    {{-- Admin Scripts (Load first - contains Admin.showToast) --}}
+    @vite(['resources/js/admin/admin-core.js', 'resources/js/admin/admin-mobile.js', 'resources/js/admin/admin-bulk.js'])
+
     {{-- Loading States System --}}
     <script src="{{ asset('js/admin/loading-states.js') }}?v={{ filemtime(public_path('js/admin/loading-states.js')) }}" defer></script>
 
     {{-- Keyboard Shortcuts System --}}
     <script src="{{ asset('js/admin/keyboard-shortcuts.js') }}?v={{ filemtime(public_path('js/admin/keyboard-shortcuts.js')) }}" defer></script>
 
-    {{-- Form Auto-save System --}}
+    {{-- Form Auto-save System (depends on Admin.showToast from admin-core.js) --}}
     <script src="{{ asset('js/admin/form-autosave.js') }}?v={{ filemtime(public_path('js/admin/form-autosave.js')) }}" defer></script>
-
-    {{-- Admin Scripts --}}
-    @vite(['resources/js/admin/admin-core.js', 'resources/js/admin/admin-mobile.js', 'resources/js/admin/admin-bulk.js'])
 
     @stack('scripts')
 </body>

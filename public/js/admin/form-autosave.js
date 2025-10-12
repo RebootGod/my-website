@@ -129,8 +129,15 @@ class FormAutoSave {
 
             // Show notification if enabled
             if (this.options.showNotifications) {
+                console.log('Attempting to show toast notification...');
+                console.log('Admin object exists:', typeof Admin !== 'undefined');
+                console.log('Admin.showToast exists:', typeof Admin !== 'undefined' && typeof Admin.showToast === 'function');
+                
                 if (typeof Admin !== 'undefined' && Admin.showToast) {
+                    console.log('Calling Admin.showToast...');
                     Admin.showToast('Draft saved', 'info', 2000);
+                } else {
+                    console.warn('Admin.showToast not available, cannot show notification');
                 }
             }
 
