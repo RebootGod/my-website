@@ -72,7 +72,7 @@
             <thead class="bg-gray-900">
                 <tr>
                     <th class="bulk-checkbox-column">
-                        <input type="checkbox" id="bulk-select-all" class="bulk-checkbox" title="Select All">
+                        <input type="checkbox" id="bulk-select-all" title="Select All">
                     </th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Series</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Year</th>
