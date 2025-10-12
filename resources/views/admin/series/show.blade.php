@@ -447,16 +447,16 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                alert('Season added successfully!');
+                Toast.success('Season added successfully!');
                 hideSeasonModal();
                 location.reload(); // Refresh to show new season
             } else {
-                alert(data.error || 'Failed to add season');
+                Toast.error(data.error || 'Failed to add season');
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('Failed to add season. Please try again.');
+            Toast.error('Failed to add season. Please try again.');
         })
         .finally(() => {
             // Reset button state
@@ -489,16 +489,16 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                alert('Episode added successfully!');
+                Toast.success('Episode added successfully!');
                 hideEpisodeModal();
                 location.reload(); // Refresh to show new episode
             } else {
-                alert(data.error || 'Failed to add episode');
+                Toast.error(data.error || 'Failed to add episode');
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('Failed to add episode. Please try again.');
+            Toast.error('Failed to add episode. Please try again.');
         })
         .finally(() => {
             // Reset button state
@@ -519,15 +519,15 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                alert(data.message);
+                Toast.success(data.message);
                 location.reload(); // Refresh to show updated seasons
             } else {
-                alert(data.error || 'Failed to delete season');
+                Toast.error(data.error || 'Failed to delete season');
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('Failed to delete season. Please try again.');
+            Toast.error('Failed to delete season. Please try again.');
         });
     }
 
@@ -542,15 +542,15 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                alert(data.message || `Episode ${episodeNumber} deleted successfully!`);
+                Toast.success(data.message || `Episode ${episodeNumber} deleted successfully!`);
                 location.reload(); // Refresh to show updated episodes
             } else {
-                alert(data.error || 'Failed to delete episode');
+                Toast.error(data.error || 'Failed to delete episode');
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('Failed to delete episode. Please try again.');
+            Toast.error('Failed to delete episode. Please try again.');
         });
     }
 });

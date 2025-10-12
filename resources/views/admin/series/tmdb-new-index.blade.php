@@ -367,19 +367,19 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                alert('Series imported successfully!');
+                Toast.success('Series imported successfully!');
                 hideImportModal();
                 // Refresh the current search to update the UI
                 if (searchInput.value.trim()) {
                     searchSeries(searchInput.value.trim());
                 }
             } else {
-                alert(data.error || 'Failed to import series');
+                Toast.error(data.error || 'Failed to import series');
             }
         })
         .catch(error => {
             console.error('Import error:', error);
-            alert('Failed to import series. Please try again.');
+            Toast.error('Failed to import series. Please try again.');
         })
         .finally(() => {
             // Reset button state

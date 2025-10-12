@@ -124,7 +124,7 @@ async function searchMovies() {
     const query = document.getElementById('searchQuery').value.trim();
     
     if (!query) {
-        alert('Please enter a search term');
+        Toast.warning('Please enter a search term');
         return;
     }
     
@@ -137,11 +137,11 @@ async function searchMovies() {
         if (data.success) {
             displayResults(data.results, data.search_type);
         } else {
-            alert(data.message || 'Search failed');
+            Toast.error(data.message || 'Search failed');
         }
     } catch (error) {
         console.error('Search error:', error);
-        alert('An error occurred while searching');
+        Toast.error('An error occurred while searching');
     } finally {
         hideLoading();
     }
