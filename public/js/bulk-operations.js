@@ -15,6 +15,8 @@
 
 class BulkOperationsManager {
     constructor(contentType) {
+        console.log('🔧 BulkOperationsManager constructor called with:', contentType);
+        
         this.contentType = contentType; // 'movie' or 'series'
         this.selectedIds = new Set();
         this.allCheckboxes = [];
@@ -29,25 +31,37 @@ class BulkOperationsManager {
      * Initialize bulk operations
      */
     init() {
-        this.setupCheckboxes();
-        this.setupBulkActionBar();
-        this.setupEventListeners();
+        console.log('🔧 BulkOperationsManager.init() started');
+        
+        try {
+            this.setupCheckboxes();
+            this.setupBulkActionBar();
+            this.setupEventListeners();
+            console.log('✅ BulkOperationsManager.init() completed successfully');
+        } catch (error) {
+            console.error('❌ BulkOperationsManager.init() failed:', error);
+        }
     }
 
     /**
      * Setup checkboxes
      */
     setupCheckboxes() {
+        console.log('🔧 Setting up checkboxes...');
+        
         // Get all item checkboxes
         this.allCheckboxes = document.querySelectorAll('.bulk-checkbox');
+        console.log('📦 Found', this.allCheckboxes.length, 'item checkboxes');
         
         // Get select all checkbox
         this.selectAllCheckbox = document.getElementById('bulk-select-all');
         
         if (!this.selectAllCheckbox) {
-            console.warn('Select all checkbox not found');
+            console.error('❌ Select all checkbox not found! ID: bulk-select-all');
             return;
         }
+        
+        console.log('✅ Select all checkbox found');
 
         // Initialize from localStorage if exists
         this.loadSelectionState();
@@ -57,13 +71,16 @@ class BulkOperationsManager {
      * Setup bulk action bar
      */
     setupBulkActionBar() {
+        console.log('🔧 Setting up bulk action bar...');
+        
         this.bulkActionBar = document.getElementById('bulk-action-bar');
         
         if (!this.bulkActionBar) {
-            console.warn('Bulk action bar not found');
+            console.error('❌ Bulk action bar not found! ID: bulk-action-bar');
             return;
         }
-
+        
+        console.log('✅ Bulk action bar found');
         this.updateBulkActionBar();
     }
 
@@ -71,19 +88,26 @@ class BulkOperationsManager {
      * Setup event listeners
      */
     setupEventListeners() {
+        console.log('🔧 Setting up event listeners...');
+        
         // Select all checkbox
         if (this.selectAllCheckbox) {
             this.selectAllCheckbox.addEventListener('change', (e) => {
+                console.log('📦 Select all clicked, checked:', e.target.checked);
                 this.toggleSelectAll(e.target.checked);
             });
+            console.log('✅ Select all event listener attached');
         }
 
         // Individual checkboxes
-        this.allCheckboxes.forEach(checkbox => {
+        console.log('📦 Attaching event listeners to', this.allCheckboxes.length, 'checkboxes');
+        this.allCheckboxes.forEach((checkbox, index) => {
             checkbox.addEventListener('change', (e) => {
+                console.log(`📦 Checkbox ${index} clicked, value: ${e.target.value}, checked: ${e.target.checked}`);
                 this.toggleSelection(e.target.value, e.target.checked);
             });
         });
+        console.log('✅ Individual checkbox event listeners attached');
 
         // Bulk action buttons
         this.setupBulkActionButtons();
@@ -93,57 +117,85 @@ class BulkOperationsManager {
      * Setup bulk action buttons
      */
     setupBulkActionButtons() {
+        console.log('🔧 Setting up bulk action buttons...');
+        
+        let buttonCount = 0;
+        
         // Change status
-        document.getElementById('bulk-publish')?.addEventListener('click', () => {
-            this.changeStatus('published');
-        });
+        const publishBtn = document.getElementById('bulk-publish');
+        if (publishBtn) {
+            publishBtn.addEventListener('click', () => this.changeStatus('published'));
+            buttonCount++;
+        }
         
-        document.getElementById('bulk-draft')?.addEventListener('click', () => {
-            this.changeStatus('draft');
-        });
+        const draftBtn = document.getElementById('bulk-draft');
+        if (draftBtn) {
+            draftBtn.addEventListener('click', () => this.changeStatus('draft'));
+            buttonCount++;
+        }
         
-        document.getElementById('bulk-archive')?.addEventListener('click', () => {
-            this.changeStatus('archived');
-        });
+        const archiveBtn = document.getElementById('bulk-archive');
+        if (archiveBtn) {
+            archiveBtn.addEventListener('click', () => this.changeStatus('archived'));
+            buttonCount++;
+        }
 
         // Toggle featured
-        document.getElementById('bulk-feature')?.addEventListener('click', () => {
-            this.toggleFeatured(true);
-        });
+        const featureBtn = document.getElementById('bulk-feature');
+        if (featureBtn) {
+            featureBtn.addEventListener('click', () => this.toggleFeatured(true));
+            buttonCount++;
+        }
         
-        document.getElementById('bulk-unfeature')?.addEventListener('click', () => {
-            this.toggleFeatured(false);
-        });
+        const unfeatureBtn = document.getElementById('bulk-unfeature');
+        if (unfeatureBtn) {
+            unfeatureBtn.addEventListener('click', () => this.toggleFeatured(false));
+            buttonCount++;
+        }
 
         // Refresh TMDB
-        document.getElementById('bulk-refresh-tmdb')?.addEventListener('click', () => {
-            this.refreshTMDB();
-        });
+        const refreshBtn = document.getElementById('bulk-refresh-tmdb');
+        if (refreshBtn) {
+            refreshBtn.addEventListener('click', () => this.refreshTMDB());
+            buttonCount++;
+        }
 
         // Delete
-        document.getElementById('bulk-delete')?.addEventListener('click', () => {
-            this.bulkDelete();
-        });
+        const deleteBtn = document.getElementById('bulk-delete');
+        if (deleteBtn) {
+            deleteBtn.addEventListener('click', () => this.bulkDelete());
+            buttonCount++;
+        }
 
         // Clear selection
-        document.getElementById('bulk-clear')?.addEventListener('click', () => {
-            this.clearSelection();
-        });
+        const clearBtn = document.getElementById('bulk-clear');
+        if (clearBtn) {
+            clearBtn.addEventListener('click', () => this.clearSelection());
+            buttonCount++;
+        }
+        
+        console.log(`✅ Attached ${buttonCount} bulk action button listeners`);
     }
 
     /**
      * Toggle select all
      */
     toggleSelectAll(checked) {
-        this.allCheckboxes.forEach(checkbox => {
+        console.log('📦 toggleSelectAll called with:', checked);
+        console.log('📦 Total checkboxes:', this.allCheckboxes.length);
+        
+        this.allCheckboxes.forEach((checkbox, index) => {
             checkbox.checked = checked;
             if (checked) {
                 this.selectedIds.add(checkbox.value);
+                console.log(`📦 Selected checkbox ${index}, value: ${checkbox.value}`);
             } else {
                 this.selectedIds.delete(checkbox.value);
+                console.log(`📦 Deselected checkbox ${index}, value: ${checkbox.value}`);
             }
         });
 
+        console.log('📦 Total selected IDs:', this.selectedIds.size);
         this.saveSelectionState();
         this.updateBulkActionBar();
     }
@@ -189,18 +241,25 @@ class BulkOperationsManager {
      * Update bulk action bar
      */
     updateBulkActionBar() {
-        if (!this.bulkActionBar) return;
+        if (!this.bulkActionBar) {
+            console.warn('⚠️ Bulk action bar not available');
+            return;
+        }
 
         const count = this.selectedIds.size;
         const countElement = document.getElementById('bulk-selected-count');
+        
+        console.log('📊 Updating bulk action bar, selected count:', count);
         
         if (count > 0) {
             this.bulkActionBar.classList.remove('hidden');
             if (countElement) {
                 countElement.textContent = count;
             }
+            console.log('✅ Bulk action bar shown');
         } else {
             this.bulkActionBar.classList.add('hidden');
+            console.log('✅ Bulk action bar hidden');
         }
     }
 
@@ -383,8 +442,30 @@ class BulkOperationsManager {
 
 // Auto-initialize on page load
 document.addEventListener('DOMContentLoaded', () => {
-    const contentType = document.body.dataset.contentType;
+    console.log('🔧 Bulk Operations: Initializing...');
+    
+    // Try to get content type from container or body
+    let contentType = null;
+    
+    // Check container div first
+    const container = document.querySelector('[data-content-type]');
+    if (container) {
+        contentType = container.dataset.contentType;
+        console.log('✅ Found content type from container:', contentType);
+    }
+    
+    // Fallback to body
+    if (!contentType && document.body.dataset.contentType) {
+        contentType = document.body.dataset.contentType;
+        console.log('✅ Found content type from body:', contentType);
+    }
+    
+    // Initialize if valid content type
     if (contentType && (contentType === 'movie' || contentType === 'series')) {
+        console.log('✅ Initializing BulkOperationsManager for:', contentType);
         window.bulkOpsManager = new BulkOperationsManager(contentType);
+        console.log('✅ BulkOperationsManager initialized successfully');
+    } else {
+        console.warn('⚠️ Content type not found or invalid:', contentType);
     }
 });
