@@ -95,10 +95,10 @@ async function handleRefreshAll(contentType) {
         console.log('📡 Response status:', response.status);
         console.log('📡 Response ok:', response.ok);
         
-        // Check if response is JSON
-        const contentType = response.headers.get('content-type');
-        if (!contentType || !contentType.includes('application/json')) {
-            console.error('❌ Response is not JSON, got:', contentType);
+        // Check if response is JSON (renamed to avoid conflict with function parameter)
+        const responseContentType = response.headers.get('content-type');
+        if (!responseContentType || !responseContentType.includes('application/json')) {
+            console.error('❌ Response is not JSON, got:', responseContentType);
             alert('❌ Server Error: Received HTML instead of JSON.\n\nPlease check server logs or contact administrator.');
             return;
         }
