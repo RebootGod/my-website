@@ -25,6 +25,7 @@
     {{-- Admin Styles --}}
     @vite(['resources/css/admin/admin-core.css', 'resources/css/admin/admin-mobile.css', 'resources/css/admin/admin-tables.css'])
     <link rel="stylesheet" href="{{ asset('css/admin/loading-states.css') }}?v={{ filemtime(public_path('css/admin/loading-states.css')) }}">
+    <link rel="stylesheet" href="{{ asset('css/admin/breadcrumbs.css') }}?v={{ filemtime(public_path('css/admin/breadcrumbs.css')) }}">
 
     @stack('styles')
 </head>

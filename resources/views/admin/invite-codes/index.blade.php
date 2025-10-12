@@ -9,6 +9,13 @@
 
 @section('content')
 <div>
+    {{-- Breadcrumb Navigation --}}
+    @include('admin.components.breadcrumbs', [
+        'items' => [
+            ['label' => 'Invite Codes', 'icon' => 'fas fa-ticket-alt']
+        ]
+    ])
+
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-3xl font-bold">Manage Invite Codes</h1>
         <div class="flex space-x-4">

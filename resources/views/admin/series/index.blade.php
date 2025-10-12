@@ -9,6 +9,13 @@
 
 @section('content')
 <div class="container mx-auto px-6 py-8">
+    {{-- Breadcrumb Navigation --}}
+    @include('admin.components.breadcrumbs', [
+        'items' => [
+            ['label' => 'Series', 'icon' => 'fas fa-tv']
+        ]
+    ])
+
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-3xl font-bold">Manage Series</h1>
         <div class="flex space-x-4">

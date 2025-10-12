@@ -9,6 +9,13 @@
 
 @section('content')
 <div class="container mx-auto">
+    {{-- Breadcrumb Navigation --}}
+    @include('admin.components.breadcrumbs', [
+        'items' => [
+            ['label' => 'Manage Users', 'icon' => 'fas fa-users']
+        ]
+    ])
+
     {{-- Header --}}
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-3xl font-bold">Manage Users</h1>

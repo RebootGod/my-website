@@ -4,6 +4,13 @@
 
 @section('content')
 <div class="dashboard-grid">
+    {{-- Breadcrumb Navigation --}}
+    @include('admin.components.breadcrumbs', [
+        'items' => [
+            ['label' => 'Dashboard', 'icon' => 'fas fa-chart-bar']
+        ]
+    ])
+
     {{-- Page Header --}}
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-3xl font-bold text-white">Admin Dashboard</h1>
