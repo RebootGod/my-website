@@ -242,7 +242,7 @@
                     <div class="popular-list">
                         @foreach($popularContent as $index => $content)
                             <div class="popular-item">
-                                <div class="popular-rank">{{ $index + 1 }}</div>
+                                <div class="popular-rank">{{ $loop->iteration }}</div>
                                 <div class="popular-info">
                                     <h4 class="popular-item-title">{{ Str::limit($content['title'] ?? 'Unknown', 30) }}</h4>
                                     <p class="popular-item-meta">{{ number_format($content['views'] ?? 0) }} views</p>
