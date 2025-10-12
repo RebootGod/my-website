@@ -243,16 +243,32 @@ class AdvancedFilters {
 
             const response = await fetch(`/admin/${this.contentType}s?${params.toString()}`, {
                 headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
                 }
             });
 
-            if (response.ok) {
-                const data = await response.json();
-                this.resultCount.textContent = `${data.count || 0} results`;
+            if (!response.ok) {
+                console.error('Failed to fetch result count, status:', response.status);
+                this.resultCount.textContent = '- results';
+                return;
             }
+
+            const contentType = response.headers.get('content-type');
+            if (!contentType || !contentType.includes('application/json')) {
+                console.error('Response is not JSON, got:', contentType);
+                this.resultCount.textContent = '- results';
+                return;
+            }
+
+            const data = await response.json();
+            this.resultCount.textContent = `${data.count || 0} results`;
         } catch (error) {
             console.error('Failed to update result count:', error);
+            // Set fallback text instead of leaving empty
+            if (this.resultCount) {
+                this.resultCount.textContent = '- results';
+            }
         }
     }
 }

@@ -34,90 +34,111 @@ class AdminSeriesController extends Controller
 
     public function index(Request $request)
     {
-        // Optimized query with eager loading (matches Movie structure)
-        $query = Series::select([
-            'id', 'title', 'year', 'status',
-            'poster_path', 'poster_url', 'local_poster_path', 'view_count', 'rating', 'created_at', 'updated_at', 'description', 'tmdb_id', 'original_title'
-        ])->with([
-            'genres:id,name'
-        ])->withCount(['views', 'seasons', 'episodes']);
+        try {
+            // Optimized query with eager loading (matches Movie structure)
+            $query = Series::select([
+                'id', 'title', 'year', 'status',
+                'poster_path', 'poster_url', 'local_poster_path', 'view_count', 'rating', 'created_at', 'updated_at', 'description', 'tmdb_id', 'original_title'
+            ])->with([
+                'genres:id,name'
+            ])->withCount(['views', 'seasons', 'episodes']);
 
-        // Apply filters using trait (same as Movie)
-        $query = $this->applySearch($query, $request->search, ['title', 'original_title', 'description']);
-        $query = $this->applyStatusFilter($query, $request->status);
-        $query = $this->applyDateFilter(
-            $query,
-            $request->date_from,
-            $request->date_to
-        );
-        
-        // Ensure genre_ids is array or null
-        $genreIds = $request->genre_ids;
-        if ($genreIds && !is_array($genreIds)) {
-            $genreIds = [$genreIds];
-        }
-        $query = $this->applyGenreFilter($query, $genreIds);
-        
-        $query = $this->applyNumericRangeFilter(
-            $query,
-            $request->views_from,
-            $request->views_to,
-            'view_count'
-        );
-
-        // Advanced filters - Year Range
-        if ($request->filled('year_from')) {
-            $query->where('year', '>=', $request->year_from);
-        }
-        if ($request->filled('year_to')) {
-            $query->where('year', '<=', $request->year_to);
-        }
-
-        // Advanced filters - Rating Range
-        if ($request->filled('rating_from')) {
-            $query->where('rating', '>=', $request->rating_from);
-        }
-        if ($request->filled('rating_to')) {
-            $query->where('rating', '<=', $request->rating_to);
-        }
-
-        // Advanced filters - TMDB Status
-        if ($request->has('has_tmdb')) {
-            if ($request->has_tmdb == '1') {
-                $query->whereNotNull('tmdb_id');
-            } elseif ($request->has_tmdb === '0') {
-                $query->whereNull('tmdb_id');
+            // Apply filters using trait (same as Movie)
+            $query = $this->applySearch($query, $request->search, ['title', 'original_title', 'description']);
+            $query = $this->applyStatusFilter($query, $request->status);
+            $query = $this->applyDateFilter(
+                $query,
+                $request->date_from,
+                $request->date_to
+            );
+            
+            // Ensure genre_ids is array or null
+            $genreIds = $request->genre_ids;
+            if ($genreIds && !is_array($genreIds)) {
+                $genreIds = [$genreIds];
             }
+            $query = $this->applyGenreFilter($query, $genreIds);
+            
+            $query = $this->applyNumericRangeFilter(
+                $query,
+                $request->views_from,
+                $request->views_to,
+                'view_count'
+            );
+
+            // Advanced filters - Year Range
+            if ($request->filled('year_from')) {
+                $query->where('year', '>=', $request->year_from);
+            }
+            if ($request->filled('year_to')) {
+                $query->where('year', '<=', $request->year_to);
+            }
+
+            // Advanced filters - Rating Range
+            if ($request->filled('rating_from')) {
+                $query->where('rating', '>=', $request->rating_from);
+            }
+            if ($request->filled('rating_to')) {
+                $query->where('rating', '<=', $request->rating_to);
+            }
+
+            // Advanced filters - TMDB Status
+            if ($request->has('has_tmdb')) {
+                if ($request->has_tmdb == '1') {
+                    $query->whereNotNull('tmdb_id');
+                } elseif ($request->has_tmdb === '0') {
+                    $query->whereNull('tmdb_id');
+                }
+            }
+
+            // Apply sorting (same as Movie)
+            $allowedSorts = ['created_at', 'title', 'year', 'view_count', 'rating', 'updated_at'];
+            $query = $this->applySorting(
+                $query,
+                $request->sort_by ?? 'created_at',
+                $request->sort_order ?? 'desc',
+                $allowedSorts
+            );
+
+            // If count_only requested (AJAX), return count
+            if ($request->has('count_only')) {
+                return response()->json(['count' => $query->count()]);
+            }
+
+            // Get paginated results with optimized query
+            $series = $this->getPaginatedResults($query, 20);
+
+            // Cache genres list to avoid repeated queries (same as Movie)
+            $genres = Cache::remember('admin:genres_list', 3600, function () {
+                return Genre::select(['id', 'name'])->orderBy('name')->get();
+            });
+
+            // Build filter summary for display
+            $filterSummary = $this->buildFilterSummary($request->only([
+                'search', 'status', 'date_from', 'date_to', 'genre_ids', 'year_from', 'year_to', 'rating_from', 'rating_to', 'has_tmdb'
+            ]));
+
+            return view('admin.series.index', compact('series', 'genres', 'filterSummary'));
+        } catch (\Exception $e) {
+            // Log error
+            Log::error('Series index error', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+                'request' => $request->all()
+            ]);
+
+            // If AJAX request (count_only), return JSON error
+            if ($request->has('count_only') || $request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'error' => 'Failed to fetch series',
+                    'message' => config('app.debug') ? $e->getMessage() : 'Internal server error',
+                    'count' => 0
+                ], 500);
+            }
+
+            // Otherwise, show error page
+            return back()->with('error', 'Failed to load series: ' . $e->getMessage());
         }
-
-        // Apply sorting (same as Movie)
-        $allowedSorts = ['created_at', 'title', 'year', 'view_count', 'rating', 'updated_at'];
-        $query = $this->applySorting(
-            $query,
-            $request->sort_by ?? 'created_at',
-            $request->sort_order ?? 'desc',
-            $allowedSorts
-        );
-
-        // If count_only requested (AJAX), return count
-        if ($request->has('count_only')) {
-            return response()->json(['count' => $query->count()]);
-        }
-
-        // Get paginated results with optimized query
-        $series = $this->getPaginatedResults($query, 20);
-
-        // Cache genres list to avoid repeated queries (same as Movie)
-        $genres = Cache::remember('admin:genres_list', 3600, function () {
-            return Genre::select(['id', 'name'])->orderBy('name')->get();
-        });
-
-        // Build filter summary for display
-        $filterSummary = $this->buildFilterSummary($request->only([
-            'search', 'status', 'date_from', 'date_to', 'genre_ids', 'year_from', 'year_to', 'rating_from', 'rating_to', 'has_tmdb'
-        ]));
-
-        return view('admin.series.index', compact('series', 'genres', 'filterSummary'));
     }
 
     public function create()
