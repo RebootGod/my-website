@@ -1,7 +1,8 @@
 /* ======================================== */
-/* KEYBOARD SHORTCUTS STYLES */
+/* KEYBOARD SHORTCUTS STYLES - PART 1 */
 /* ======================================== */
-/* File: resources/css/admin/keyboard-shortcuts.css */
+/* File: resources/css/admin/keyboard-shortcuts_1.css */
+/* Continued in keyboard-shortcuts_2.css */
 
 /* Modal Backdrop */
 .keyboard-modal {
@@ -343,108 +344,3 @@
     .keyboard-shortcuts-grid {
         grid-template-columns: 1fr;
         gap: 1.5rem;
-    }
-
-    .keyboard-help-body {
-        padding: 1.5rem;
-    }
-}
-
-/* Tablet */
-@media (max-width: 768px) {
-    .keyboard-modal-content {
-        margin: 5vh auto;
-    }
-}
-
-/* Dark theme adjustments (already dark by default) */
-@media (prefers-color-scheme: dark) {
-    .keyboard-modal-content {
-        background-color: #1f2937;
-        border: 1px solid #374151;
-    }
-}
-
-/* Light theme support */
-@media (prefers-color-scheme: light) {
-    .keyboard-modal-backdrop {
-        background-color: rgba(0, 0, 0, 0.5);
-    }
-
-    .keyboard-modal-content {
-        background-color: #ffffff;
-        border: 1px solid #e5e7eb;
-    }
-
-    .keyboard-search-header {
-        border-bottom-color: #e5e7eb;
-    }
-
-    .keyboard-search-header input {
-        color: #111827;
-    }
-
-    .keyboard-search-header input::placeholder {
-        color: #9ca3af;
-    }
-
-    .keyboard-search-result-title {
-        color: #111827;
-    }
-
-    .keyboard-help-header {
-        border-bottom-color: #e5e7eb;
-    }
-
-    .keyboard-help-header h3 {
-        color: #111827;
-    }
-
-    .keyboard-shortcut-item {
-        background-color: #f9fafb;
-    }
-
-    .keyboard-shortcut-keys kbd {
-        background-color: #e5e7eb;
-        color: #111827;
-        border-color: #d1d5db;
-    }
-
-    .keyboard-shortcut-desc {
-        color: #4b5563;
-    }
-
-    .keyboard-search-footer {
-        background-color: #f9fafb;
-        border-top-color: #e5e7eb;
-    }
-}
-
-/* Accessibility - Focus visible */
-.keyboard-search-result:focus-visible,
-.keyboard-modal-close:focus-visible {
-    outline: 2px solid #10b981;
-    outline-offset: 2px;
-}
-
-/* Reduced motion support */
-@media (prefers-reduced-motion: reduce) {
-    .keyboard-modal-content {
-        animation: none;
-    }
-
-    .keyboard-search-result {
-        transition: none;
-    }
-
-    .keyboard-modal {
-        transition: none;
-    }
-}
-
-/* Print styles */
-@media print {
-    .keyboard-modal {
-        display: none !important;
-    }
-}

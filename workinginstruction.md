@@ -15,7 +15,7 @@
 - Gue lebih suka kalo file untuk .php .js .css dipisah. Setiap css punya file nya sendiri, setiap php punya file nya sendiri, setial js punya file nya sendiri. Sehingga mudah untuk di debug
 - Gue lebih suka kalo setiap fitur, function, punya file nya tersendiri. Agar lebih mudah pada saat debug atau fixing
 - Gue lebih suka kalo setiap fitur, function, punya file nya tersendiri, karena bisa dipakai untuk page lain kalo dibutuhkan. Jadi gaperlu bikin function baru, css baru, js baru, atau apapun yang baru
-- Gue lebih suka kalo setiap file memiliki maksimal 350 baris, buat file login_2 untuk lanjutin, dan ubah nama file login menjadi login_1
+- Gue lebih suka kalo setiap file memiliki maksimal 350 baris, buat file login_2 untuk lanjutin dan seterusnya, dan ubah nama file login menjadi login_1
 
 - Pastikan code aman dari SQL Injection, XSS, CSRF, IDOR, HTML Injection, dan common attacks berdasarkan OWASP top Ten 2024 dan OWASP top ten 2025
 

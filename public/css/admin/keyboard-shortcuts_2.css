@@ -1,0 +1,42 @@
+    }
+
+    .keyboard-help-body {
+        padding: 1.5rem;
+    }
+}
+/* ======================================== */
+/* KEYBOARD SHORTCUTS STYLES - PART 2 */
+/* ======================================== */
+/* File: resources/css/admin/keyboard-shortcuts_2.css */
+/* Continuation from keyboard-shortcuts_1.css */
+
+/* Responsive - Tablet */
+@media (max-width: 768px) {
+    .keyboard-modal-content {
+        margin: 5vh auto;
+    }
+}
+
+/* Dark theme adjustments (already dark by default) */
+@media (prefers-color-scheme: dark) {
+    .keyboard-modal-content {
+        background-color: #1f2937;
+        border: 1px solid #374151;
+    }
+}
+
+/* Light theme support */
+@media (prefers-color-scheme: light) {
+    .keyboard-modal-backdrop {
+        background-color: rgba(0, 0, 0, 0.5);
+    }
+
+    .keyboard-modal-content {
+        background-color: #ffffff;
+        border: 1px solid #e5e7eb;
+    }
+
+    .keyboard-search-header {
+        border-bottom-color: #e5e7eb;
+    }
+}

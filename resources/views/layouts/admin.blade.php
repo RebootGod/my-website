@@ -26,7 +26,8 @@
     @vite(['resources/css/admin/admin-core.css', 'resources/css/admin/admin-mobile.css', 'resources/css/admin/admin-tables.css'])
     <link rel="stylesheet" href="{{ asset('css/admin/loading-states.css') }}?v={{ filemtime(public_path('css/admin/loading-states.css')) }}">
     <link rel="stylesheet" href="{{ asset('css/admin/breadcrumbs.css') }}?v={{ filemtime(public_path('css/admin/breadcrumbs.css')) }}">
-    <link rel="stylesheet" href="{{ asset('css/admin/keyboard-shortcuts.css') }}?v={{ filemtime(public_path('css/admin/keyboard-shortcuts.css')) }}">
+    <link rel="stylesheet" href="{{ asset('css/admin/keyboard-shortcuts_1.css') }}?v={{ filemtime(public_path('css/admin/keyboard-shortcuts_1.css')) }}">
+    <link rel="stylesheet" href="{{ asset('css/admin/keyboard-shortcuts_2.css') }}?v={{ filemtime(public_path('css/admin/keyboard-shortcuts_2.css')) }}">
 
     @stack('styles')
 </head>
@@ -167,8 +168,9 @@
     {{-- Loading States System --}}
     <script src="{{ asset('js/admin/loading-states.js') }}?v={{ filemtime(public_path('js/admin/loading-states.js')) }}" defer></script>
 
-    {{-- Keyboard Shortcuts System --}}
-    <script src="{{ asset('js/admin/keyboard-shortcuts.js') }}?v={{ filemtime(public_path('js/admin/keyboard-shortcuts.js')) }}" defer></script>
+    {{-- Keyboard Shortcuts System (Split files for 350-line compliance) --}}
+    <script src="{{ asset('js/admin/keyboard-shortcuts_1.js') }}?v={{ filemtime(public_path('js/admin/keyboard-shortcuts_1.js')) }}" defer></script>
+    <script src="{{ asset('js/admin/keyboard-shortcuts_2.js') }}?v={{ filemtime(public_path('js/admin/keyboard-shortcuts_2.js')) }}" defer></script>
 
     {{-- Admin Scripts --}}
     @vite(['resources/js/admin/admin-core.js', 'resources/js/admin/admin-mobile.js', 'resources/js/admin/admin-bulk.js'])
