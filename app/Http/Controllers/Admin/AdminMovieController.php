@@ -51,7 +51,7 @@ class AdminMovieController extends Controller
         // Optimized query with eager loading
         $query = Movie::select([
             'id', 'title', 'year', 'quality', 'status',
-            'poster_path', 'poster_url', 'local_poster_path', 'view_count', 'created_at', 'updated_at', 'description'
+            'poster_path', 'poster_url', 'local_poster_path', 'view_count', 'rating', 'created_at', 'updated_at', 'description', 'tmdb_id'
         ])->with([
             'genres:id,name',
             'sources:id,movie_id,source_name,is_active'
@@ -68,19 +68,54 @@ class AdminMovieController extends Controller
         $query = $this->applyGenreFilter($query, $request->genre_ids);
         $query = $this->applyNumericRangeFilter(
             $query,
-            $request->views_min,
-            $request->views_max,
+            $request->views_from,
+            $request->views_to,
             'view_count'
         );
 
+        // Advanced filters - Year Range
+        if ($request->filled('year_from')) {
+            $query->where('year', '>=', $request->year_from);
+        }
+        if ($request->filled('year_to')) {
+            $query->where('year', '<=', $request->year_to);
+        }
+
+        // Advanced filters - Rating Range
+        if ($request->filled('rating_from')) {
+            $query->where('rating', '>=', $request->rating_from);
+        }
+        if ($request->filled('rating_to')) {
+            $query->where('rating', '<=', $request->rating_to);
+        }
+
+        // Advanced filters - Quality
+        if ($request->filled('quality')) {
+            $query->where('quality', $request->quality);
+        }
+
+        // Advanced filters - TMDB Status
+        if ($request->has('has_tmdb')) {
+            if ($request->has_tmdb == '1') {
+                $query->whereNotNull('tmdb_id');
+            } elseif ($request->has_tmdb === '0') {
+                $query->whereNull('tmdb_id');
+            }
+        }
+
         // Apply sorting
-        $allowedSorts = ['created_at', 'title', 'year', 'view_count', 'updated_at'];
+        $allowedSorts = ['created_at', 'title', 'year', 'view_count', 'rating', 'updated_at'];
         $query = $this->applySorting(
             $query,
             $request->sort_by ?? 'created_at',
             $request->sort_order ?? 'desc',
             $allowedSorts
         );
+
+        // If count_only requested (AJAX), return count
+        if ($request->has('count_only')) {
+            return response()->json(['count' => $query->count()]);
+        }
 
         // Get paginated results with optimized query
         $movies = $this->getPaginatedResults($query, 20);
@@ -92,7 +127,7 @@ class AdminMovieController extends Controller
 
         // Build filter summary for display
         $filterSummary = $this->buildFilterSummary($request->only([
-            'search', 'status', 'date_from', 'date_to', 'genre_ids'
+            'search', 'status', 'date_from', 'date_to', 'genre_ids', 'year_from', 'year_to', 'rating_from', 'rating_to', 'quality', 'has_tmdb'
         ]));
 
         return view('admin.movies.index', compact('movies', 'genres', 'filterSummary'));

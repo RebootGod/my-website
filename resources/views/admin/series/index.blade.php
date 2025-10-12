@@ -32,13 +32,20 @@
         </div>
     </div>
 
-    {{-- Search Bar --}}
+    {{-- Advanced Filters Component (Same as Movies) --}}
+    @include('admin.components.advanced-filters', [
+        'action' => route('admin.series.index'),
+        'contentType' => 'series',
+        'genres' => $genres
+    ])
+
+    {{-- Quick Search Bar (Optional - kept for convenience) --}}
     <div class="bg-gray-800 rounded-lg p-4 mb-6">
         <form action="{{ route('admin.series.index') }}" method="GET" class="flex gap-4">
             <input 
                 type="text" 
                 name="search" 
-                placeholder="Search series..."
+                placeholder="Quick search series..."
                 value="{{ request('search') }}"
                 class="flex-1 px-4 py-2 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400"
             >
