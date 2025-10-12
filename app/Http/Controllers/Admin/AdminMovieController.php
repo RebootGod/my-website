@@ -51,7 +51,7 @@ class AdminMovieController extends Controller
         // Optimized query with eager loading
         $query = Movie::select([
             'id', 'title', 'year', 'quality', 'status',
-            'poster_path', 'view_count', 'created_at', 'updated_at'
+            'poster_path', 'poster_url', 'local_poster_path', 'view_count', 'created_at', 'updated_at', 'description'
         ])->with([
             'genres:id,name',
             'sources:id,movie_id,source_name,is_active'

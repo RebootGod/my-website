@@ -7,6 +7,8 @@
 - Pada saat fixing atau develop fitur, selalu lakukan deep checking & validation pada apa yang dikerjakan
 - Selalu lakukan deep checking & validation, agar tidak terjadi error
 
+- Pada saat fixing untuk movies, lakukan juga pengecekan untuk series. Begitu juga sebaliknya
+
 - Setelah itu push ke git agar laravel forge bisa melakukan deployment ke production
 
 - Gue lebih suka structure file yang professional
