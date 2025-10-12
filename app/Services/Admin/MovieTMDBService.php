@@ -12,10 +12,12 @@ use Illuminate\Http\Request;
 class MovieTMDBService
 {
     protected $tmdbService;
+    protected $dataService;
 
     public function __construct()
     {
         $this->tmdbService = new TMDBService();
+        $this->dataService = new MovieTMDBDataService();
     }
 
     /**
@@ -126,14 +128,17 @@ class MovieTMDBService
 
             $tmdbData = $tmdbResult['data'];
 
-            // Prepare movie data
-            $movieData = $this->prepareTMDBMovieData($tmdbData);
+            // Prepare movie data using data service
+            $movieData = $this->dataService->prepareTMDBMovieData($tmdbData);
 
             // Create movie
             $movie = Movie::create($movieData);
 
-            // Sync genres
-            $this->syncMovieGenres($movie, $tmdbData['genres'] ?? []);
+            // Sync genres using data service
+            $this->dataService->syncMovieGenres($movie, $tmdbData['genres'] ?? []);
+
+            // Dispatch image download jobs using data service
+            $this->dataService->dispatchImageDownloads($movie, $movieData);
 
             Log::info('Movie imported from TMDB', [
                 'tmdb_id' => $tmdbId,
@@ -203,55 +208,6 @@ class MovieTMDBService
                 'summary' => $summary
             ]
         ];
-    }
-
-    /**
-     * Prepare TMDB movie data for database insertion
-     */
-    protected function prepareTMDBMovieData(array $tmdbData): array
-    {
-        return [
-            'tmdb_id' => $tmdbData['tmdb_id'],
-            'title' => $tmdbData['title'],
-            'slug' => Str::slug($tmdbData['title']),
-            'overview' => $tmdbData['description'] ?? '',
-            'description' => $tmdbData['description'] ?? '',
-            'release_date' => $tmdbData['release_date'] ?
-                \Carbon\Carbon::parse($tmdbData['release_date']) : null,
-            'year' => $tmdbData['year'] ?? null,
-            'runtime' => $tmdbData['duration'] ?? null,
-            'poster_path' => $tmdbData['poster_path'] ?? null,
-            'backdrop_path' => $tmdbData['backdrop_path'] ?? null,
-            'rating' => $tmdbData['rating'] ?? 0,
-            'vote_count' => $tmdbData['vote_count'] ?? 0,
-            'popularity' => $tmdbData['popularity'] ?? 0,
-            'language' => $tmdbData['original_language'] ?? 'en',
-            'original_title' => $tmdbData['original_title'] ?? $tmdbData['title'],
-            'status' => 'published',
-            'is_featured' => false,
-            'added_by' => auth()->id(),
-        ];
-    }
-
-    /**
-     * Sync movie genres from TMDB data
-     */
-    protected function syncMovieGenres(Movie $movie, array $tmdbGenres): void
-    {
-        $genreIds = [];
-
-        foreach ($tmdbGenres as $tmdbGenre) {
-            // Find or create genre
-            $genre = Genre::firstOrCreate(
-                ['tmdb_id' => $tmdbGenre['id']],
-                ['name' => $tmdbGenre['name']]
-            );
-            
-            $genreIds[] = $genre->id;
-        }
-
-        // Sync genres to movie
-        $movie->genres()->sync($genreIds);
     }
 
     /**
