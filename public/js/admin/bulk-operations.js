@@ -268,19 +268,36 @@ class BulkOperationsManager {
      * Refresh from TMDB
      */
     async refreshTMDB() {
+        console.log('🔄 refreshTMDB called');
+        console.log('📦 Selected IDs:', this.selectedIds);
+        console.log('📦 Selected IDs size:', this.selectedIds.size);
+        console.log('📦 Content type:', this.contentType);
+        
         if (this.selectedIds.size === 0) {
+            console.warn('⚠️ No items selected');
             window.showToast('Please select items first', 'warning');
             return;
         }
 
+        const idsArray = Array.from(this.selectedIds);
+        console.log('📦 IDs array:', idsArray);
+        console.log('📦 IDs array length:', idsArray.length);
+
         if (!confirm(`Refresh ${this.selectedIds.size} items from TMDB? This may take a while.`)) {
+            console.log('❌ User cancelled');
             return;
         }
 
-        await this.executeBulkAction('refresh-tmdb', {
+        console.log('✅ User confirmed, executing bulk action...');
+        
+        const payload = {
             type: this.contentType,
-            ids: Array.from(this.selectedIds)
-        }, true); // Enable progress tracking
+            ids: idsArray
+        };
+        
+        console.log('📦 Payload:', JSON.stringify(payload, null, 2));
+        
+        await this.executeBulkAction('refresh-tmdb', payload, true); // Enable progress tracking
     }
 
     /**
@@ -313,47 +330,75 @@ class BulkOperationsManager {
      * Execute bulk action
      */
     async executeBulkAction(action, data, trackProgress = false) {
+        console.log('🚀 executeBulkAction called');
+        console.log('📦 Action:', action);
+        console.log('📦 Data:', JSON.stringify(data, null, 2));
+        console.log('📦 Track progress:', trackProgress);
+        
         if (this.isProcessing) {
+            console.warn('⚠️ Already processing another operation');
             window.showToast('Another operation is in progress', 'warning');
             return;
         }
 
         this.isProcessing = true;
+        console.log('✅ Set isProcessing = true');
+        
         const loadingToast = window.showToast('Processing...', 'info', 0);
 
         try {
-            const response = await fetch(`/admin/bulk/${action}`, {
-                method: action === 'delete' ? 'DELETE' : 'POST',
+            const url = `/admin/bulk/${action}`;
+            const method = action === 'delete' ? 'DELETE' : 'POST';
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+            
+            console.log('🌐 Request URL:', url);
+            console.log('🌐 Method:', method);
+            console.log('🔑 CSRF Token:', csrfToken ? 'Found' : 'NOT FOUND');
+            console.log('📦 Request body:', JSON.stringify(data));
+            
+            const response = await fetch(url, {
+                method: method,
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'X-CSRF-TOKEN': csrfToken,
                     'Accept': 'application/json'
                 },
                 body: JSON.stringify(data)
             });
 
+            console.log('📡 Response status:', response.status);
+            console.log('📡 Response ok:', response.ok);
+            
             const result = await response.json();
+            console.log('📦 Response data:', JSON.stringify(result, null, 2));
 
             if (result.success) {
+                console.log('✅ Operation successful');
                 window.showToast(result.message, 'success');
                 
                 // Track progress if enabled
                 if (trackProgress && result.progressKey) {
+                    console.log('📊 Starting progress tracking with key:', result.progressKey);
                     this.trackProgress(result.progressKey);
                 } else {
+                    console.log('🔄 Reloading page in 1.5 seconds...');
                     // Reload page to reflect changes
                     setTimeout(() => {
                         window.location.reload();
                     }, 1500);
                 }
             } else {
+                console.error('❌ Operation failed:', result.message);
+                console.error('❌ Errors:', result.errors);
                 window.showToast(result.message || 'Operation failed', 'error');
             }
         } catch (error) {
-            console.error('Bulk operation error:', error);
+            console.error('💥 Exception in executeBulkAction:', error);
+            console.error('💥 Error stack:', error.stack);
             window.showToast('Operation failed: ' + error.message, 'error');
         } finally {
             this.isProcessing = false;
+            console.log('✅ Set isProcessing = false');
         }
     }
 
