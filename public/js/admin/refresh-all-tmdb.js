@@ -73,11 +73,37 @@ async function handleRefreshAll(contentType) {
     
     console.log('✅ User confirmed, starting Refresh All...');
     
+    // Create and show progress modal IMMEDIATELY (before API call)
+    if (!window.BulkProgressTracker) {
+        alert('❌ Error: Progress tracker not available.\n\nPlease refresh the page and try again.');
+        return;
+    }
+    
+    // Generate a temporary progress key for immediate display
+    const tempProgressKey = `bulk_operation_tmdb_refresh_all_${contentType}_${Date.now()}`;
+    const tracker = new window.BulkProgressTracker(tempProgressKey);
+    
+    // Show modal immediately with "Initializing..." state
+    tracker.createModal();
+    tracker.showModal();
+    
+    // Update initial state
+    const statusEl = document.getElementById('progress-status');
+    if (statusEl) {
+        statusEl.textContent = 'Initializing refresh operation...';
+    }
+    
     try {
         const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
         
         if (!csrfToken) {
+            tracker.hideModal();
             throw new Error('CSRF token not found');
+        }
+        
+        // Update status: Sending request
+        if (statusEl) {
+            statusEl.textContent = 'Sending request to server...';
         }
         
         const response = await fetch('/admin/bulk/refresh-all-tmdb', {
@@ -99,26 +125,28 @@ async function handleRefreshAll(contentType) {
         const responseContentType = response.headers.get('content-type');
         if (!responseContentType || !responseContentType.includes('application/json')) {
             console.error('❌ Response is not JSON, got:', responseContentType);
-            alert('❌ Server Error: Received HTML instead of JSON.\n\nPlease check server logs or contact administrator.');
+            tracker.hideModal();
+            alert('❌ Server Error: Received HTML instead of JSON.\n\nThis usually means:\n- Server timeout (too many items)\n- Server error\n\nPlease check server logs or try again with fewer items.');
             return;
         }
         
         const result = await response.json();
         console.log('📦 Response:', result);
         
-        if (result.success) {
-            // Use existing progress tracker modal
-            if (result.progressKey && window.BulkProgressTracker) {
-                console.log('📊 Starting progress tracker with key:', result.progressKey);
-                const tracker = new window.BulkProgressTracker(result.progressKey);
-                await tracker.start();
-            } else {
-                // Fallback: show alert and reload
-                alert(`✅ ${result.message}`);
-                window.location.reload();
+        if (result.success && result.progressKey) {
+            // Update tracker with real progress key from server
+            tracker.progressKey = result.progressKey;
+            
+            // Update status: Processing
+            if (statusEl) {
+                statusEl.textContent = 'Processing items...';
             }
+            
+            // Start polling for real progress updates
+            tracker.startPolling();
         } else {
-            // Show error
+            // Hide modal and show error
+            tracker.hideModal();
             const errorMsg = result.message || 'Refresh All failed';
             const errors = result.errors ? JSON.stringify(result.errors, null, 2) : '';
             alert(`❌ Error: ${errorMsg}\n\n${errors}`);
@@ -127,6 +155,7 @@ async function handleRefreshAll(contentType) {
         
     } catch (error) {
         console.error('💥 Error during Refresh All:', error);
+        tracker.hideModal();
         alert(`❌ Error: ${error.message}\n\nPlease check console for details.`);
     }
 }
