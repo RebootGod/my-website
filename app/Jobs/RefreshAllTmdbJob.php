@@ -143,7 +143,7 @@ class RefreshAllTmdbJob implements ShouldQueue
      * Update progress in cache
      */
     protected function updateProgress(
-        int $total,
+        int $processed,
         int $success,
         int $failed,
         int $totalItems,
@@ -151,13 +151,14 @@ class RefreshAllTmdbJob implements ShouldQueue
         ?string $error = null
     ): void {
         $progress = [
-            'total' => $total,
+            'total' => $totalItems,      // Total items to process
+            'processed' => $processed,    // Items processed so far
             'success' => $success,
             'failed' => $failed,
-            'total_items' => $totalItems,
             'completed' => $completed,
+            'status' => $completed ? 'completed' : 'processing',
             'error' => $error,
-            'percentage' => $totalItems > 0 ? round(($total / $totalItems) * 100, 1) : 0,
+            'percentage' => $totalItems > 0 ? round(($processed / $totalItems) * 100, 1) : 0,
             'updated_at' => now()->toISOString()
         ];
 
