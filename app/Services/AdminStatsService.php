@@ -308,13 +308,12 @@ class AdminStatsService
         return Cache::remember('admin:recent_activity', 300, function () use ($limit) {
             // Get recent movies
             $recentMovies = Movie::select(['id', 'title', 'created_at', 'status'])
-                ->with('uploader:id,username,email') // Load uploader relationship
                 ->latest()
                 ->limit($limit)
                 ->get()
                 ->map(function ($movie) {
                     return [
-                        'user' => $movie->uploader ?? null,
+                        'user' => null, // Movies don't track uploader
                         'action' => 'created',
                         'subject_type' => 'Movie',
                         'subject_title' => $movie->title,
@@ -325,13 +324,12 @@ class AdminStatsService
 
             // Get recent series
             $recentSeries = Series::select(['id', 'title', 'created_at', 'status'])
-                ->with('uploader:id,username,email') // Load uploader relationship
                 ->latest()
                 ->limit($limit)
                 ->get()
                 ->map(function ($series) {
                     return [
-                        'user' => $series->uploader ?? null,
+                        'user' => null, // Series don't track uploader
                         'action' => 'created',
                         'subject_type' => 'Series',
                         'subject_title' => $series->title,
