@@ -339,7 +339,5 @@ document.addEventListener('DOMContentLoaded', () => {
         showNotifications: true
     });
 });
-    console.log('=== END INITIALIZATION ===');
-});
 </script>
 @endpush
