@@ -185,15 +185,15 @@ class GlobalSearchController extends Controller
      */
     protected function searchUsers($searchTerm)
     {
-        $users = User::where('name', 'like', $searchTerm)
+        $users = User::where('username', 'like', $searchTerm)
             ->orWhere('email', 'like', $searchTerm)
             ->limit(self::MAX_RESULTS_PER_CATEGORY)
-            ->get(['id', 'name', 'email', 'created_at']);
+            ->get(['id', 'username', 'email', 'created_at']);
 
         return $users->map(function ($user) {
             return [
                 'type' => 'user',
-                'title' => $user->name,
+                'title' => $user->username,
                 'subtitle' => 'User • ' . $user->email,
                 'url' => route('admin.users.edit', $user->id),
                 'icon' => 'fas fa-user',
