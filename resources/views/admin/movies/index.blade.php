@@ -7,8 +7,12 @@
 
 @section('title', 'Manage Movies - Admin')
 
+@section('styles')
+<link rel="stylesheet" href="{{ asset('css/bulk-operations.css') }}">
+@endsection
+
 @section('content')
-<div class="container mx-auto px-6 py-8">
+<div class="container mx-auto px-6 py-8" data-content-type="movie">
     {{-- Breadcrumb Navigation --}}
     @include('admin.components.breadcrumbs', [
         'items' => [
@@ -55,6 +59,9 @@
         <table class="w-full">
             <thead class="bg-gray-900">
                 <tr>
+                    <th class="bulk-checkbox-column">
+                        <input type="checkbox" id="bulk-select-all" class="bulk-checkbox" title="Select All">
+                    </th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Movie</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Year</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Quality</th>
@@ -66,6 +73,9 @@
             <tbody class="divide-y divide-gray-700">
                 @forelse($movies as $movie)
                 <tr class="hover:bg-gray-700">
+                    <td class="bulk-checkbox-column">
+                        <input type="checkbox" class="bulk-checkbox" value="{{ $movie->id }}" title="Select movie">
+                    </td>
                     <td class="px-6 py-4">
                         <div class="flex items-center">
                             <img src="{{ $movie->poster_url }}" alt="{{ $movie->title }}" class="w-12 h-16 rounded mr-4">
@@ -111,11 +121,45 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="6" class="px-6 py-4 text-center text-gray-400">No movies found</td>
+                    <td colspan="7" class="px-6 py-4 text-center text-gray-400">No movies found</td>
                 </tr>
                 @endforelse
             </tbody>
         </table>
+    </div>
+
+    {{-- Bulk Action Bar --}}
+    <div id="bulk-action-bar" class="hidden">
+        <div class="flex items-center justify-between flex-wrap gap-4">
+            <div class="bulk-selected-badge">
+                <i class="fas fa-check-circle"></i>
+                <span id="bulk-selected-count">0</span> selected
+            </div>
+            
+            <div class="bulk-actions">
+                <button id="bulk-publish" class="bulk-action-btn primary">
+                    <i class="fas fa-check"></i> Publish
+                </button>
+                <button id="bulk-draft" class="bulk-action-btn warning">
+                    <i class="fas fa-file"></i> Draft
+                </button>
+                <button id="bulk-archive" class="bulk-action-btn secondary">
+                    <i class="fas fa-archive"></i> Archive
+                </button>
+                <button id="bulk-feature" class="bulk-action-btn primary">
+                    <i class="fas fa-star"></i> Feature
+                </button>
+                <button id="bulk-refresh-tmdb" class="bulk-action-btn secondary">
+                    <i class="fas fa-sync"></i> Refresh TMDB
+                </button>
+                <button id="bulk-delete" class="bulk-action-btn danger">
+                    <i class="fas fa-trash"></i> Delete
+                </button>
+                <button id="bulk-clear" class="bulk-action-btn ghost">
+                    <i class="fas fa-times"></i> Clear
+                </button>
+            </div>
+        </div>
     </div>
 
     {{-- Pagination --}}
@@ -125,4 +169,9 @@
     </div>
     @endif
 </div>
+@endsection
+
+@section('scripts')
+<script src="{{ asset('js/bulk-operations.js') }}"></script>
+<script src="{{ asset('js/bulk-progress-tracker.js') }}"></script>
 @endsection

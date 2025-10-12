@@ -1,0 +1,350 @@
+/**
+ * Bulk Operations CSS
+ * 
+ * Styles for bulk operations interface
+ * Max 350 lines per workinginstruction.md
+ */
+
+/* ================================
+   Bulk Checkbox Styles
+   ================================ */
+
+.bulk-checkbox {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    accent-color: #10b981; /* green-500 */
+    border-radius: 4px;
+}
+
+.bulk-checkbox:hover {
+    transform: scale(1.1);
+    transition: transform 0.2s ease;
+}
+
+.bulk-checkbox:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+/* Select all checkbox in header */
+#bulk-select-all {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    accent-color: #10b981;
+}
+
+/* ================================
+   Bulk Action Bar
+   ================================ */
+
+#bulk-action-bar {
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 40;
+    background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+    border: 2px solid #10b981;
+    border-radius: 12px;
+    padding: 1rem 1.5rem;
+    box-shadow: 0 10px 40px rgba(16, 185, 129, 0.3);
+    min-width: 600px;
+    max-width: 90vw;
+    animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateX(-50%) translateY(100px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(-50%) translateY(0);
+        opacity: 1;
+    }
+}
+
+#bulk-action-bar.hidden {
+    display: none;
+}
+
+/* Selection count */
+.bulk-selected-badge {
+    background: #10b981;
+    color: white;
+    font-weight: 700;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-size: 1.125rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Action buttons container */
+.bulk-actions {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+/* Action button base */
+.bulk-action-btn {
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    border: none;
+    outline: none;
+}
+
+.bulk-action-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.bulk-action-btn:active {
+    transform: translateY(0);
+}
+
+.bulk-action-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+/* Button variants */
+.bulk-action-btn.primary {
+    background: #10b981; /* green-500 */
+    color: white;
+}
+
+.bulk-action-btn.primary:hover {
+    background: #059669; /* green-600 */
+}
+
+.bulk-action-btn.secondary {
+    background: #3b82f6; /* blue-500 */
+    color: white;
+}
+
+.bulk-action-btn.secondary:hover {
+    background: #2563eb; /* blue-600 */
+}
+
+.bulk-action-btn.warning {
+    background: #f59e0b; /* amber-500 */
+    color: white;
+}
+
+.bulk-action-btn.warning:hover {
+    background: #d97706; /* amber-600 */
+}
+
+.bulk-action-btn.danger {
+    background: #ef4444; /* red-500 */
+    color: white;
+}
+
+.bulk-action-btn.danger:hover {
+    background: #dc2626; /* red-600 */
+}
+
+.bulk-action-btn.ghost {
+    background: transparent;
+    color: #9ca3af; /* gray-400 */
+    border: 1px solid #4b5563; /* gray-600 */
+}
+
+.bulk-action-btn.ghost:hover {
+    background: #374151; /* gray-700 */
+    color: white;
+}
+
+/* ================================
+   Table Checkbox Column
+   ================================ */
+
+.bulk-checkbox-column {
+    width: 50px;
+    text-align: center;
+    padding: 1rem 0.5rem;
+}
+
+.bulk-checkbox-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+/* Row selection highlight */
+tr.selected {
+    background-color: rgba(16, 185, 129, 0.1) !important;
+    border-left: 3px solid #10b981;
+}
+
+tr.selected td {
+    background-color: rgba(16, 185, 129, 0.05);
+}
+
+/* ================================
+   Dropdown Menu
+   ================================ */
+
+.bulk-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.bulk-dropdown-menu {
+    position: absolute;
+    bottom: 100%;
+    left: 0;
+    margin-bottom: 0.5rem;
+    background: #1f2937;
+    border: 1px solid #374151;
+    border-radius: 8px;
+    padding: 0.5rem 0;
+    min-width: 200px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    z-index: 50;
+    display: none;
+}
+
+.bulk-dropdown-menu.show {
+    display: block;
+    animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.bulk-dropdown-item {
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    transition: background 0.15s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: #d1d5db;
+    font-size: 0.875rem;
+}
+
+.bulk-dropdown-item:hover {
+    background: #374151;
+    color: white;
+}
+
+.bulk-dropdown-item i {
+    width: 20px;
+    text-align: center;
+}
+
+.bulk-dropdown-divider {
+    height: 1px;
+    background: #374151;
+    margin: 0.5rem 0;
+}
+
+/* ================================
+   Loading State
+   ================================ */
+
+.bulk-loading {
+    pointer-events: none;
+    opacity: 0.6;
+    position: relative;
+}
+
+.bulk-loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 20px;
+    height: 20px;
+    border: 2px solid #10b981;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: translate(-50%, -50%) rotate(360deg);
+    }
+}
+
+/* ================================
+   Responsive Design
+   ================================ */
+
+@media (max-width: 768px) {
+    #bulk-action-bar {
+        min-width: auto;
+        width: calc(100% - 2rem);
+        padding: 1rem;
+        bottom: 1rem;
+    }
+
+    .bulk-actions {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .bulk-action-btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .bulk-selected-badge {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+/* ================================
+   Accessibility
+   ================================ */
+
+.bulk-checkbox:focus,
+#bulk-select-all:focus {
+    outline: 2px solid #10b981;
+    outline-offset: 2px;
+}
+
+.bulk-action-btn:focus {
+    outline: 2px solid #10b981;
+    outline-offset: 2px;
+}
+
+/* Screen reader only */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}

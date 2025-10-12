@@ -234,6 +234,16 @@ Route::middleware(['auth', 'admin', CheckPermission::class . ':access_admin_pane
     Route::get('/search', [\App\Http\Controllers\Admin\GlobalSearchController::class, 'search'])->name('search');
     Route::get('/search/suggestions', [\App\Http\Controllers\Admin\GlobalSearchController::class, 'suggestions'])->name('search.suggestions');
 
+    // Bulk Operations
+    Route::prefix('bulk')->name('bulk.')->group(function () {
+        Route::post('/update-metadata', [\App\Http\Controllers\Admin\BulkOperationController::class, 'updateMetadata'])->name('update-metadata');
+        Route::post('/refresh-tmdb', [\App\Http\Controllers\Admin\BulkOperationController::class, 'refreshTMDB'])->name('refresh-tmdb');
+        Route::post('/change-status', [\App\Http\Controllers\Admin\BulkOperationController::class, 'changeStatus'])->name('change-status');
+        Route::post('/toggle-featured', [\App\Http\Controllers\Admin\BulkOperationController::class, 'toggleFeatured'])->name('toggle-featured');
+        Route::delete('/delete', [\App\Http\Controllers\Admin\BulkOperationController::class, 'delete'])->name('delete');
+        Route::get('/progress', [\App\Http\Controllers\Admin\BulkOperationController::class, 'getProgress'])->name('progress');
+    });
+
     // TMDB Integration - New Version (Movies)
     Route::prefix('tmdb-new')->name('tmdb-new.')->group(function () {
         Route::get('/', [NewTMDBController::class, 'index'])->name('index');
