@@ -328,3 +328,15 @@
     </div>
 </div>
 @endsection
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // Initialize Form Auto-save for movie edit form
+    const movieFormAutoSave = new FormAutoSave('form[action*="movies"]', {
+        saveInterval: 30000,
+        storageKey: 'autosave_movie_{{ $movie->id }}',
+        showNotifications: true
+    });
+});
+</script>
+@endpush

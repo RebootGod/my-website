@@ -269,3 +269,16 @@
     </form>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // Initialize Form Auto-save for series edit form
+    const seriesFormAutoSave = new FormAutoSave('form[action*="series"]', {
+        saveInterval: 30000,
+        storageKey: 'autosave_series_{{ $series->id }}',
+        showNotifications: true
+    });
+});
+</script>
+@endpush

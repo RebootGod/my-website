@@ -170,6 +170,9 @@
     {{-- Keyboard Shortcuts System --}}
     <script src="{{ asset('js/admin/keyboard-shortcuts.js') }}?v={{ filemtime(public_path('js/admin/keyboard-shortcuts.js')) }}" defer></script>
 
+    {{-- Form Auto-save System --}}
+    <script src="{{ asset('js/admin/form-autosave.js') }}?v={{ filemtime(public_path('js/admin/form-autosave.js')) }}" defer></script>
+
     {{-- Admin Scripts --}}
     @vite(['resources/js/admin/admin-core.js', 'resources/js/admin/admin-mobile.js', 'resources/js/admin/admin-bulk.js'])
 
