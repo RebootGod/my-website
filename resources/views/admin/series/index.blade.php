@@ -8,7 +8,7 @@
 @section('title', 'Manage Series - Admin')
 
 @section('styles')
-<link rel="stylesheet" href="{{ asset('css/bulk-operations.css') }}">
+<link rel="stylesheet" href="{{ asset('css/admin/bulk-operations.css') }}?v={{ filemtime(public_path('css/admin/bulk-operations.css')) }}">
 @endsection
 
 @section('content')
@@ -174,8 +174,8 @@
 @endsection
 
 @section('scripts')
-<script src="{{ asset('js/bulk-operations.js') }}"></script>
-<script src="{{ asset('js/bulk-progress-tracker.js') }}"></script>
+<script src="{{ asset('js/admin/bulk-operations.js') }}?v={{ filemtime(public_path('js/admin/bulk-operations.js')) }}" defer></script>
+<script src="{{ asset('js/admin/bulk-progress-tracker.js') }}?v={{ filemtime(public_path('js/admin/bulk-progress-tracker.js')) }}" defer></script>
 @endsection
 
 @section('scripts')
