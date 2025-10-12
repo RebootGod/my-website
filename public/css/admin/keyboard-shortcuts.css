@@ -442,6 +442,75 @@
     }
 }
 
+/* Search History Styles */
+.keyboard-search-section {
+    padding: 8px 0;
+}
+
+.keyboard-search-section-title {
+    padding: 8px 16px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #9ca3af;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.keyboard-search-section-title i {
+    font-size: 14px;
+}
+
+.keyboard-search-history-item {
+    position: relative;
+}
+
+.keyboard-remove-history {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    color: #6b7280;
+    padding: 6px;
+    cursor: pointer;
+    border-radius: 4px;
+    opacity: 0;
+    transition: all 0.2s ease;
+}
+
+.keyboard-search-history-item:hover .keyboard-remove-history {
+    opacity: 1;
+}
+
+.keyboard-remove-history:hover {
+    background: #374151;
+    color: #ef4444;
+}
+
+.keyboard-clear-history {
+    background: transparent;
+    border: none;
+    color: #6b7280;
+    padding: 6px 10px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    font-size: 12px;
+}
+
+.keyboard-clear-history:hover {
+    background: #374151;
+    color: #ef4444;
+}
+
+.keyboard-clear-history i {
+    font-size: 12px;
+}
+
 /* Print styles */
 @media print {
     .keyboard-modal {

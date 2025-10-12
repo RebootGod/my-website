@@ -170,6 +170,9 @@
     {{-- Loading States System --}}
     <script src="{{ asset('js/admin/loading-states.js') }}?v={{ filemtime(public_path('js/admin/loading-states.js')) }}" defer></script>
 
+    {{-- Search History Module (load before keyboard-shortcuts) --}}
+    <script src="{{ asset('js/admin/search-history.js') }}?v={{ filemtime(public_path('js/admin/search-history.js')) }}"></script>
+
     {{-- Keyboard Shortcuts System --}}
     <script src="{{ asset('js/admin/keyboard-shortcuts.js') }}?v={{ filemtime(public_path('js/admin/keyboard-shortcuts.js')) }}" defer></script>
 

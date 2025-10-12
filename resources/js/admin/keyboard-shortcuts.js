@@ -22,6 +22,8 @@ class KeyboardShortcuts {
         this.isHelpModalOpen = false;
         this.searchResults = [];
         this.selectedIndex = -1;
+        this.searchHistory = new SearchHistory(); // Search history manager
+        this.debounceTimer = null;
         
         this.init();
     }
@@ -138,10 +140,7 @@ class KeyboardShortcuts {
                     </button>
                 </div>
                 <div class="keyboard-search-results" id="keyboardSearchResults">
-                    <div class="keyboard-search-hint">
-                        <i class="fas fa-keyboard"></i>
-                        <span>Type to search across all sections</span>
-                    </div>
+                    <!-- Recent searches will be shown here initially -->
                 </div>
                 <div class="keyboard-search-footer">
                     <div class="keyboard-search-shortcuts">
@@ -149,6 +148,9 @@ class KeyboardShortcuts {
                         <span><kbd>Enter</kbd> Select</span>
                         <span><kbd>Esc</kbd> Close</span>
                     </div>
+                    <button class="keyboard-clear-history" onclick="keyboardShortcuts.clearSearchHistory()" title="Clear search history">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
                 </div>
             </div>
         `;
@@ -269,6 +271,9 @@ class KeyboardShortcuts {
             modal.classList.add('active');
             this.isSearchModalOpen = true;
             
+            // Show recent searches initially
+            this.showRecentSearches();
+            
             // Focus input after animation
             setTimeout(() => {
                 input.focus();
@@ -334,13 +339,22 @@ class KeyboardShortcuts {
     async handleSearchInput(e) {
         const query = e.target.value.trim();
         
+        if (query.length === 0) {
+            this.showRecentSearches();
+            return;
+        }
+        
         if (query.length < 2) {
-            this.clearSearchResults();
+            // Show suggestions from history
+            this.showSuggestions(query);
             return;
         }
 
-        // Perform search
-        await this.performSearch(query);
+        // Debounce search
+        clearTimeout(this.debounceTimer);
+        this.debounceTimer = setTimeout(async () => {
+            await this.performSearch(query);
+        }, 300);
     }
 
     /**
@@ -421,10 +435,14 @@ class KeyboardShortcuts {
             return;
         }
         
+        // Get current search query
+        const currentQuery = document.getElementById('keyboardSearchInput')?.value.trim();
+        
         const html = results.map((result, index) => `
             <a href="${this.escapeHtml(result.url)}" 
                class="keyboard-search-result" 
-               data-index="${index}">
+               data-index="${index}"
+               onclick="keyboardShortcuts.saveSearchToHistory('${this.escapeHtml(currentQuery)}', '${this.escapeHtml(result.url)}')">
                 <div class="keyboard-search-result-icon">
                     <i class="${this.escapeHtml(result.icon)}"></i>
                 </div>
@@ -436,6 +454,15 @@ class KeyboardShortcuts {
         `).join('');
         
         resultsContainer.innerHTML = html;
+    }
+
+    /**
+     * Save search to history when user clicks result
+     */
+    saveSearchToHistory(query, url) {
+        if (query) {
+            this.searchHistory.addSearch(query, url);
+        }
     }
 
     /**
@@ -521,6 +548,130 @@ class KeyboardShortcuts {
         const div = document.createElement('div');
         div.textContent = text;
         return div.innerHTML;
+    }
+
+    /**
+     * Show recent searches
+     */
+    showRecentSearches() {
+        const resultsContainer = document.getElementById('keyboardSearchResults');
+        if (!resultsContainer) return;
+
+        const recentSearches = this.searchHistory.getRecentSearches(8);
+
+        if (recentSearches.length === 0) {
+            resultsContainer.innerHTML = `
+                <div class="keyboard-search-hint">
+                    <i class="fas fa-keyboard"></i>
+                    <span>Type to search across all sections</span>
+                </div>
+            `;
+            return;
+        }
+
+        const html = `
+            <div class="keyboard-search-section">
+                <div class="keyboard-search-section-title">
+                    <i class="fas fa-history"></i> Recent Searches
+                </div>
+                ${recentSearches.map((item, index) => `
+                    <div class="keyboard-search-result keyboard-search-history-item" 
+                         data-index="${index}"
+                         onclick="keyboardShortcuts.selectHistoryItem('${this.escapeHtml(item.query)}')">
+                        <div class="keyboard-search-result-icon">
+                            <i class="fas fa-clock-rotate-left"></i>
+                        </div>
+                        <div class="keyboard-search-result-content">
+                            <div class="keyboard-search-result-title">${this.escapeHtml(item.query)}</div>
+                            <div class="keyboard-search-result-type">
+                                ${item.count > 1 ? `Searched ${item.count} times` : 'Recent'} 
+                                · ${this.searchHistory.formatTimeAgo(item.lastUsed)}
+                            </div>
+                        </div>
+                        <button class="keyboard-remove-history" 
+                                onclick="event.stopPropagation(); keyboardShortcuts.removeHistoryItem('${this.escapeHtml(item.query)}')">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+
+        resultsContainer.innerHTML = html;
+    }
+
+    /**
+     * Show autocomplete suggestions
+     */
+    showSuggestions(query) {
+        const resultsContainer = document.getElementById('keyboardSearchResults');
+        if (!resultsContainer) return;
+
+        const suggestions = this.searchHistory.getSuggestions(query, 5);
+
+        if (suggestions.length === 0) {
+            resultsContainer.innerHTML = `
+                <div class="keyboard-search-hint">
+                    <i class="fas fa-search"></i>
+                    <span>Keep typing to search...</span>
+                </div>
+            `;
+            return;
+        }
+
+        const html = `
+            <div class="keyboard-search-section">
+                <div class="keyboard-search-section-title">
+                    <i class="fas fa-lightbulb"></i> Suggestions
+                </div>
+                ${suggestions.map((item, index) => `
+                    <div class="keyboard-search-result" 
+                         data-index="${index}"
+                         onclick="keyboardShortcuts.selectHistoryItem('${this.escapeHtml(item.query)}')">
+                        <div class="keyboard-search-result-icon">
+                            <i class="fas fa-${item.isFrequent ? 'fire' : 'search'}"></i>
+                        </div>
+                        <div class="keyboard-search-result-content">
+                            <div class="keyboard-search-result-title">${this.escapeHtml(item.query)}</div>
+                            <div class="keyboard-search-result-type">
+                                ${item.isFrequent ? 'Frequently searched' : 'Suggestion'}
+                            </div>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+
+        resultsContainer.innerHTML = html;
+    }
+
+    /**
+     * Select history item
+     */
+    selectHistoryItem(query) {
+        const input = document.getElementById('keyboardSearchInput');
+        if (input) {
+            input.value = query;
+            this.performSearch(query);
+        }
+    }
+
+    /**
+     * Remove history item
+     */
+    removeHistoryItem(query) {
+        this.searchHistory.removeSearch(query);
+        this.showRecentSearches();
+    }
+
+    /**
+     * Clear search history
+     */
+    clearSearchHistory() {
+        if (confirm('Clear all search history?')) {
+            this.searchHistory.clearHistory();
+            this.showRecentSearches();
+        }
     }
 }
 
