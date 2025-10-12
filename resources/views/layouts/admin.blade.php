@@ -24,6 +24,7 @@
 
     {{-- Admin Styles --}}
     @vite(['resources/css/admin/admin-core.css', 'resources/css/admin/admin-mobile.css', 'resources/css/admin/admin-tables.css'])
+    <link rel="stylesheet" href="{{ asset('css/admin/loading-states.css') }}?v={{ filemtime(public_path('css/admin/loading-states.css')) }}">
 
     @stack('styles')
 </head>
@@ -160,6 +161,9 @@
 
     {{-- Toast Notification System --}}
     @include('admin.components.toast-container')
+
+    {{-- Loading States System --}}
+    <script src="{{ asset('js/admin/loading-states.js') }}?v={{ filemtime(public_path('js/admin/loading-states.js')) }}" defer></script>
 
     {{-- Admin Scripts --}}
     @vite(['resources/js/admin/admin-core.js', 'resources/js/admin/admin-mobile.js', 'resources/js/admin/admin-bulk.js'])
