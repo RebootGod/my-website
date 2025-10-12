@@ -167,7 +167,7 @@ class GlobalSearchController extends Controller
                 'type' => 'series',
                 'title' => $series->title,
                 'subtitle' => 'Series • ' . $year,
-                'url' => route('admin.series.edit', $series->id),
+                'url' => route('admin.series.edit', $series),
                 'icon' => 'fas fa-tv',
                 'meta' => [
                     'id' => $series->id,
