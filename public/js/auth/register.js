@@ -74,17 +74,25 @@ function registerHandler() {
             // Length check
             if (password.length >= 8) strength++;
 
-            // Uppercase check
-            if (/[A-Z]/.test(password)) strength++;
+            // Uppercase check - update checkmark
+            const hasUppercase = /[A-Z]/.test(password);
+            if (hasUppercase) strength++;
+            this.updateCheckmark('check-uppercase', hasUppercase);
 
-            // Lowercase check
-            if (/[a-z]/.test(password)) strength++;
+            // Lowercase check - update checkmark
+            const hasLowercase = /[a-z]/.test(password);
+            if (hasLowercase) strength++;
+            this.updateCheckmark('check-lowercase', hasLowercase);
 
-            // Number check
-            if (/[0-9]/.test(password)) strength++;
+            // Number check - update checkmark
+            const hasNumber = /[0-9]/.test(password);
+            if (hasNumber) strength++;
+            this.updateCheckmark('check-number', hasNumber);
 
-            // Special character check
-            if (/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) strength++;
+            // Special character check - update checkmark
+            const hasSpecialChar = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password);
+            if (hasSpecialChar) strength++;
+            this.updateCheckmark('check-special', hasSpecialChar);
 
             this.passwordStrength = strength;
 
@@ -98,6 +106,13 @@ function registerHandler() {
             } else {
                 this.strengthClass = 'strength-strong';
                 this.strengthText = 'Kuat';
+            }
+        },
+
+        updateCheckmark(elementId, isValid) {
+            const element = document.getElementById(elementId);
+            if (element) {
+                element.style.color = isValid ? '#10b981' : '#6c757d';
             }
         },
 
@@ -170,7 +185,14 @@ function initializeRegisterForm(config) {
     // Store config globally for access in Alpine component
     window.authConfig = config || {};
 
-    
+    // Add password strength checker
+    const passwordInput = document.getElementById('register_password');
+    if (passwordInput) {
+        passwordInput.addEventListener('input', function() {
+            checkPasswordRequirements(this.value);
+        });
+    }
+
     // Auto-hide alert messages after 5 seconds
     const alerts = document.querySelectorAll('.alert');
     alerts.forEach(alert => {
@@ -181,4 +203,27 @@ function initializeRegisterForm(config) {
             }, 300);
         }, 5000);
     });
+}
+
+// Check password requirements and update checkmarks
+function checkPasswordRequirements(password) {
+    // Uppercase check
+    updateCheckmark('check-uppercase', /[A-Z]/.test(password));
+    
+    // Lowercase check
+    updateCheckmark('check-lowercase', /[a-z]/.test(password));
+    
+    // Number check
+    updateCheckmark('check-number', /[0-9]/.test(password));
+    
+    // Special character check
+    updateCheckmark('check-special', /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password));
+}
+
+// Update checkmark color
+function updateCheckmark(elementId, isValid) {
+    const element = document.getElementById(elementId);
+    if (element) {
+        element.style.color = isValid ? '#10b981' : '#6c757d';
+    }
 }

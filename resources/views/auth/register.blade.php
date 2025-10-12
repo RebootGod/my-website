@@ -181,3 +181,14 @@
 </div>
 @endsection
 
+@push('scripts')
+<script src="{{ asset('js/auth/register.js') }}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        initializeRegisterForm({
+            csrfToken: '{{ csrf_token() }}',
+            inviteCodeUrl: '{{ route('invite.validate') }}'
+        });
+    });
+</script>
+@endpush
