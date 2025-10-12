@@ -286,10 +286,10 @@ class ContentBulkOperationService
             'title' => $tmdbData['title'] ?? $tmdbData['name'] ?? $item->title,
             'description' => $tmdbData['overview'] ?? $item->description,
             'release_date' => $tmdbData['release_date'] ?? $tmdbData['first_air_date'] ?? $item->release_date,
-            'poster_url' => $tmdbData['poster_path'] 
+            'poster_url' => isset($tmdbData['poster_path']) && $tmdbData['poster_path']
                 ? 'https://image.tmdb.org/t/p/w500' . $tmdbData['poster_path'] 
                 : $item->poster_url,
-            'backdrop_url' => $tmdbData['backdrop_path']
+            'backdrop_url' => isset($tmdbData['backdrop_path']) && $tmdbData['backdrop_path']
                 ? 'https://image.tmdb.org/t/p/original' . $tmdbData['backdrop_path']
                 : $item->backdrop_url,
             'rating' => $tmdbData['vote_average'] ?? $item->rating,
