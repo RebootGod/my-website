@@ -365,10 +365,13 @@ class KeyboardShortcuts {
             // Build search URL
             const searchUrl = `/admin/search?q=${encodeURIComponent(query)}`;
             
+            console.log('🔍 Searching:', query);
+            console.log('📍 URL:', searchUrl);
+            
             // Show loading
             this.showSearchLoading();
             
-            // Fetch results (placeholder - implement actual search endpoint)
+            // Fetch results
             const response = await fetch(searchUrl, {
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest',
@@ -376,15 +379,22 @@ class KeyboardShortcuts {
                 }
             });
             
+            console.log('📡 Response status:', response.status);
+            console.log('📡 Response OK:', response.ok);
+            
             if (response.ok) {
                 const data = await response.json();
+                console.log('✅ Search results:', data);
                 this.displaySearchResults(data);
             } else {
+                console.warn('⚠️ Response not OK, using fallback. Status:', response.status);
+                const errorText = await response.text();
+                console.error('Error response:', errorText);
                 // Fallback to client-side search
                 this.performClientSideSearch(query);
             }
         } catch (error) {
-            console.error('Search error:', error);
+            console.error('❌ Search error:', error);
             this.performClientSideSearch(query);
         }
     }
