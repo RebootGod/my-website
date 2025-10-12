@@ -106,47 +106,103 @@ class ContentBulkOperationService
             'errors' => []
         ];
 
+        Log::info("Starting bulk TMDB refresh", [
+            'type' => $type,
+            'count' => count($ids),
+            'ids' => $ids
+        ]);
+
         foreach ($ids as $id) {
             try {
                 $item = $model::findOrFail($id);
+                
+                Log::info("Processing {$type} ID {$id}", [
+                    'title' => $item->title,
+                    'tmdb_id' => $item->tmdb_id
+                ]);
                 
                 if (!$item->tmdb_id) {
                     $results['failed']++;
                     $results['errors'][] = [
                         'id' => $id,
+                        'title' => $item->title,
                         'error' => 'No TMDB ID found'
                     ];
+                    Log::warning("No TMDB ID for {$type} ID {$id}");
                     continue;
                 }
 
                 // Refresh from TMDB
+                $tmdbResult = null;
                 if ($type === 'movie') {
-                    $tmdbData = $this->tmdbService->getMovieDetails($item->tmdb_id);
+                    $tmdbResult = $this->tmdbService->getMovieDetails($item->tmdb_id);
                 } else {
-                    $tmdbData = $this->tmdbService->getSeriesDetails($item->tmdb_id);
+                    // For series, use getTvDetails instead of getSeriesDetails
+                    $tmdbResult = $this->tmdbService->getTvDetails($item->tmdb_id);
                 }
 
-                if ($tmdbData) {
-                    $this->updateFromTMDBData($item, $tmdbData, $type);
-                    $results['success']++;
-                } else {
+                // Validate TMDB response
+                if (!$tmdbResult || !isset($tmdbResult['success']) || !$tmdbResult['success']) {
+                    $results['failed']++;
+                    $error = 'Failed to fetch TMDB data';
+                    if (isset($tmdbResult['error'])) {
+                        $error .= ': ' . $tmdbResult['error'];
+                    }
+                    $results['errors'][] = [
+                        'id' => $id,
+                        'title' => $item->title,
+                        'error' => $error
+                    ];
+                    Log::error("TMDB API failed for {$type} ID {$id}", [
+                        'tmdb_id' => $item->tmdb_id,
+                        'response' => $tmdbResult
+                    ]);
+                    continue;
+                }
+
+                // Extract data from response
+                $tmdbData = $tmdbResult['data'] ?? $tmdbResult;
+                
+                // Validate data exists
+                if (empty($tmdbData) || !is_array($tmdbData)) {
                     $results['failed']++;
                     $results['errors'][] = [
                         'id' => $id,
-                        'error' => 'Failed to fetch TMDB data'
+                        'title' => $item->title,
+                        'error' => 'Invalid TMDB response format'
                     ];
+                    Log::error("Invalid TMDB response for {$type} ID {$id}", [
+                        'tmdb_id' => $item->tmdb_id,
+                        'data' => $tmdbData
+                    ]);
+                    continue;
                 }
+
+                // Update item with TMDB data
+                $this->updateFromTMDBData($item, $tmdbData, $type);
+                $results['success']++;
+                Log::info("Successfully refreshed {$type} ID {$id} from TMDB");
+                
             } catch (\Exception $e) {
                 $results['failed']++;
                 $results['errors'][] = [
                     'id' => $id,
+                    'title' => $item->title ?? 'Unknown',
                     'error' => $e->getMessage()
                 ];
                 Log::error("TMDB refresh failed for {$type} ID {$id}", [
-                    'error' => $e->getMessage()
+                    'error' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString()
                 ]);
             }
         }
+
+        Log::info("Bulk TMDB refresh completed", [
+            'type' => $type,
+            'success' => $results['success'],
+            'failed' => $results['failed'],
+            'errors_count' => count($results['errors'])
+        ]);
 
         return $results;
     }
@@ -282,10 +338,15 @@ class ContentBulkOperationService
      */
     protected function updateFromTMDBData($item, array $tmdbData, string $type): void
     {
+        // Movies use 'title', Series use 'name'
+        $titleField = $type === 'movie' ? 'title' : 'name';
+        // Movies use 'release_date', Series use 'first_air_date'
+        $dateField = $type === 'movie' ? 'release_date' : 'first_air_date';
+
         $updateData = [
-            'title' => $tmdbData['title'] ?? $tmdbData['name'] ?? $item->title,
+            'title' => $tmdbData[$titleField] ?? $item->title,
             'description' => $tmdbData['overview'] ?? $item->description,
-            'release_date' => $tmdbData['release_date'] ?? $tmdbData['first_air_date'] ?? $item->release_date,
+            'release_date' => $tmdbData[$dateField] ?? $item->release_date,
             'poster_url' => isset($tmdbData['poster_path']) && $tmdbData['poster_path']
                 ? 'https://image.tmdb.org/t/p/w500' . $tmdbData['poster_path'] 
                 : $item->poster_url,
@@ -293,7 +354,15 @@ class ContentBulkOperationService
                 ? 'https://image.tmdb.org/t/p/original' . $tmdbData['backdrop_path']
                 : $item->backdrop_url,
             'rating' => $tmdbData['vote_average'] ?? $item->rating,
+            'updated_at' => now() // Explicitly update timestamp
         ];
+
+        // Log the update for debugging
+        Log::info("Updating {$type} from TMDB", [
+            'id' => $item->id,
+            'title' => $updateData['title'],
+            'rating' => $updateData['rating']
+        ]);
 
         $item->update($updateData);
     }
