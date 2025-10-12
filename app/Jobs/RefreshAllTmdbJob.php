@@ -78,7 +78,9 @@ class RefreshAllTmdbJob implements ShouldQueue
             $this->updateProgress(0, 0, 0, count($this->ids));
 
             // Execute bulk refresh operation
-            $result = $bulkService->bulkRefreshFromTMDB($this->type, $this->ids, $this->progressKey);
+            // NOTE: bulkRefreshFromTMDB only takes 2 params (type, ids)
+            // Progress tracking is handled by THIS job, not the service
+            $result = $bulkService->bulkRefreshFromTMDB($this->type, $this->ids);
 
             Log::info("✅ RefreshAllTmdbJob COMPLETED", [
                 'type' => $this->type,
