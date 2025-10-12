@@ -73,9 +73,6 @@ async function handleRefreshAll(contentType) {
     
     console.log('✅ User confirmed, starting Refresh All...');
     
-    // Show loading state
-    window.showToast('Starting Refresh All TMDB...', 'info', 0);
-    
     try {
         const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
         
@@ -92,37 +89,44 @@ async function handleRefreshAll(contentType) {
             },
             body: JSON.stringify({
                 type: contentType
-                // Optional: can add status filter or limit
-                // status: 'published',
-                // limit: 100
             })
         });
         
-        const result = await response.json();
+        console.log('📡 Response status:', response.status);
+        console.log('📡 Response ok:', response.ok);
         
+        // Check if response is JSON
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+            console.error('❌ Response is not JSON, got:', contentType);
+            alert('❌ Server Error: Received HTML instead of JSON.\n\nPlease check server logs or contact administrator.');
+            return;
+        }
+        
+        const result = await response.json();
         console.log('📦 Response:', result);
         
         if (result.success) {
-            window.showToast(result.message, 'success');
-            
-            // Show progress tracking if available
+            // Use existing progress tracker modal
             if (result.progressKey && window.BulkProgressTracker) {
-                console.log('📊 Starting progress tracker...');
+                console.log('📊 Starting progress tracker with key:', result.progressKey);
                 const tracker = new window.BulkProgressTracker(result.progressKey);
                 await tracker.start();
             } else {
-                // Reload after delay if no progress tracking
-                setTimeout(() => {
-                    window.location.reload();
-                }, 2000);
+                // Fallback: show alert and reload
+                alert(`✅ ${result.message}`);
+                window.location.reload();
             }
         } else {
-            window.showToast(result.message || 'Refresh All failed', 'error');
+            // Show error
+            const errorMsg = result.message || 'Refresh All failed';
+            const errors = result.errors ? JSON.stringify(result.errors, null, 2) : '';
+            alert(`❌ Error: ${errorMsg}\n\n${errors}`);
             console.error('❌ Refresh All failed:', result);
         }
         
     } catch (error) {
         console.error('💥 Error during Refresh All:', error);
-        window.showToast('Error: ' + error.message, 'error');
+        alert(`❌ Error: ${error.message}\n\nPlease check console for details.`);
     }
 }
