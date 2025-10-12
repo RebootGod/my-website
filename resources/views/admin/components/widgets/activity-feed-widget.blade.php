@@ -27,11 +27,18 @@
     $widgetId = $id ?? 'activity-' . uniqid();
     $title = $title ?? 'Recent Activity';
     
-    // Convert array to collection if needed
-    if (is_array($activities ?? null)) {
+    // Defensive conversion: handle array, Collection, or null
+    if (!isset($activities)) {
+        $activities = collect();
+    } elseif (is_array($activities)) {
         $activities = collect($activities);
     } elseif (!($activities instanceof \Illuminate\Support\Collection)) {
-        $activities = collect();
+        // If it's some other type, try to convert or default to empty
+        try {
+            $activities = collect($activities);
+        } catch (\Exception $e) {
+            $activities = collect();
+        }
     }
     
     $limit = $limit ?? 10;

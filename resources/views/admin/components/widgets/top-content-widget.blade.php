@@ -19,11 +19,18 @@
     $title = $title ?? 'Top Content';
     $contentType = $contentType ?? 'movies'; // movies, series
     
-    // Convert array to collection if needed
-    if (is_array($items ?? null)) {
+    // Defensive conversion: handle array, Collection, or null
+    if (!isset($items)) {
+        $items = collect();
+    } elseif (is_array($items)) {
         $items = collect($items);
     } elseif (!($items instanceof \Illuminate\Support\Collection)) {
-        $items = collect();
+        // If it's some other type, try to convert or default to empty
+        try {
+            $items = collect($items);
+        } catch (\Exception $e) {
+            $items = collect();
+        }
     }
     
     $limit = $limit ?? 5;
