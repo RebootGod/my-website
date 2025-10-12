@@ -18,7 +18,14 @@
     $widgetId = $id ?? 'top-content-' . uniqid();
     $title = $title ?? 'Top Content';
     $contentType = $contentType ?? 'movies'; // movies, series
-    $items = $items ?? collect();
+    
+    // Convert array to collection if needed
+    if (is_array($items ?? null)) {
+        $items = collect($items);
+    } elseif (!($items instanceof \Illuminate\Support\Collection)) {
+        $items = collect();
+    }
+    
     $limit = $limit ?? 5;
     $showThumbnails = $showThumbnails ?? true;
     $showViews = $showViews ?? true;

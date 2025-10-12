@@ -26,7 +26,14 @@
 @php
     $widgetId = $id ?? 'activity-' . uniqid();
     $title = $title ?? 'Recent Activity';
-    $activities = $activities ?? collect();
+    
+    // Convert array to collection if needed
+    if (is_array($activities ?? null)) {
+        $activities = collect($activities);
+    } elseif (!($activities instanceof \Illuminate\Support\Collection)) {
+        $activities = collect();
+    }
+    
     $limit = $limit ?? 10;
     $showUserAvatar = $showUserAvatar ?? true;
     $showTimestamp = $showTimestamp ?? true;

@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\InviteCode;
 use App\Models\BrokenLinkReport;
 use App\Models\Series;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
 
@@ -302,45 +303,65 @@ class AdminStatsService
      * @param int $limit
      * @return array
      */
-    public function getRecentActivity(int $limit = 10): array
+    public function getRecentActivity(int $limit = 10): Collection
     {
         return Cache::remember('admin:recent_activity', 300, function () use ($limit) {
             // Get recent movies
-            $recentMovies = Movie::select(['title', 'created_at', 'status'])
+            $recentMovies = Movie::select(['id', 'title', 'created_at', 'status'])
+                ->with('uploader:id,username,email') // Load uploader relationship
                 ->latest()
                 ->limit($limit)
                 ->get()
                 ->map(function ($movie) {
                     return [
-                        'type' => 'movie',
-                        'title' => $movie->title,
+                        'user' => $movie->uploader ?? null,
                         'action' => 'created',
-                        'status' => $movie->status,
-                        'date' => $movie->created_at
+                        'subject_type' => 'Movie',
+                        'subject_title' => $movie->title,
+                        'subject_id' => $movie->id,
+                        'created_at' => $movie->created_at
                     ];
                 });
 
-            // Get recent users
-            $recentUsers = User::select(['username', 'created_at', 'role'])
+            // Get recent series
+            $recentSeries = Series::select(['id', 'title', 'created_at', 'status'])
+                ->with('uploader:id,username,email') // Load uploader relationship
+                ->latest()
+                ->limit($limit)
+                ->get()
+                ->map(function ($series) {
+                    return [
+                        'user' => $series->uploader ?? null,
+                        'action' => 'created',
+                        'subject_type' => 'Series',
+                        'subject_title' => $series->title,
+                        'subject_id' => $series->id,
+                        'created_at' => $series->created_at
+                    ];
+                });
+
+            // Get recent users (registered)
+            $recentUsers = User::select(['id', 'username', 'email', 'created_at', 'role'])
                 ->latest()
                 ->limit($limit)
                 ->get()
                 ->map(function ($user) {
                     return [
-                        'type' => 'user',
-                        'title' => $user->username,
+                        'user' => $user,
                         'action' => 'registered',
-                        'status' => $user->role,
-                        'date' => $user->created_at
+                        'subject_type' => 'User',
+                        'subject_title' => $user->username,
+                        'subject_id' => $user->id,
+                        'created_at' => $user->created_at
                     ];
                 });
 
             // Combine and sort by date
-            return $recentMovies->concat($recentUsers)
-                ->sortByDesc('date')
+            return $recentMovies->concat($recentSeries)
+                ->concat($recentUsers)
+                ->sortByDesc('created_at')
                 ->take($limit)
-                ->values()
-                ->toArray();
+                ->values();
         });
     }
 
