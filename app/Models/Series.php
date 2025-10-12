@@ -48,11 +48,20 @@ class Series extends Model
     ];
 
     // ========================================
-    // ROUTE KEY NAME - Use slug instead of ID
+    // ROUTE KEY NAME - Use slug for public routes, ID for admin routes
     // ========================================
 
+    /**
+     * Get the route key for the model.
+     * Use 'slug' for public routes, 'id' for admin routes.
+     */
     public function getRouteKeyName()
     {
+        // Check if current route is admin route
+        if (request()->is('admin/*')) {
+            return 'id';
+        }
+        
         return 'slug';
     }
 
