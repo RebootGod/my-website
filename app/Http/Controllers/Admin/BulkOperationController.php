@@ -369,19 +369,22 @@ class BulkOperationController extends Controller
                 'queued_at' => now()->toISOString()
             ]);
 
-            // Dispatch job to queue (immediate response to user)
+            // Dispatch job to DATABASE queue (explicit connection)
+            // Production uses redis as default, but this job needs database queue
             \App\Jobs\RefreshAllTmdbJob::dispatch(
                 $request->type,
                 $ids,
                 $progressKey,
                 $request->status,
                 $request->limit
-            );
+            )->onConnection('database')->onQueue('default');
 
-            Log::info("✅ Job dispatched to queue", [
+            Log::info("✅ Job dispatched to DATABASE queue", [
                 'type' => $request->type,
                 'progress_key' => $progressKey,
-                'total_items' => count($ids)
+                'total_items' => count($ids),
+                'connection' => 'database',
+                'queue' => 'default'
             ]);
 
             return response()->json([
