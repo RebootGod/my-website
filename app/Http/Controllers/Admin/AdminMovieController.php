@@ -65,7 +65,14 @@ class AdminMovieController extends Controller
             $request->date_from,
             $request->date_to
         );
-        $query = $this->applyGenreFilter($query, $request->genre_ids);
+        
+        // Ensure genre_ids is array or null
+        $genreIds = $request->genre_ids;
+        if ($genreIds && !is_array($genreIds)) {
+            $genreIds = [$genreIds];
+        }
+        $query = $this->applyGenreFilter($query, $genreIds);
+        
         $query = $this->applyNumericRangeFilter(
             $query,
             $request->views_from,
