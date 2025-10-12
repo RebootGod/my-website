@@ -151,7 +151,7 @@ class GlobalSearchController extends Controller
         $series = Series::where('title', 'like', $searchTerm)
             ->orWhere('description', 'like', $searchTerm)
             ->limit(self::MAX_RESULTS_PER_CATEGORY)
-            ->get(['id', 'title', 'release_date', 'poster_url']);
+            ->get();
 
         return $series->map(function ($series) {
             $year = 'N/A';
