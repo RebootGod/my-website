@@ -158,6 +158,9 @@
         </main>
     </div>
 
+    {{-- Toast Notification System --}}
+    @include('admin.components.toast-container')
+
     {{-- Admin Scripts --}}
     @vite(['resources/js/admin/admin-core.js', 'resources/js/admin/admin-mobile.js', 'resources/js/admin/admin-bulk.js'])
 
