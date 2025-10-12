@@ -28,6 +28,7 @@
     <link rel="stylesheet" href="{{ asset('css/admin/breadcrumbs.css') }}?v={{ filemtime(public_path('css/admin/breadcrumbs.css')) }}">
     <link rel="stylesheet" href="{{ asset('css/admin/keyboard-shortcuts.css') }}?v={{ filemtime(public_path('css/admin/keyboard-shortcuts.css')) }}">
 
+    @yield('styles')
     @stack('styles')
 </head>
 <body class="admin-layout">
@@ -179,6 +180,7 @@
     {{-- Form Auto-save System (depends on Admin.showToast from admin-core.js) --}}
     <script src="{{ asset('js/admin/form-autosave.js') }}?v={{ filemtime(public_path('js/admin/form-autosave.js')) }}" defer></script>
 
+    @yield('scripts')
     @stack('scripts')
 </body>
 </html>

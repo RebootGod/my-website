@@ -248,6 +248,9 @@ document.addEventListener('DOMContentLoaded', function() {
     Admin.init();
 });
 
+// Expose showToast to global scope for compatibility
+window.showToast = Admin.showToast;
+
 // Export for module usage
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = Admin;
