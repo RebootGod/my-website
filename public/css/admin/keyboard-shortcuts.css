@@ -1,0 +1,450 @@
+/* ======================================== */
+/* KEYBOARD SHORTCUTS STYLES */
+/* ======================================== */
+/* File: resources/css/admin/keyboard-shortcuts.css */
+
+/* Modal Backdrop */
+.keyboard-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 9999;
+    display: none;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.keyboard-modal.active {
+    display: block;
+    opacity: 1;
+}
+
+.keyboard-modal-backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(4px);
+    cursor: pointer;
+}
+
+/* Modal Content */
+.keyboard-modal-content {
+    position: relative;
+    max-width: 600px;
+    margin: 10vh auto 0;
+    background-color: #1f2937;
+    border-radius: 12px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    animation: modalSlideIn 0.3s ease;
+}
+
+@keyframes modalSlideIn {
+    from {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.keyboard-modal-close {
+    background: none;
+    border: none;
+    color: #9ca3af;
+    font-size: 1.25rem;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 0.375rem;
+    transition: all 0.2s ease;
+}
+
+.keyboard-modal-close:hover {
+    color: #f3f4f6;
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Search Modal Specific */
+.keyboard-search-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.5rem;
+    border-bottom: 1px solid #374151;
+}
+
+.keyboard-search-header i {
+    color: #10b981;
+    font-size: 1.25rem;
+}
+
+.keyboard-search-header input {
+    flex: 1;
+    background: none;
+    border: none;
+    color: #f3f4f6;
+    font-size: 1.125rem;
+    outline: none;
+}
+
+.keyboard-search-header input::placeholder {
+    color: #6b7280;
+}
+
+.keyboard-search-results {
+    max-height: 400px;
+    overflow-y: auto;
+    padding: 0.5rem;
+}
+
+/* Custom scrollbar */
+.keyboard-search-results::-webkit-scrollbar {
+    width: 8px;
+}
+
+.keyboard-search-results::-webkit-scrollbar-track {
+    background: #1f2937;
+}
+
+.keyboard-search-results::-webkit-scrollbar-thumb {
+    background: #4b5563;
+    border-radius: 4px;
+}
+
+.keyboard-search-results::-webkit-scrollbar-thumb:hover {
+    background: #6b7280;
+}
+
+.keyboard-search-result {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    text-decoration: none;
+    color: #f3f4f6;
+    transition: all 0.2s ease;
+    margin-bottom: 0.25rem;
+}
+
+.keyboard-search-result:hover,
+.keyboard-search-result.selected {
+    background-color: rgba(16, 185, 129, 0.1);
+    transform: translateX(4px);
+}
+
+.keyboard-search-result-icon {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(16, 185, 129, 0.2);
+    border-radius: 0.5rem;
+    color: #10b981;
+}
+
+.keyboard-search-result-content {
+    flex: 1;
+}
+
+.keyboard-search-result-title {
+    font-weight: 600;
+    color: #f3f4f6;
+    margin-bottom: 0.125rem;
+}
+
+.keyboard-search-result-type {
+    font-size: 0.75rem;
+    color: #9ca3af;
+    text-transform: uppercase;
+}
+
+/* Search States */
+.keyboard-search-hint,
+.keyboard-search-empty,
+.keyboard-search-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 1rem;
+    text-align: center;
+    color: #9ca3af;
+}
+
+.keyboard-search-hint i,
+.keyboard-search-empty i,
+.keyboard-search-loading i {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+.keyboard-search-loading i {
+    color: #10b981;
+    opacity: 1;
+}
+
+/* Search Footer */
+.keyboard-search-footer {
+    padding: 1rem 1.5rem;
+    border-top: 1px solid #374151;
+    background-color: rgba(0, 0, 0, 0.2);
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px;
+}
+
+.keyboard-search-shortcuts {
+    display: flex;
+    gap: 1.5rem;
+    justify-content: center;
+    font-size: 0.875rem;
+    color: #9ca3af;
+}
+
+.keyboard-search-shortcuts kbd {
+    background-color: #374151;
+    color: #f3f4f6;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-family: monospace;
+    font-size: 0.75rem;
+    border: 1px solid #4b5563;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* Help Modal Specific */
+.keyboard-help-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.5rem;
+    border-bottom: 1px solid #374151;
+}
+
+.keyboard-help-header h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #f3f4f6;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.keyboard-help-header i {
+    color: #10b981;
+}
+
+.keyboard-help-body {
+    padding: 2rem;
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+.keyboard-shortcuts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+}
+
+.keyboard-shortcut-section h4 {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: #10b981;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 1rem;
+}
+
+.keyboard-shortcut-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem;
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 0.5rem;
+    margin-bottom: 0.5rem;
+    transition: background-color 0.2s ease;
+}
+
+.keyboard-shortcut-item:hover {
+    background-color: rgba(16, 185, 129, 0.1);
+}
+
+.keyboard-shortcut-keys {
+    display: flex;
+    gap: 0.375rem;
+    font-weight: 600;
+}
+
+.keyboard-shortcut-keys kbd {
+    background-color: #374151;
+    color: #f3f4f6;
+    padding: 0.375rem 0.625rem;
+    border-radius: 0.375rem;
+    font-family: monospace;
+    font-size: 0.875rem;
+    border: 1px solid #4b5563;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    min-width: 2rem;
+    text-align: center;
+}
+
+.keyboard-shortcut-desc {
+    color: #d1d5db;
+    font-size: 0.9375rem;
+}
+
+/* Responsive - Mobile */
+@media (max-width: 640px) {
+    .keyboard-modal-content {
+        max-width: calc(100% - 2rem);
+        margin: 2rem 1rem;
+    }
+
+    .keyboard-search-header {
+        padding: 1rem;
+    }
+
+    .keyboard-search-header input {
+        font-size: 1rem;
+    }
+
+    .keyboard-search-results {
+        max-height: 300px;
+    }
+
+    .keyboard-search-result {
+        padding: 0.625rem;
+    }
+
+    .keyboard-search-result-icon {
+        width: 32px;
+        height: 32px;
+    }
+
+    .keyboard-search-footer {
+        padding: 0.75rem 1rem;
+    }
+
+    .keyboard-search-shortcuts {
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        font-size: 0.8125rem;
+    }
+
+    .keyboard-shortcuts-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    .keyboard-help-body {
+        padding: 1.5rem;
+    }
+}
+
+/* Tablet */
+@media (max-width: 768px) {
+    .keyboard-modal-content {
+        margin: 5vh auto;
+    }
+}
+
+/* Dark theme adjustments (already dark by default) */
+@media (prefers-color-scheme: dark) {
+    .keyboard-modal-content {
+        background-color: #1f2937;
+        border: 1px solid #374151;
+    }
+}
+
+/* Light theme support */
+@media (prefers-color-scheme: light) {
+    .keyboard-modal-backdrop {
+        background-color: rgba(0, 0, 0, 0.5);
+    }
+
+    .keyboard-modal-content {
+        background-color: #ffffff;
+        border: 1px solid #e5e7eb;
+    }
+
+    .keyboard-search-header {
+        border-bottom-color: #e5e7eb;
+    }
+
+    .keyboard-search-header input {
+        color: #111827;
+    }
+
+    .keyboard-search-header input::placeholder {
+        color: #9ca3af;
+    }
+
+    .keyboard-search-result-title {
+        color: #111827;
+    }
+
+    .keyboard-help-header {
+        border-bottom-color: #e5e7eb;
+    }
+
+    .keyboard-help-header h3 {
+        color: #111827;
+    }
+
+    .keyboard-shortcut-item {
+        background-color: #f9fafb;
+    }
+
+    .keyboard-shortcut-keys kbd {
+        background-color: #e5e7eb;
+        color: #111827;
+        border-color: #d1d5db;
+    }
+
+    .keyboard-shortcut-desc {
+        color: #4b5563;
+    }
+
+    .keyboard-search-footer {
+        background-color: #f9fafb;
+        border-top-color: #e5e7eb;
+    }
+}
+
+/* Accessibility - Focus visible */
+.keyboard-search-result:focus-visible,
+.keyboard-modal-close:focus-visible {
+    outline: 2px solid #10b981;
+    outline-offset: 2px;
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    .keyboard-modal-content {
+        animation: none;
+    }
+
+    .keyboard-search-result {
+        transition: none;
+    }
+
+    .keyboard-modal {
+        transition: none;
+    }
+}
+
+/* Print styles */
+@media print {
+    .keyboard-modal {
+        display: none !important;
+    }
+}
