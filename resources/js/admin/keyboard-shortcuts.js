@@ -125,7 +125,7 @@ class KeyboardShortcuts {
         searchModal.id = 'keyboardSearchModal';
         searchModal.className = 'keyboard-modal keyboard-search-modal';
         searchModal.innerHTML = `
-            <div class="keyboard-modal-backdrop" onclick="KeyboardShortcuts.instance.closeSearchModal()"></div>
+            <div class="keyboard-modal-backdrop"></div>
             <div class="keyboard-modal-content">
                 <div class="keyboard-search-header">
                     <i class="fas fa-search"></i>
@@ -133,7 +133,7 @@ class KeyboardShortcuts {
                            id="keyboardSearchInput" 
                            placeholder="Search movies, series, users..."
                            autocomplete="off">
-                    <button class="keyboard-modal-close" onclick="KeyboardShortcuts.instance.closeSearchModal()">
+                    <button class="keyboard-modal-close">
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
@@ -159,11 +159,11 @@ class KeyboardShortcuts {
         helpModal.id = 'keyboardHelpModal';
         helpModal.className = 'keyboard-modal keyboard-help-modal';
         helpModal.innerHTML = `
-            <div class="keyboard-modal-backdrop" onclick="KeyboardShortcuts.instance.closeHelpModal()"></div>
+            <div class="keyboard-modal-backdrop"></div>
             <div class="keyboard-modal-content">
                 <div class="keyboard-help-header">
                     <h3><i class="fas fa-keyboard"></i> Keyboard Shortcuts</h3>
-                    <button class="keyboard-modal-close" onclick="KeyboardShortcuts.instance.closeHelpModal()">
+                    <button class="keyboard-modal-close">
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
@@ -173,6 +173,26 @@ class KeyboardShortcuts {
             </div>
         `;
         document.body.appendChild(helpModal);
+
+        // Attach event listeners for Search Modal
+        const searchBackdrop = searchModal.querySelector('.keyboard-modal-backdrop');
+        const searchCloseBtn = searchModal.querySelector('.keyboard-modal-close');
+        if (searchBackdrop) {
+            searchBackdrop.addEventListener('click', () => this.closeSearchModal());
+        }
+        if (searchCloseBtn) {
+            searchCloseBtn.addEventListener('click', () => this.closeSearchModal());
+        }
+
+        // Attach event listeners for Help Modal
+        const helpBackdrop = helpModal.querySelector('.keyboard-modal-backdrop');
+        const helpCloseBtn = helpModal.querySelector('.keyboard-modal-close');
+        if (helpBackdrop) {
+            helpBackdrop.addEventListener('click', () => this.closeHelpModal());
+        }
+        if (helpCloseBtn) {
+            helpCloseBtn.addEventListener('click', () => this.closeHelpModal());
+        }
 
         // Attach search input listener
         const searchInput = document.getElementById('keyboardSearchInput');
