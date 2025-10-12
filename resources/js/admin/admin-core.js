@@ -69,11 +69,13 @@ Admin.showToast = function(message, type = 'info', duration = 3000) {
         </div>
     `;
 
-    // Add to page
-    let container = document.querySelector('.admin-toast-container');
+    // Add to page - use existing toast-container
+    let container = document.querySelector('#toast-container');
     if (!container) {
+        // Fallback: create container with correct ID
         container = document.createElement('div');
-        container.className = 'admin-toast-container';
+        container.id = 'toast-container';
+        container.className = 'toast-container admin-toast-container';
         document.body.appendChild(container);
     }
 
