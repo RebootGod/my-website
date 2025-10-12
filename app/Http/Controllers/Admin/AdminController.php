@@ -30,25 +30,8 @@ class AdminController extends Controller
      */
     public function dashboard()
     {
-        // Use optimized stats service for dashboard
-        $stats = $this->statsService->getDashboardStats();
-        $contentGrowth = $this->statsService->getContentGrowthStats(30);
-        $userActivity = $this->statsService->getUserActivityStats();
-        $topContent = $this->statsService->getTopPerformingContent(5);
-        $recentActivity = $this->statsService->getRecentActivity(10);
-
-        // Add series count if not included in stats
-        if (!isset($stats['total_series'])) {
-            $stats['total_series'] = Series::count();
-        }
-
-        return view('admin.dashboard', compact(
-            'stats',
-            'contentGrowth',
-            'userActivity',
-            'topContent',
-            'recentActivity'
-        ));
+        // Use dashboard-v2 view
+        return view('admin.dashboard-v2');
     }
 
     /**

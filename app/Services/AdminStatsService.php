@@ -59,6 +59,17 @@ class AdminStatsService
         // Convert stdClass to array
         $stats = (array) $basicStats;
 
+        // Add monthly stats
+        $oneMonthAgo = now()->subMonth();
+        $stats['movies_this_month'] = Movie::where('created_at', '>=', $oneMonthAgo)->count();
+        $stats['series_this_month'] = Series::where('created_at', '>=', $oneMonthAgo)->count();
+        $stats['users_this_month'] = User::where('created_at', '>=', $oneMonthAgo)->count();
+
+        // Add storage stats
+        $storageStats = $this->getStorageStats();
+        $stats['storage_used'] = $storageStats['used'];
+        $stats['storage_total'] = $storageStats['total'];
+
         // Add calculated stats
         $stats['total_content'] = $stats['total_movies'] + $stats['total_series'];
         $stats['publish_rate'] = $stats['total_movies'] > 0
@@ -120,59 +131,21 @@ class AdminStatsService
             ORDER BY date
         ", [$startDate]);
 
-        $userData = DB::select("
-            SELECT
-                DATE(created_at) as date,
-                COUNT(*) as count
-            FROM users
-            WHERE created_at >= ?
-            GROUP BY DATE(created_at)
-            ORDER BY date
-        ", [$startDate]);
-
-        return [
-            'movies' => $this->formatDailyData($movieData, $days),
-            'series' => $this->formatDailyData($seriesData, $days),
-            'users' => $this->formatDailyData($userData, $days),
-            'labels' => $this->generateDateLabels($days)
-        ];
-    }
-
-    /**
-     * Format daily data for charts
-     *
-     * @param array $data
-     * @param int $days
-     * @return array
-     */
-    private function formatDailyData(array $data, int $days): array
-    {
-        $formatted = [];
-        $dataByDate = collect($data)->keyBy('date');
+        // Create comprehensive breakdown for each date
+        $breakdown = [];
+        $moviesByDate = collect($movieData)->keyBy('date');
+        $seriesByDate = collect($seriesData)->keyBy('date');
 
         for ($i = $days - 1; $i >= 0; $i--) {
             $date = now()->subDays($i)->format('Y-m-d');
-            $formatted[] = $dataByDate->get($date)?->count ?? 0;
+            $breakdown[] = [
+                'date' => $date,
+                'movies' => $moviesByDate->get($date)?->count ?? 0,
+                'series' => $seriesByDate->get($date)?->count ?? 0
+            ];
         }
 
-        return $formatted;
-    }
-
-    /**
-     * Generate date labels for charts
-     *
-     * @param int $days
-     * @return array
-     */
-    private function generateDateLabels(int $days): array
-    {
-        $labels = [];
-
-        for ($i = $days - 1; $i >= 0; $i--) {
-            $labels[] = now()->subDays($i)->format('M j');
-        }
-
-        return $labels;
+        return $breakdown;
     }
 
     /**
@@ -376,7 +349,8 @@ class AdminStatsService
             'admin:content_growth_7',
             'admin:user_activity',
             'admin:top_content_10',
-            'admin:recent_activity'
+            'admin:recent_activity',
+            'admin:storage_stats'
         ];
 
         foreach ($cacheKeys as $key) {
@@ -384,6 +358,73 @@ class AdminStatsService
         }
     }
 
+    /**
+     * Get storage statistics
+     *
+     * @return array
+     */
+    public function getStorageStats(): array
+    {
+        return Cache::remember('admin:storage_stats', 3600, function () {
+            try {
+                $storagePath = storage_path('app/public');
+                
+                // Calculate used space
+                $used = 0;
+                if (is_dir($storagePath)) {
+                    $used = $this->getDirectorySize($storagePath);
+                }
+
+                // Get total disk space
+                $total = disk_total_space($storagePath);
+                $free = disk_free_space($storagePath);
+
+                return [
+                    'used' => $used,
+                    'free' => $free ?: 0,
+                    'total' => $total ?: 0,
+                    'percentage' => $total > 0 ? round(($used / $total) * 100, 2) : 0
+                ];
+            } catch (\Exception $e) {
+                \Log::error('Failed to calculate storage stats: ' . $e->getMessage());
+                
+                return [
+                    'used' => 0,
+                    'free' => 0,
+                    'total' => 0,
+                    'percentage' => 0
+                ];
+            }
+        });
+    }
+
+    /**
+     * Calculate directory size recursively
+     *
+     * @param string $directory
+     * @return int Bytes
+     */
+    private function getDirectorySize(string $directory): int
+    {
+        $size = 0;
+        
+        try {
+            $files = new \RecursiveIteratorIterator(
+                new \RecursiveDirectoryIterator($directory, \RecursiveDirectoryIterator::SKIP_DOTS),
+                \RecursiveIteratorIterator::SELF_FIRST
+            );
+
+            foreach ($files as $file) {
+                if ($file->isFile()) {
+                    $size += $file->getSize();
+                }
+            }
+        } catch (\Exception $e) {
+            \Log::warning('Error calculating directory size: ' . $e->getMessage());
+        }
+
+        return $size;
+    }
     /**
      * Force refresh statistics
      *
