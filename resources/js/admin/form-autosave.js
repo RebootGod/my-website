@@ -134,23 +134,8 @@ class FormAutoSave {
 
             localStorage.setItem(this.options.storageKey, JSON.stringify(saveData));
 
-            // Show notification - DIRECT inline implementation
-            const existingNotif = document.getElementById('autosave-notif');
-            if (existingNotif) existingNotif.remove();
-
-            const notif = document.createElement('div');
-            notif.id = 'autosave-notif';
-            notif.innerHTML = '✓ Draft saved';
-            notif.style.cssText = 'position:fixed;bottom:24px;right:24px;background:#10b981;color:#fff;padding:14px 24px;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.2);font-size:14px;font-weight:600;z-index:99999;opacity:0;transition:opacity 0.3s';
-            document.body.appendChild(notif);
-            
-            setTimeout(() => notif.style.opacity = '1', 50);
-            setTimeout(() => {
-                notif.style.opacity = '0';
-                setTimeout(() => notif.remove(), 300);
-            }, 2500);
-
-            console.log('✓ Draft saved notification shown');
+            // No notification - silent auto-save only
+            // Data saved successfully, no visual feedback needed
 
             // Call custom callback
             if (this.options.onSave) {
