@@ -134,8 +134,23 @@ class FormAutoSave {
 
             localStorage.setItem(this.options.storageKey, JSON.stringify(saveData));
 
-            // Show simple inline notification (no toast)
-            this.showInlineNotification();
+            // Show notification - DIRECT inline implementation
+            const existingNotif = document.getElementById('autosave-notif');
+            if (existingNotif) existingNotif.remove();
+
+            const notif = document.createElement('div');
+            notif.id = 'autosave-notif';
+            notif.innerHTML = '✓ Draft saved';
+            notif.style.cssText = 'position:fixed;bottom:24px;right:24px;background:#10b981;color:#fff;padding:14px 24px;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.2);font-size:14px;font-weight:600;z-index:99999;opacity:0;transition:opacity 0.3s';
+            document.body.appendChild(notif);
+            
+            setTimeout(() => notif.style.opacity = '1', 50);
+            setTimeout(() => {
+                notif.style.opacity = '0';
+                setTimeout(() => notif.remove(), 300);
+            }, 2500);
+
+            console.log('✓ Draft saved notification shown');
 
             // Call custom callback
             if (this.options.onSave) {
@@ -144,54 +159,6 @@ class FormAutoSave {
         } catch (error) {
             console.error('FormAutoSave: Error saving data', error);
         }
-    }
-
-    /**
-     * Show simple inline notification (no toast needed)
-     */
-    showInlineNotification() {
-        // Remove existing notification if any
-        const existing = document.getElementById('autosave-notification');
-        if (existing) existing.remove();
-
-        // Create notification element
-        const notification = document.createElement('div');
-        notification.id = 'autosave-notification';
-        notification.innerHTML = '<i class="fas fa-check-circle"></i> Draft saved';
-        notification.style.cssText = `
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: #10b981;
-            color: white;
-            padding: 12px 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            font-size: 14px;
-            font-weight: 500;
-            z-index: 9999;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            opacity: 0;
-            transform: translateY(10px);
-            transition: all 0.3s ease;
-        `;
-
-        document.body.appendChild(notification);
-
-        // Fade in
-        setTimeout(() => {
-            notification.style.opacity = '1';
-            notification.style.transform = 'translateY(0)';
-        }, 10);
-
-        // Fade out and remove after 2 seconds
-        setTimeout(() => {
-            notification.style.opacity = '0';
-            notification.style.transform = 'translateY(10px)';
-            setTimeout(() => notification.remove(), 300);
-        }, 2000);
     }
 
     /**
