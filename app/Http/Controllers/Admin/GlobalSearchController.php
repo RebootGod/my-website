@@ -42,45 +42,65 @@ class GlobalSearchController extends Controller
      */
     public function search(Request $request)
     {
-        $query = $request->input('q', '');
-        
-        // Validate query length
-        if (strlen($query) < self::MIN_QUERY_LENGTH) {
+        try {
+            $query = $request->input('q', '');
+            
+            // Validate query length
+            if (strlen($query) < self::MIN_QUERY_LENGTH) {
+                return response()->json([
+                    'results' => [],
+                    'message' => 'Query too short'
+                ]);
+            }
+
+            // Sanitize query (prevent SQL injection)
+            $query = trim($query);
+            $searchTerm = '%' . str_replace(['%', '_'], ['\%', '\_'], $query) . '%';
+
+            $results = [];
+
+            // Search Movies
+            try {
+                $movies = $this->searchMovies($searchTerm);
+                $results = array_merge($results, $movies);
+            } catch (\Exception $e) {
+                \Log::error('Movie search error: ' . $e->getMessage());
+            }
+
+            // Search Series
+            try {
+                $series = $this->searchSeries($searchTerm);
+                $results = array_merge($results, $series);
+            } catch (\Exception $e) {
+                \Log::error('Series search error: ' . $e->getMessage());
+            }
+
+            // Search Users (super admin only for privacy)
+            if (auth()->check() && auth()->user()->isSuperAdmin()) {
+                try {
+                    $users = $this->searchUsers($searchTerm);
+                    $results = array_merge($results, $users);
+                } catch (\Exception $e) {
+                    \Log::error('User search error: ' . $e->getMessage());
+                }
+            }
+
+            // Note: Episodes search disabled (model doesn't exist yet)
+            // TODO: Create Episode model and re-enable
+
+            return response()->json([
+                'results' => $results,
+                'total' => count($results),
+                'query' => $query
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Global search error: ' . $e->getMessage());
             return response()->json([
                 'results' => [],
-                'message' => 'Query too short'
-            ]);
+                'error' => 'Search failed',
+                'message' => config('app.debug') ? $e->getMessage() : 'An error occurred'
+            ], 500);
         }
-
-        // Sanitize query (prevent SQL injection)
-        $query = trim($query);
-        $searchTerm = '%' . str_replace(['%', '_'], ['\%', '\_'], $query) . '%';
-
-        $results = [];
-
-        // Search Movies
-        $movies = $this->searchMovies($searchTerm);
-        $results = array_merge($results, $movies);
-
-        // Search Series
-        $series = $this->searchSeries($searchTerm);
-        $results = array_merge($results, $series);
-
-        // Search Users (super admin only for privacy)
-        if (auth()->user()->isSuperAdmin()) {
-            $users = $this->searchUsers($searchTerm);
-            $results = array_merge($results, $users);
-        }
-
-        // Search Episodes
-        $episodes = $this->searchEpisodes($searchTerm);
-        $results = array_merge($results, $episodes);
-
-        return response()->json([
-            'results' => $results,
-            'total' => count($results),
-            'query' => $query
-        ]);
     }
 
     /**
@@ -97,10 +117,19 @@ class GlobalSearchController extends Controller
             ->get(['id', 'title', 'release_date', 'poster_url']);
 
         return $movies->map(function ($movie) {
+            $year = 'N/A';
+            if ($movie->release_date) {
+                try {
+                    $year = $movie->release_date->format('Y');
+                } catch (\Exception $e) {
+                    $year = 'N/A';
+                }
+            }
+
             return [
                 'type' => 'movie',
                 'title' => $movie->title,
-                'subtitle' => 'Movie • ' . ($movie->release_date ? $movie->release_date->format('Y') : 'N/A'),
+                'subtitle' => 'Movie • ' . $year,
                 'url' => route('admin.movies.edit', $movie->id),
                 'icon' => 'fas fa-film',
                 'meta' => [
@@ -125,10 +154,19 @@ class GlobalSearchController extends Controller
             ->get(['id', 'title', 'release_date', 'poster_url']);
 
         return $series->map(function ($series) {
+            $year = 'N/A';
+            if ($series->release_date) {
+                try {
+                    $year = $series->release_date->format('Y');
+                } catch (\Exception $e) {
+                    $year = 'N/A';
+                }
+            }
+
             return [
                 'type' => 'series',
                 'title' => $series->title,
-                'subtitle' => 'Series • ' . ($series->release_date ? $series->release_date->format('Y') : 'N/A'),
+                'subtitle' => 'Series • ' . $year,
                 'url' => route('admin.series.edit', $series->id),
                 'icon' => 'fas fa-tv',
                 'meta' => [
