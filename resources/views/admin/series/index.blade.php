@@ -121,16 +121,14 @@
                                         {{ $item->status === 'published' ? 'Unpublish' : 'Publish' }}
                                     </button>
                                 </form>
+                                <form action="{{ route('admin.series.destroy', $item->id) }}" method="POST" class="inline" onsubmit="return confirm('Are you sure you want to delete this series?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="text-red-400 hover:text-red-300">Delete</button>
+                                </form>
                             @else
                                 <span class="text-gray-500 text-sm">Invalid series</span>
                             @endif
-                                </button>
-                            </form>
-                            <form action="{{ route('admin.series.destroy', $item) }}" method="POST" class="inline" onsubmit="return confirm('Are you sure you want to delete this series?');">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="text-red-400 hover:text-red-300">Delete</button>
-                            </form>
                         </div>
                     </td>
                 </tr>
