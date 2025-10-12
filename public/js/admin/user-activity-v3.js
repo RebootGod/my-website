@@ -41,11 +41,21 @@
 
         const ctx = canvas.getContext('2d');
         const data = window.activityData || {};
-        const dailyTrend = data.dailyTrend || [];
+        const dailyTrend = data.dailyTrend || {};
         
-        // Prepare chart data
-        const labels = Object.keys(dailyTrend).sort();
-        const values = labels.map(date => dailyTrend[date] || 0);
+        // Prepare chart data - handle new structure with labels and data arrays
+        let labels = [];
+        let values = [];
+        
+        if (dailyTrend.labels && dailyTrend.data) {
+            // New structure: { labels: [...], data: [...] }
+            labels = dailyTrend.labels || [];
+            values = dailyTrend.data || [];
+        } else {
+            // Fallback for old structure: { 'date': count, ... }
+            labels = Object.keys(dailyTrend).sort();
+            values = labels.map(date => dailyTrend[date] || 0);
+        }
 
         // Get theme
         const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
@@ -60,7 +70,7 @@
         activityChart = new Chart(ctx, {
             type: 'line',
             data: {
-                labels: labels.map(date => formatDate(date)),
+                labels: labels,
                 datasets: [{
                     label: 'Activities',
                     data: values,

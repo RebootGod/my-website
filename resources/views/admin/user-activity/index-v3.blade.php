@@ -91,7 +91,10 @@
                 <div class="stat-value">
                     @php
                         $dailyTrend = $stats['daily_trend'] ?? [];
-                        $peakDay = !empty($dailyTrend) ? max($dailyTrend) : 0;
+                        $peakDay = 0;
+                        if (!empty($dailyTrend) && isset($dailyTrend['data']) && is_array($dailyTrend['data'])) {
+                            $peakDay = !empty($dailyTrend['data']) ? max($dailyTrend['data']) : 0;
+                        }
                     @endphp
                     {{ number_format($peakDay) }}
                 </div>
