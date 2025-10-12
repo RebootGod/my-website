@@ -302,7 +302,7 @@ class BulkOperationController extends Controller
 
     /**
      * Refresh ALL items from TMDB (Movies or Series)
-     * WARNING: This can be resource-intensive for large datasets
+     * Uses queue job to prevent timeouts with large datasets
      */
     public function refreshAllTMDB(Request $request)
     {
@@ -348,7 +348,7 @@ class BulkOperationController extends Controller
                 ], 404);
             }
 
-            Log::info("Refresh ALL TMDB initiated", [
+            Log::info("🚀 Refresh ALL TMDB initiated (Queue Job)", [
                 'type' => $request->type,
                 'total_items' => count($ids),
                 'status_filter' => $request->status ?? 'all',
@@ -359,47 +359,40 @@ class BulkOperationController extends Controller
             // Create progress tracking key
             $progressKey = $this->bulkService->createProgressKey('tmdb_refresh_all', $request->type);
             
-            // Initialize progress
+            // Initialize progress - queued status
             $this->bulkService->updateProgress($progressKey, [
                 'total' => count($ids),
                 'processed' => 0,
                 'success' => 0,
                 'failed' => 0,
-                'status' => 'processing'
+                'status' => 'queued',
+                'queued_at' => now()->toISOString()
             ]);
 
-            // Execute bulk refresh
-            $results = $this->bulkService->bulkRefreshFromTMDB(
+            // Dispatch job to queue (immediate response to user)
+            \App\Jobs\RefreshAllTmdbJob::dispatch(
                 $request->type,
-                $ids
+                $ids,
+                $progressKey,
+                $request->status,
+                $request->limit
             );
 
-            // Update final progress
-            $this->bulkService->updateProgress($progressKey, [
-                'total' => count($ids),
-                'processed' => count($ids),
-                'success' => $results['success'],
-                'failed' => $results['failed'],
-                'status' => 'completed',
-                'errors' => $results['errors']
-            ]);
-
-            Log::info("Refresh ALL TMDB completed", [
+            Log::info("✅ Job dispatched to queue", [
                 'type' => $request->type,
-                'success' => $results['success'],
-                'failed' => $results['failed'],
-                'total' => count($ids)
+                'progress_key' => $progressKey,
+                'total_items' => count($ids)
             ]);
 
             return response()->json([
                 'success' => true,
-                'results' => $results,
                 'progressKey' => $progressKey,
-                'message' => "Refreshed {$results['success']} out of " . count($ids) . " {$request->type}(s) from TMDB"
+                'totalItems' => count($ids),
+                'message' => "Refresh job queued for {$request->type}(s). Processing " . count($ids) . " items in background."
             ]);
 
         } catch (\Exception $e) {
-            Log::error('Refresh ALL TMDB failed', [
+            Log::error('❌ Refresh ALL TMDB failed to queue', [
                 'type' => $request->type ?? 'unknown',
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
@@ -407,7 +400,7 @@ class BulkOperationController extends Controller
 
             return response()->json([
                 'success' => false,
-                'message' => 'Refresh ALL failed: ' . $e->getMessage()
+                'message' => 'Failed to queue refresh job: ' . $e->getMessage()
             ], 500);
         }
     }
