@@ -128,8 +128,10 @@ class FormAutoSave {
             localStorage.setItem(this.options.storageKey, JSON.stringify(saveData));
 
             // Show notification if enabled
-            if (this.options.showNotifications && window.showToast) {
-                window.showToast('Draft saved', 'info', 2000);
+            if (this.options.showNotifications) {
+                if (typeof Admin !== 'undefined' && Admin.showToast) {
+                    Admin.showToast('Draft saved', 'info', 2000);
+                }
             }
 
             // Call custom callback
@@ -212,8 +214,10 @@ class FormAutoSave {
             }
 
             // Show notification
-            if (this.options.showNotifications && window.showToast) {
-                window.showToast('Draft restored successfully', 'success', 3000);
+            if (this.options.showNotifications) {
+                if (typeof Admin !== 'undefined' && Admin.showToast) {
+                    Admin.showToast('Draft restored successfully', 'success', 3000);
+                }
             }
 
             // Call custom callback
@@ -227,8 +231,8 @@ class FormAutoSave {
             console.log('Form data restored successfully');
         } catch (error) {
             console.error('FormAutoSave: Error restoring data', error);
-            if (window.showToast) {
-                window.showToast('Error restoring draft', 'error', 3000);
+            if (typeof Admin !== 'undefined' && Admin.showToast) {
+                Admin.showToast('Error restoring draft', 'error', 3000);
             }
         }
     }
