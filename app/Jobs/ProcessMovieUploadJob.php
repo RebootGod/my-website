@@ -55,7 +55,8 @@ class ProcessMovieUploadJob implements ShouldQueue
         $this->telegramUserId = $telegramUserId;
         $this->telegramUsername = $telegramUsername;
         
-        $this->onQueue('bot-uploads');
+        // Use default queue connection instead of hardcoded Redis
+        // $this->onQueue('bot-uploads');
     }
 
     /**

@@ -62,7 +62,8 @@ class DownloadTmdbImageJob implements ShouldQueue
         $this->seasonNumber = $seasonNumber;
         $this->episodeNumber = $episodeNumber;
         
-        $this->onQueue('image-downloads');
+        // Use default queue connection (database) instead of hardcoded Redis
+        // $this->onQueue('image-downloads');
     }
 
     /**
