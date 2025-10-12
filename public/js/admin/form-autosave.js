@@ -81,7 +81,12 @@ class FormAutoSave {
      */
     markAsDirty() {
         const currentData = this.getFormData();
+        const wasDirty = this.isDirty;
         this.isDirty = JSON.stringify(currentData) !== JSON.stringify(this.originalData);
+        
+        if (!wasDirty && this.isDirty) {
+            console.log('Form marked as DIRTY (has unsaved changes)');
+        }
     }
 
     /**
@@ -115,7 +120,12 @@ class FormAutoSave {
      * Save form data to localStorage
      */
     saveFormData() {
-        if (!this.isDirty) return;
+        console.log('saveFormData called, isDirty:', this.isDirty);
+        
+        if (!this.isDirty) {
+            console.log('Form not dirty, skipping save');
+            return;
+        }
 
         try {
             const data = this.getFormData();
