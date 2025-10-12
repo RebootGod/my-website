@@ -438,20 +438,58 @@ class KeyboardShortcuts {
         // Get current search query
         const currentQuery = document.getElementById('keyboardSearchInput')?.value.trim();
         
-        const html = results.map((result, index) => `
-            <a href="${this.escapeHtml(result.url)}" 
-               class="keyboard-search-result" 
-               data-index="${index}"
-               onclick="keyboardShortcuts.saveSearchToHistory('${this.escapeHtml(currentQuery)}', '${this.escapeHtml(result.url)}')">
-                <div class="keyboard-search-result-icon">
-                    <i class="${this.escapeHtml(result.icon)}"></i>
-                </div>
-                <div class="keyboard-search-result-content">
-                    <div class="keyboard-search-result-title">${this.escapeHtml(result.title)}</div>
-                    <div class="keyboard-search-result-type">${this.escapeHtml(result.type)}</div>
-                </div>
-            </a>
-        `).join('');
+        // Group results by type
+        const grouped = results.reduce((acc, result) => {
+            if (!acc[result.type]) {
+                acc[result.type] = [];
+            }
+            acc[result.type].push(result);
+            return acc;
+        }, {});
+
+        // Type labels and order
+        const typeConfig = {
+            'movie': { label: 'Movies', icon: 'fas fa-film' },
+            'series': { label: 'Series', icon: 'fas fa-tv' },
+            'episode': { label: 'Episodes', icon: 'fas fa-play-circle' },
+            'user': { label: 'Users', icon: 'fas fa-user' },
+            'navigation': { label: 'Navigation', icon: 'fas fa-bars' }
+        };
+
+        let html = '';
+        let globalIndex = 0;
+
+        // Render each category
+        Object.entries(grouped).forEach(([type, items]) => {
+            const config = typeConfig[type] || { label: type, icon: 'fas fa-circle' };
+            
+            html += `
+                <div class="keyboard-search-section">
+                    <div class="keyboard-search-section-title">
+                        <i class="${config.icon}"></i> ${config.label}
+                    </div>
+            `;
+
+            items.forEach(result => {
+                html += `
+                    <a href="${this.escapeHtml(result.url)}" 
+                       class="keyboard-search-result" 
+                       data-index="${globalIndex}"
+                       onclick="keyboardShortcuts.saveSearchToHistory('${this.escapeHtml(currentQuery)}', '${this.escapeHtml(result.url)}')">
+                        <div class="keyboard-search-result-icon">
+                            <i class="${this.escapeHtml(result.icon)}"></i>
+                        </div>
+                        <div class="keyboard-search-result-content">
+                            <div class="keyboard-search-result-title">${this.escapeHtml(result.title)}</div>
+                            <div class="keyboard-search-result-type">${this.escapeHtml(result.subtitle || result.type)}</div>
+                        </div>
+                    </a>
+                `;
+                globalIndex++;
+            });
+
+            html += `</div>`;
+        });
         
         resultsContainer.innerHTML = html;
     }

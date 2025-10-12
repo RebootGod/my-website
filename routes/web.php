@@ -230,6 +230,9 @@ Route::middleware(['auth', 'admin', CheckPermission::class . ':access_admin_pane
     Route::get('/analytics/export', [AnalyticsController::class, 'export'])->name('analytics.export');
     Route::get('/analytics/realtime', [AnalyticsController::class, 'realtime'])->name('analytics.realtime');
     
+    // Global Search (Ctrl+K)
+    Route::get('/search', [\App\Http\Controllers\Admin\GlobalSearchController::class, 'search'])->name('search');
+    Route::get('/search/suggestions', [\App\Http\Controllers\Admin\GlobalSearchController::class, 'suggestions'])->name('search.suggestions');
 
     // TMDB Integration - New Version (Movies)
     Route::prefix('tmdb-new')->name('tmdb-new.')->group(function () {
