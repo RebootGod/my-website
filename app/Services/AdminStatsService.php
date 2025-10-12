@@ -251,22 +251,44 @@ class AdminStatsService
         $cacheKey = "admin:top_content_{$limit}";
 
         return Cache::remember($cacheKey, self::CACHE_DURATION, function () use ($limit) {
-            $topMovies = Movie::select(['id', 'title', 'view_count', 'created_at'])
+            // Get top movies
+            $topMovies = Movie::select(['id', 'title', 'view_count', 'rating', 'created_at'])
                 ->where('status', 'published')
                 ->orderBy('view_count', 'desc')
                 ->limit($limit)
-                ->get();
+                ->get()
+                ->map(function ($movie) {
+                    return [
+                        'type' => 'Movie',
+                        'title' => $movie->title,
+                        'views' => $movie->view_count ?? 0,
+                        'rating' => $movie->rating ?? 0,
+                        'id' => $movie->id
+                    ];
+                });
 
-            $topSeries = Series::select(['id', 'title', 'view_count', 'created_at'])
+            // Get top series
+            $topSeries = Series::select(['id', 'title', 'view_count', 'rating', 'created_at'])
                 ->where('status', 'published')
                 ->orderBy('view_count', 'desc')
                 ->limit($limit)
-                ->get();
+                ->get()
+                ->map(function ($series) {
+                    return [
+                        'type' => 'Series',
+                        'title' => $series->title,
+                        'views' => $series->view_count ?? 0,
+                        'rating' => $series->rating ?? 0,
+                        'id' => $series->id
+                    ];
+                });
 
-            return [
-                'movies' => $topMovies,
-                'series' => $topSeries
-            ];
+            // Combine and sort by views
+            return $topMovies->concat($topSeries)
+                ->sortByDesc('views')
+                ->take($limit)
+                ->values()
+                ->toArray();
         });
     }
 
