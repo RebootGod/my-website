@@ -77,6 +77,13 @@ class BulkOperationController extends Controller
      */
     public function refreshTMDB(Request $request)
     {
+        // Debug logging
+        Log::info('Bulk Refresh TMDB Request', [
+            'request_all' => $request->all(),
+            'raw_input' => $request->getContent(),
+            'headers' => $request->headers->all()
+        ]);
+
         $validator = Validator::make($request->all(), [
             'type' => 'required|in:movie,series',
             'ids' => 'required|array|min:1',
@@ -84,6 +91,11 @@ class BulkOperationController extends Controller
         ]);
 
         if ($validator->fails()) {
+            Log::error('Bulk Refresh TMDB Validation Failed', [
+                'errors' => $validator->errors()->toArray(),
+                'input' => $request->all()
+            ]);
+            
             return response()->json([
                 'success' => false,
                 'errors' => $validator->errors()
