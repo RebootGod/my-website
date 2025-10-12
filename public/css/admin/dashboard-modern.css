@@ -1,0 +1,380 @@
+/* Dashboard Modern Styles - Max 350 lines per workinginstruction.md */
+/* Dark & Light Theme Support */
+
+/* ==================== Theme Variables ==================== */
+:root {
+    /* Dark Theme (Default) */
+    --dashboard-bg: #0f172a;
+    --dashboard-card-bg: #1e293b;
+    --dashboard-card-hover: #334155;
+    --dashboard-text-primary: #f8fafc;
+    --dashboard-text-secondary: #cbd5e1;
+    --dashboard-border: #334155;
+    --dashboard-shadow: rgba(0, 0, 0, 0.3);
+    
+    /* Accent Colors */
+    --color-primary: #3b82f6;
+    --color-success: #10b981;
+    --color-warning: #f59e0b;
+    --color-error: #ef4444;
+    --color-info: #06b6d4;
+    
+    /* Transitions */
+    --transition-speed: 0.3s;
+}
+
+/* Light Theme Variables */
+.theme-light {
+    --dashboard-bg: #f1f5f9;
+    --dashboard-card-bg: #ffffff;
+    --dashboard-card-hover: #f8fafc;
+    --dashboard-text-primary: #0f172a;
+    --dashboard-text-secondary: #64748b;
+    --dashboard-border: #e2e8f0;
+    --dashboard-shadow: rgba(0, 0, 0, 0.1);
+}
+
+/* Theme Transition */
+.theme-transitioning,
+.theme-transitioning * {
+    transition: background-color var(--transition-speed) ease,
+                color var(--transition-speed) ease,
+                border-color var(--transition-speed) ease !important;
+}
+
+/* ==================== Dashboard Grid ==================== */
+.dashboard-grid {
+    display: grid;
+    gap: 1.5rem;
+    padding: 1.5rem;
+    background: var(--dashboard-bg);
+    color: var(--dashboard-text-primary);
+    min-height: 100vh;
+}
+
+/* ==================== Widget Container ==================== */
+.dashboard-widget {
+    background: var(--dashboard-card-bg);
+    border: 1px solid var(--dashboard-border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px var(--dashboard-shadow);
+    transition: transform var(--transition-speed) ease,
+                box-shadow var(--transition-speed) ease,
+                border-color var(--transition-speed) ease;
+    cursor: move;
+    position: relative;
+}
+
+.dashboard-widget:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 12px var(--dashboard-shadow);
+    border-color: var(--color-primary);
+}
+
+/* Drag States */
+.dashboard-widget.dragging {
+    opacity: 0.5;
+    transform: scale(0.95);
+}
+
+.dashboard-widget.drag-over {
+    border-color: var(--color-primary);
+    border-width: 2px;
+    background: var(--dashboard-card-hover);
+}
+
+/* Hidden Widget */
+.dashboard-widget.widget-hidden {
+    display: none;
+}
+
+/* ==================== Widget Header ==================== */
+.widget-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--dashboard-border);
+}
+
+.widget-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--dashboard-text-primary);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.widget-title i {
+    color: var(--color-primary);
+}
+
+.widget-controls {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.widget-control-btn {
+    padding: 0.5rem;
+    background: transparent;
+    border: none;
+    color: var(--dashboard-text-secondary);
+    cursor: pointer;
+    border-radius: 6px;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.widget-control-btn:hover {
+    background: var(--dashboard-card-hover);
+    color: var(--dashboard-text-primary);
+}
+
+/* ==================== Stat Cards ==================== */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+}
+
+.stat-card {
+    background: linear-gradient(135deg, var(--dashboard-card-bg) 0%, var(--dashboard-card-hover) 100%);
+    padding: 1.5rem;
+    border-radius: 12px;
+    border: 1px solid var(--dashboard-border);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px var(--dashboard-shadow);
+}
+
+.stat-card-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.stat-card-icon.primary { background: rgba(59, 130, 246, 0.2); color: var(--color-primary); }
+.stat-card-icon.success { background: rgba(16, 185, 129, 0.2); color: var(--color-success); }
+.stat-card-icon.warning { background: rgba(245, 158, 11, 0.2); color: var(--color-warning); }
+.stat-card-icon.error { background: rgba(239, 68, 68, 0.2); color: var(--color-error); }
+.stat-card-icon.info { background: rgba(6, 182, 212, 0.2); color: var(--color-info); }
+
+.stat-card-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--dashboard-text-primary);
+    margin-bottom: 0.25rem;
+}
+
+.stat-card-label {
+    font-size: 0.875rem;
+    color: var(--dashboard-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* ==================== Charts ==================== */
+.chart-widget {
+    min-height: 300px;
+}
+
+.chart-canvas {
+    position: relative;
+    height: 250px;
+}
+
+/* ==================== Theme Toggle Button ==================== */
+.theme-toggle-btn {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    padding: 1rem 1.5rem;
+    background: var(--dashboard-card-bg);
+    border: 1px solid var(--dashboard-border);
+    border-radius: 50px;
+    color: var(--dashboard-text-primary);
+    cursor: pointer;
+    box-shadow: 0 4px 12px var(--dashboard-shadow);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    z-index: 1000;
+}
+
+.theme-toggle-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px var(--dashboard-shadow);
+    background: var(--dashboard-card-hover);
+}
+
+.theme-toggle-btn i {
+    font-size: 1.25rem;
+}
+
+/* ==================== View Density ==================== */
+/* Compact Mode */
+.density-compact .dashboard-grid {
+    gap: 0.75rem;
+    padding: 0.75rem;
+}
+
+.density-compact .dashboard-widget {
+    padding: 1rem;
+}
+
+.density-compact .widget-header {
+    margin-bottom: 0.5rem;
+}
+
+.density-compact .stat-card {
+    padding: 1rem;
+}
+
+.density-compact .stat-card-value {
+    font-size: 1.5rem;
+}
+
+/* Comfortable Mode */
+.density-comfortable .dashboard-grid {
+    gap: 2rem;
+    padding: 2rem;
+}
+
+.density-comfortable .dashboard-widget {
+    padding: 2rem;
+}
+
+.density-comfortable .widget-header {
+    margin-bottom: 1.5rem;
+}
+
+.density-comfortable .stat-card {
+    padding: 2rem;
+}
+
+/* ==================== Responsive Design ==================== */
+@media (max-width: 1024px) {
+    .stats-grid {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .dashboard-grid {
+        gap: 1rem;
+        padding: 1rem;
+    }
+    
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .dashboard-widget {
+        padding: 1rem;
+    }
+    
+    .widget-title {
+        font-size: 1rem;
+    }
+    
+    .stat-card-value {
+        font-size: 1.5rem;
+    }
+    
+    .theme-toggle-btn {
+        bottom: 1rem;
+        right: 1rem;
+        padding: 0.75rem 1rem;
+    }
+    
+    .theme-toggle-text {
+        display: none;
+    }
+}
+
+@media (max-width: 480px) {
+    .widget-controls {
+        flex-direction: column;
+    }
+    
+    .theme-toggle-btn {
+        padding: 0.75rem;
+    }
+}
+
+/* ==================== Animations ==================== */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideOut {
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+}
+
+.dashboard-widget {
+    animation: fadeIn 0.3s ease;
+}
+
+/* ==================== Accessibility ==================== */
+.dashboard-widget:focus {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+}
+
+.widget-control-btn:focus {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+    .dashboard-widget {
+        border-width: 2px;
+    }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
