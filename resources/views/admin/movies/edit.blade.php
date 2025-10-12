@@ -332,22 +332,13 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('=== FORM AUTO-SAVE INITIALIZATION ===');
-    console.log('Admin object exists:', typeof Admin !== 'undefined');
-    console.log('Admin.showToast exists:', typeof Admin !== 'undefined' && typeof Admin.showToast === 'function');
-    console.log('FormAutoSave exists:', typeof FormAutoSave !== 'undefined');
-    
     // Initialize Form Auto-save for movie edit form
-    const movieFormAutoSave = new FormAutoSave('form[action*="movies"]', {
-        saveInterval: 10000, // 10 seconds for testing
+    new FormAutoSave('form[action*="movies"]', {
+        saveInterval: 30000, // 30 seconds
         storageKey: 'autosave_movie_{{ $movie->id }}',
-        showNotifications: true,
-        onSave: (data) => {
-            console.log('✓ onSave callback triggered');
-        }
+        showNotifications: true
     });
-    
-    console.log('FormAutoSave instance created:', movieFormAutoSave);
+});
     console.log('=== END INITIALIZATION ===');
 });
 </script>

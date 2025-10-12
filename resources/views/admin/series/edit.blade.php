@@ -273,23 +273,12 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('=== SERIES FORM AUTO-SAVE INITIALIZATION ===');
-    console.log('Admin object exists:', typeof Admin !== 'undefined');
-    console.log('Admin.showToast exists:', typeof Admin !== 'undefined' && typeof Admin.showToast === 'function');
-    console.log('FormAutoSave exists:', typeof FormAutoSave !== 'undefined');
-    
     // Initialize Form Auto-save for series edit form
-    const seriesFormAutoSave = new FormAutoSave('form[action*="series"]', {
-        saveInterval: 10000, // 10 seconds for testing
+    new FormAutoSave('form[action*="series"]', {
+        saveInterval: 30000, // 30 seconds
         storageKey: 'autosave_series_{{ $series->id }}',
-        showNotifications: true,
-        onSave: (data) => {
-            console.log('✓ Series onSave callback triggered');
-        }
+        showNotifications: true
     });
-    
-    console.log('Series FormAutoSave instance created:', seriesFormAutoSave);
-    console.log('=== END SERIES INITIALIZATION ===');
 });
 </script>
 @endpush
