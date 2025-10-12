@@ -1,0 +1,435 @@
+/**
+ * User Activity V2 Styles - Part 2
+ * Responsive design, pagination, empty states
+ * Max 350 lines per workinginstruction.md
+ */
+
+/* ========================================
+   Pagination
+======================================== */
+.pagination-wrapper {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.pagination li {
+    margin: 0;
+}
+
+.pagination a,
+.pagination span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 36px;
+    height: 36px;
+    padding: 0 0.75rem;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    background: var(--item-bg);
+    border: 1px solid var(--border-color);
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.pagination a:hover {
+    background: var(--item-hover);
+    border-color: var(--primary-color);
+}
+
+.pagination .active span {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+.pagination .disabled span {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* ========================================
+   Empty States
+======================================== */
+.empty-state {
+    text-align: center;
+    padding: 3rem 2rem;
+}
+
+.empty-state svg {
+    width: 64px;
+    height: 64px;
+    color: var(--text-secondary);
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+.empty-state p {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+.empty-state-small {
+    text-align: center;
+    padding: 2rem 1rem;
+}
+
+.empty-state-small p {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+/* ========================================
+   Responsive Design
+======================================== */
+
+/* Large Tablets */
+@media (max-width: 1280px) {
+    .content-grid {
+        grid-template-columns: 260px 1fr 300px;
+        gap: 1rem;
+    }
+
+    .filter-card,
+    .popular-card {
+        top: 1rem;
+    }
+}
+
+/* Tablets */
+@media (max-width: 1024px) {
+    .user-activity-modern {
+        padding: 1.5rem;
+    }
+
+    .header-content {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .header-right {
+        width: 100%;
+        justify-content: flex-end;
+    }
+
+    .content-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    .filter-card,
+    .popular-card {
+        position: relative;
+        top: 0;
+    }
+
+    .activity-card-body {
+        max-height: none;
+    }
+
+    .popular-body {
+        max-height: none;
+    }
+}
+
+/* Mobile */
+@media (max-width: 640px) {
+    .user-activity-modern {
+        padding: 1rem;
+    }
+
+    .activity-header {
+        margin-bottom: 1.5rem;
+    }
+
+    .activity-title {
+        font-size: 1.5rem;
+    }
+
+    .header-right {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .btn-export,
+    .btn-refresh {
+        font-size: 0.813rem;
+        padding: 0.5rem 1rem;
+    }
+
+    .btn-export span:not(.sr-only),
+    .btn-refresh span:not(.sr-only) {
+        display: none;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .stat-card {
+        padding: 1rem;
+    }
+
+    .stat-icon {
+        width: 48px;
+        height: 48px;
+    }
+
+    .stat-icon svg {
+        width: 24px;
+        height: 24px;
+    }
+
+    .stat-value {
+        font-size: 1.5rem;
+    }
+
+    .filter-card,
+    .activity-card,
+    .popular-card {
+        border-radius: 8px;
+    }
+
+    .filter-body,
+    .activity-card-body,
+    .popular-body {
+        padding: 1rem;
+    }
+
+    .timeline-item {
+        gap: 0.75rem;
+    }
+
+    .timeline-marker {
+        width: 36px;
+        height: 36px;
+    }
+
+    .timeline-marker svg {
+        width: 18px;
+        height: 18px;
+    }
+
+    .timeline-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.25rem;
+    }
+
+    .timeline-time {
+        font-size: 0.688rem;
+    }
+
+    .popular-item {
+        padding: 0.5rem;
+    }
+
+    .popular-rank {
+        width: 28px;
+        height: 28px;
+        font-size: 0.75rem;
+    }
+}
+
+/* Extra Small Mobile */
+@media (max-width: 400px) {
+    .activity-title {
+        font-size: 1.25rem;
+    }
+
+    .activity-subtitle {
+        font-size: 0.875rem;
+    }
+
+    .stat-value {
+        font-size: 1.25rem;
+    }
+
+    .btn-icon {
+        width: 36px;
+        height: 36px;
+    }
+}
+
+/* ========================================
+   Scrollbar Styling
+======================================== */
+.activity-card-body::-webkit-scrollbar,
+.popular-body::-webkit-scrollbar {
+    width: 6px;
+}
+
+.activity-card-body::-webkit-scrollbar-track,
+.popular-body::-webkit-scrollbar-track {
+    background: var(--scrollbar-track);
+}
+
+.activity-card-body::-webkit-scrollbar-thumb,
+.popular-body::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb);
+    border-radius: 3px;
+}
+
+.activity-card-body::-webkit-scrollbar-thumb:hover,
+.popular-body::-webkit-scrollbar-thumb:hover {
+    background: var(--primary-color);
+}
+
+/* ========================================
+   Loading States
+======================================== */
+.loading-spinner {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--border-color);
+    border-top-color: var(--primary-color);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.skeleton {
+    background: linear-gradient(
+        90deg,
+        var(--card-bg) 25%,
+        var(--card-hover) 50%,
+        var(--card-bg) 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: 4px;
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: -200% 0;
+    }
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+/* ========================================
+   Print Styles
+======================================== */
+@media print {
+    .activity-header .header-right,
+    .filter-card,
+    .popular-card,
+    .pagination-wrapper {
+        display: none !important;
+    }
+
+    .user-activity-modern {
+        padding: 0;
+        background: white;
+    }
+
+    .content-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .activity-card {
+        box-shadow: none;
+        border: 1px solid #e5e7eb;
+    }
+
+    .activity-card-body {
+        max-height: none;
+        overflow: visible;
+    }
+
+    .timeline-item {
+        page-break-inside: avoid;
+    }
+}
+
+/* ========================================
+   Accessibility
+======================================== */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}
+
+button:focus-visible,
+a:focus-visible,
+select:focus-visible {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+}
+
+/* ========================================
+   High Contrast Mode
+======================================== */
+@media (prefers-contrast: high) {
+    .filter-card,
+    .activity-card,
+    .popular-card {
+        border-width: 2px;
+    }
+
+    .timeline-marker {
+        border: 2px solid var(--primary-color);
+    }
+}
+
+/* ========================================
+   Reduced Motion
+======================================== */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* ========================================
+   Utilities
+======================================== */
+.fade-in {
+    animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

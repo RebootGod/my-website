@@ -59,7 +59,7 @@ class UserActivityController extends Controller
         // Get popular content
         $popularContent = $this->activityService->getPopularContent($period);
 
-        return view('admin.user-activity.index', compact(
+        return view('admin.user-activity.index-v2', compact(
             'stats',
             'activities',
             'activityTypes',
