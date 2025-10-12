@@ -77,17 +77,6 @@ class BulkOperationController extends Controller
      */
     public function refreshTMDB(Request $request)
     {
-        // Log incoming request
-        Log::info('BulkOperationController@refreshTMDB called', [
-            'all_data' => $request->all(),
-            'type' => $request->input('type'),
-            'ids' => $request->input('ids'),
-            'ids_type' => gettype($request->input('ids')),
-            'ids_count' => is_array($request->input('ids')) ? count($request->input('ids')) : 'not array',
-            'user_id' => auth()->id(),
-            'ip' => $request->ip()
-        ]);
-
         $validator = Validator::make($request->all(), [
             'type' => 'required|in:movie,series',
             'ids' => 'required|array|min:1',
@@ -95,11 +84,6 @@ class BulkOperationController extends Controller
         ]);
 
         if ($validator->fails()) {
-            Log::warning('BulkOperationController@refreshTMDB validation failed', [
-                'errors' => $validator->errors()->toArray(),
-                'input' => $request->all()
-            ]);
-            
             return response()->json([
                 'success' => false,
                 'message' => 'Validation failed',
@@ -108,11 +92,6 @@ class BulkOperationController extends Controller
         }
 
         try {
-            Log::info('BulkOperationController@refreshTMDB validation passed, starting operation', [
-                'type' => $request->type,
-                'ids_count' => count($request->ids)
-            ]);
-            
             // Create progress tracking key
             $progressKey = $this->bulkService->createProgressKey('tmdb_refresh', $request->type);
             
