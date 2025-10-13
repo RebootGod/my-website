@@ -747,9 +747,17 @@ class TMDBService
         $fieldsUsed = [];
         
         // Field-by-field merge with fallback
+        // Smart fallback: If Indonesian returns original title (not translated), prefer English
+        $useEnglishTitle = false;
+        if ($language === 'id-ID' && isset($primary['title'], $primary['original_title'])) {
+            // If title equals original_title, it means no Indonesian translation exists
+            $useEnglishTitle = ($primary['title'] === $primary['original_title']);
+        }
+
         $merged = [
             'id' => $primary['id'],
-            'title' => !empty($primary['title']) ? $primary['title'] : ($fallback['title'] ?? ''),
+            'title' => $useEnglishTitle ? ($fallback['title'] ?? $primary['title']) : 
+                       (!empty($primary['title']) ? $primary['title'] : ($fallback['title'] ?? '')),
             'original_title' => !empty($primary['original_title']) ? $primary['original_title'] : ($fallback['original_title'] ?? ''),
             'overview' => !empty($primary['overview']) ? $primary['overview'] : ($fallback['overview'] ?? ''),
             'tagline' => !empty($primary['tagline']) ? $primary['tagline'] : ($fallback['tagline'] ?? ''),
@@ -810,9 +818,17 @@ class TMDBService
             return array_merge($primary, ['_language_used' => $language]);
         }
 
+        // Smart fallback: If Indonesian returns original name (not translated), prefer English
+        $useEnglishName = false;
+        if ($language === 'id-ID' && isset($primary['name'], $primary['original_name'])) {
+            // If name equals original_name, it means no Indonesian translation exists
+            $useEnglishName = ($primary['name'] === $primary['original_name']);
+        }
+
         $merged = [
             'id' => $primary['id'],
-            'name' => !empty($primary['name']) ? $primary['name'] : ($fallback['name'] ?? ''),
+            'name' => $useEnglishName ? ($fallback['name'] ?? $primary['name']) : 
+                      (!empty($primary['name']) ? $primary['name'] : ($fallback['name'] ?? '')),
             'original_name' => !empty($primary['original_name']) ? $primary['original_name'] : ($fallback['original_name'] ?? ''),
             'overview' => !empty($primary['overview']) ? $primary['overview'] : ($fallback['overview'] ?? ''),
             'tagline' => !empty($primary['tagline']) ? $primary['tagline'] : ($fallback['tagline'] ?? ''),
@@ -861,9 +877,14 @@ class TMDBService
             return array_merge($primary, ['_language_used' => $language]);
         }
 
+        // Smart fallback for season name: prefer English if Indonesian not available
+        $seasonName = !empty($primary['name']) && $primary['name'] !== 'Season ' . $primary['season_number'] 
+                      ? $primary['name'] 
+                      : ($fallback['name'] ?? $primary['name'] ?? '');
+
         $merged = [
             'id' => $primary['id'],
-            'name' => !empty($primary['name']) ? $primary['name'] : ($fallback['name'] ?? ''),
+            'name' => $seasonName,
             'overview' => !empty($primary['overview']) ? $primary['overview'] : ($fallback['overview'] ?? ''),
             'season_number' => $primary['season_number'],
             'air_date' => $primary['air_date'] ?? $fallback['air_date'] ?? null,
@@ -890,9 +911,19 @@ class TMDBService
         foreach ($primaryEpisodes as $index => $primaryEp) {
             $fallbackEp = $fallbackEpisodes[$index] ?? null;
             
+            // Smart fallback for episode name: prefer English if Indonesian not available
+            // Check if name is just "Episode X" (default/untranslated)
+            $episodeName = $primaryEp['name'] ?? '';
+            $isGenericName = preg_match('/^Episode\s+\d+$/i', $episodeName);
+            
+            // Use English if: name is empty, generic "Episode X", or same as fallback's generic name
+            if (empty($episodeName) || $isGenericName) {
+                $episodeName = $fallbackEp['name'] ?? $episodeName;
+            }
+            
             $merged[] = [
                 'id' => $primaryEp['id'],
-                'name' => !empty($primaryEp['name']) ? $primaryEp['name'] : ($fallbackEp['name'] ?? ''),
+                'name' => $episodeName,
                 'overview' => !empty($primaryEp['overview']) ? $primaryEp['overview'] : ($fallbackEp['overview'] ?? ''),
                 'episode_number' => $primaryEp['episode_number'],
                 'season_number' => $primaryEp['season_number'],
