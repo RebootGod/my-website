@@ -403,6 +403,35 @@ class ContentBulkOperationService
         ]);
 
         $movie->update($updateData);
+
+        // Dispatch image download jobs if poster/backdrop changed
+        if (isset($tmdbData['poster_path']) && $tmdbData['poster_path'] && $updateData['poster_url'] !== $movie->poster_url) {
+            \App\Jobs\DownloadTmdbImageJob::dispatch(
+                'movie',
+                $movie->id,
+                'poster',
+                $tmdbData['poster_path']
+            )->onConnection('database')->onQueue('default');
+            
+            Log::info("Dispatched poster download job for movie", [
+                'movie_id' => $movie->id,
+                'poster_path' => $tmdbData['poster_path']
+            ]);
+        }
+
+        if (isset($tmdbData['backdrop_path']) && $tmdbData['backdrop_path'] && $updateData['backdrop_url'] !== $movie->backdrop_url) {
+            \App\Jobs\DownloadTmdbImageJob::dispatch(
+                'movie',
+                $movie->id,
+                'backdrop',
+                $tmdbData['backdrop_path']
+            )->onConnection('database')->onQueue('default');
+            
+            Log::info("Dispatched backdrop download job for movie", [
+                'movie_id' => $movie->id,
+                'backdrop_path' => $tmdbData['backdrop_path']
+            ]);
+        }
     }
 
     /**
@@ -462,6 +491,35 @@ class ContentBulkOperationService
         ]);
 
         $series->update($updateData);
+
+        // Dispatch image download jobs if poster/backdrop changed
+        if (isset($tmdbData['poster_path']) && $tmdbData['poster_path'] && $updateData['poster_url'] !== $series->poster_url) {
+            \App\Jobs\DownloadTmdbImageJob::dispatch(
+                'series',
+                $series->id,
+                'poster',
+                $tmdbData['poster_path']
+            )->onConnection('database')->onQueue('default');
+            
+            Log::info("Dispatched poster download job for series", [
+                'series_id' => $series->id,
+                'poster_path' => $tmdbData['poster_path']
+            ]);
+        }
+
+        if (isset($tmdbData['backdrop_path']) && $tmdbData['backdrop_path'] && $updateData['backdrop_url'] !== $series->backdrop_url) {
+            \App\Jobs\DownloadTmdbImageJob::dispatch(
+                'series',
+                $series->id,
+                'backdrop',
+                $tmdbData['backdrop_path']
+            )->onConnection('database')->onQueue('default');
+            
+            Log::info("Dispatched backdrop download job for series", [
+                'series_id' => $series->id,
+                'backdrop_path' => $tmdbData['backdrop_path']
+            ]);
+        }
 
         // Refresh episodes data from TMDB
         $episodeResults = $this->refreshSeriesEpisodes($series);
@@ -540,8 +598,37 @@ class ContentBulkOperationService
 
                         if ($episode->wasRecentlyCreated) {
                             $results['episodes_created']++;
+                            
+                            // Download still image for new episode
+                            if (!empty($episodeData['still_path'])) {
+                                \App\Jobs\DownloadTmdbImageJob::dispatch(
+                                    'episode',
+                                    $episode->id,
+                                    'still',
+                                    $episodeData['still_path'],
+                                    $season->season_number,
+                                    $episode->episode_number
+                                )->onConnection('database')->onQueue('default');
+                            }
                         } else {
                             $results['episodes_updated']++;
+                            
+                            // Download still image if changed
+                            if (!empty($episodeData['still_path']) && $episodeData['still_path'] !== $episode->getOriginal('still_path')) {
+                                \App\Jobs\DownloadTmdbImageJob::dispatch(
+                                    'episode',
+                                    $episode->id,
+                                    'still',
+                                    $episodeData['still_path'],
+                                    $season->season_number,
+                                    $episode->episode_number
+                                )->onConnection('database')->onQueue('default');
+                                
+                                Log::info("Dispatched still image download for episode", [
+                                    'episode_id' => $episode->id,
+                                    'still_path' => $episodeData['still_path']
+                                ]);
+                            }
                         }
 
                     } catch (\Exception $e) {
