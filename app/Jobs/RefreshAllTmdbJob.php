@@ -160,7 +160,7 @@ class RefreshAllTmdbJob implements ShouldQueue
 
                 // Small delay between batches to prevent overwhelming TMDB API
                 if ($currentBatch < $totalBatches) {
-                    usleep(100000); // 0.1 second delay
+                    sleep(1); // 1 second delay between batches
                 }
             }
 

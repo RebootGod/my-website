@@ -73,11 +73,42 @@ async function handleRefreshAll(contentType) {
     
     console.log('✅ User confirmed, starting Refresh All...');
     
-    // Create and show progress modal IMMEDIATELY (before API call)
+    // Check if BulkProgressTracker is available
+    // If not, wait a bit for it to load (deferred script)
     if (!window.BulkProgressTracker) {
-        alert('❌ Error: Progress tracker not available.\n\nPlease refresh the page and try again.');
+        console.log('⏳ Waiting for BulkProgressTracker to load...');
+        
+        // Wait up to 2 seconds for it to load
+        let attempts = 0;
+        const checkInterval = setInterval(() => {
+            attempts++;
+            
+            if (window.BulkProgressTracker) {
+                clearInterval(checkInterval);
+                console.log('✅ BulkProgressTracker loaded');
+                // Proceed with the operation
+                executeRefreshAll(contentType);
+            } else if (attempts >= 20) { // 20 attempts * 100ms = 2 seconds
+                clearInterval(checkInterval);
+                console.error('❌ BulkProgressTracker failed to load');
+                alert('❌ Error: Progress tracker not available.\n\nPlease refresh the page and try again.');
+            }
+        }, 100);
+        
         return;
     }
+    
+    // If BulkProgressTracker is already available, proceed
+    executeRefreshAll(contentType);
+}
+
+/**
+ * Execute Refresh All TMDB operation
+ */
+async function executeRefreshAll(contentType) {
+    console.log('🚀 Executing Refresh All for:', contentType);
+    
+    // Create and show progress modal IMMEDIATELY (before API call)
     
     // Generate a temporary progress key for immediate display
     const tempProgressKey = `bulk_operation_tmdb_refresh_all_${contentType}_${Date.now()}`;
