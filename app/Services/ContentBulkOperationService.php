@@ -526,9 +526,12 @@ class ContentBulkOperationService
         
         Log::info("Series episodes refresh completed", [
             'series_id' => $series->id,
+            'seasons_updated' => $episodeResults['seasons_updated'],
             'episodes_updated' => $episodeResults['episodes_updated'],
             'episodes_created' => $episodeResults['episodes_created'],
             'episodes_failed' => $episodeResults['episodes_failed']
+        ]);
+    }            'episodes_failed' => $episodeResults['episodes_failed']
         ]);
     }
 
@@ -538,6 +541,7 @@ class ContentBulkOperationService
     protected function refreshSeriesEpisodes($series): array
     {
         $results = [
+            'seasons_updated' => 0,
             'episodes_updated' => 0,
             'episodes_created' => 0,
             'episodes_failed' => 0
@@ -571,6 +575,35 @@ class ContentBulkOperationService
                         'season_number' => $season->season_number
                     ]);
                     continue;
+                }
+
+                // Update season metadata from TMDB
+                $seasonInfo = $seasonData['data'];
+                $seasonUpdateData = [
+                    'name' => $seasonInfo['name'] ?? $season->name,
+                    'overview' => $seasonInfo['overview'] ?? $season->overview,
+                    'poster_path' => $seasonInfo['poster_path'] ?? $season->poster_path,
+                    'air_date' => $seasonInfo['air_date'] ?? $season->air_date,
+                ];
+
+                $season->update($seasonUpdateData);
+                $results['seasons_updated']++;
+
+                // Download season poster if changed
+                if (!empty($seasonInfo['poster_path']) && $seasonInfo['poster_path'] !== $season->getOriginal('poster_path')) {
+                    \App\Jobs\DownloadTmdbImageJob::dispatch(
+                        'season',
+                        $season->id,
+                        'poster',
+                        $seasonInfo['poster_path'],
+                        $season->season_number
+                    )->onConnection('database')->onQueue('default');
+                    
+                    Log::info("Dispatched season poster download", [
+                        'season_id' => $season->id,
+                        'season_number' => $season->season_number,
+                        'poster_path' => $seasonInfo['poster_path']
+                    ]);
                 }
 
                 $episodes = $seasonData['data']['episodes'] ?? [];
