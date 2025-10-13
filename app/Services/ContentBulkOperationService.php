@@ -132,6 +132,12 @@ class ContentBulkOperationService
                     continue;
                 }
 
+                // Clear cache for this TMDB item to ensure fresh data
+                Cache::forget("tmdb:movie:details:{$item->tmdb_id}:id-ID");
+                Cache::forget("tmdb:movie:details:{$item->tmdb_id}:en-US");
+                Cache::forget("tmdb:tv:details:{$item->tmdb_id}:id-ID");
+                Cache::forget("tmdb:tv:details:{$item->tmdb_id}:en-US");
+
                 // Refresh from TMDB with Indonesian language priority
                 $tmdbResult = null;
                 if ($type === 'movie') {
@@ -350,6 +356,17 @@ class ContentBulkOperationService
      */
     protected function updateMovieFromTMDB($movie, array $tmdbData): void
     {
+        // Log received TMDB data for debugging
+        Log::info("Movie TMDB data received", [
+            'movie_id' => $movie->id,
+            'movie_title' => $movie->title,
+            'tmdb_title' => $tmdbData['title'] ?? 'N/A',
+            'tmdb_poster_path' => $tmdbData['poster_path'] ?? 'N/A',
+            'tmdb_backdrop_path' => $tmdbData['backdrop_path'] ?? 'N/A',
+            'current_poster_url' => $movie->poster_url,
+            'current_backdrop_url' => $movie->backdrop_url,
+        ]);
+
         $updateData = [
             'title' => $tmdbData['title'] ?? $movie->title,
             'original_title' => $tmdbData['original_title'] ?? $movie->original_title,
@@ -378,7 +395,11 @@ class ContentBulkOperationService
         Log::info("Updating movie from TMDB", [
             'id' => $movie->id,
             'title' => $updateData['title'],
-            'rating' => $updateData['rating']
+            'rating' => $updateData['rating'],
+            'new_poster_url' => $updateData['poster_url'],
+            'new_backdrop_url' => $updateData['backdrop_url'],
+            'poster_changed' => $updateData['poster_url'] !== $movie->poster_url,
+            'backdrop_changed' => $updateData['backdrop_url'] !== $movie->backdrop_url,
         ]);
 
         $movie->update($updateData);
@@ -389,6 +410,17 @@ class ContentBulkOperationService
      */
     protected function updateSeriesFromTMDB($series, array $tmdbData): void
     {
+        // Log received TMDB data for debugging
+        Log::info("Series TMDB data received", [
+            'series_id' => $series->id,
+            'series_title' => $series->title,
+            'tmdb_name' => $tmdbData['name'] ?? 'N/A',
+            'tmdb_poster_path' => $tmdbData['poster_path'] ?? 'N/A',
+            'tmdb_backdrop_path' => $tmdbData['backdrop_path'] ?? 'N/A',
+            'current_poster_url' => $series->poster_url,
+            'current_backdrop_url' => $series->backdrop_url,
+        ]);
+
         $updateData = [
             'title' => $tmdbData['name'] ?? $series->title,
             'original_title' => $tmdbData['original_name'] ?? $series->original_title,
@@ -422,7 +454,11 @@ class ContentBulkOperationService
             'title' => $updateData['title'],
             'rating' => $updateData['rating'],
             'seasons' => $updateData['number_of_seasons'],
-            'episodes' => $updateData['number_of_episodes']
+            'episodes' => $updateData['number_of_episodes'],
+            'new_poster_url' => $updateData['poster_url'],
+            'new_backdrop_url' => $updateData['backdrop_url'],
+            'poster_changed' => $updateData['poster_url'] !== $series->poster_url,
+            'backdrop_changed' => $updateData['backdrop_url'] !== $series->backdrop_url,
         ]);
 
         $series->update($updateData);
