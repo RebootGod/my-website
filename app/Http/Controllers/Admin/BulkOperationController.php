@@ -96,34 +96,37 @@ class BulkOperationController extends Controller
             $progressKey = $this->bulkService->createProgressKey('tmdb_refresh', $request->type);
             
             // Initialize progress
+            $totalItems = count($request->ids);
             $this->bulkService->updateProgress($progressKey, [
-                'total' => count($request->ids),
+                'total' => $totalItems,
                 'processed' => 0,
                 'success' => 0,
                 'failed' => 0,
-                'status' => 'processing'
+                'waiting' => $totalItems,
+                'status' => 'processing',
+                'current_batch' => 0,
+                'total_batches' => (int) ceil($totalItems / 5), // 5 items per batch
+                'errors' => []
             ]);
 
-            $results = $this->bulkService->bulkRefreshFromTMDB(
+            // Dispatch to queue job (REUSABLE - same as "Refresh All TMDB" button)
+            \App\Jobs\RefreshAllTmdbJob::dispatch(
                 $request->type,
-                $request->ids
-            );
+                $request->ids,
+                $progressKey
+            )->onConnection('database')->onQueue('default');
 
-            // Update final progress
-            $this->bulkService->updateProgress($progressKey, [
-                'total' => count($request->ids),
-                'processed' => count($request->ids),
-                'success' => $results['success'],
-                'failed' => $results['failed'],
-                'status' => 'completed',
-                'errors' => $results['errors']
+            Log::info('Bulk TMDB refresh job dispatched', [
+                'type' => $request->type,
+                'count' => $totalItems,
+                'progress_key' => $progressKey
             ]);
 
             return response()->json([
                 'success' => true,
-                'results' => $results,
                 'progressKey' => $progressKey,
-                'message' => "Refreshed {$results['success']} items from TMDB"
+                'message' => "Processing {$totalItems} items in background. Check progress modal for updates.",
+                'totalItems' => $totalItems
             ]);
         } catch (\Exception $e) {
             Log::error('Bulk TMDB refresh failed', [
