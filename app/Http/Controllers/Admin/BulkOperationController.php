@@ -73,7 +73,8 @@ class BulkOperationController extends Controller
     }
 
     /**
-     * Bulk refresh from TMDB
+     * Bulk refresh from TMDB (Bulk Action - Selected Items)
+     * Uses separate job per type for independent operation
      */
     public function refreshTMDB(Request $request)
     {
@@ -93,7 +94,7 @@ class BulkOperationController extends Controller
 
         try {
             // Create progress tracking key
-            $progressKey = $this->bulkService->createProgressKey('tmdb_refresh', $request->type);
+            $progressKey = $this->bulkService->createProgressKey('tmdb_refresh_bulkaction', $request->type);
             
             // Initialize progress
             $totalItems = count($request->ids);
@@ -109,36 +110,36 @@ class BulkOperationController extends Controller
                 'errors' => []
             ]);
 
-            // Dispatch to queue job (REUSABLE - same as "Refresh All TMDB" button)
-            \App\Jobs\RefreshAllTmdbJob::dispatch(
+            // Dispatch to DEDICATED Bulk Action job (separate from Refresh All button)
+            \App\Jobs\RefreshAllTmdb_BulkAction_Job::dispatch(
                 $request->type,
                 $request->ids,
-                $progressKey,
-                null, // status filter (not used in bulk action)
-                null  // limit (not used in bulk action)
+                $progressKey
             )->onConnection('database')->onQueue('default');
 
-            Log::info('Bulk TMDB refresh job dispatched', [
+            Log::info('🔄 Bulk Action TMDB refresh job dispatched', [
                 'type' => $request->type,
                 'count' => $totalItems,
-                'progress_key' => $progressKey
+                'progress_key' => $progressKey,
+                'job' => 'RefreshAllTmdb_BulkAction_Job'
             ]);
 
             return response()->json([
                 'success' => true,
                 'progressKey' => $progressKey,
-                'message' => "Processing {$totalItems} items in background. Check progress modal for updates.",
+                'message' => "Processing {$totalItems} {$request->type}(s) in background via Bulk Action.",
                 'totalItems' => $totalItems
             ]);
         } catch (\Exception $e) {
-            Log::error('Bulk TMDB refresh failed', [
+            Log::error('❌ Bulk Action TMDB refresh failed', [
+                'type' => $request->type,
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
 
             return response()->json([
                 'success' => false,
-                'message' => 'Bulk TMDB refresh failed: ' . $e->getMessage()
+                'message' => 'Bulk Action TMDB refresh failed: ' . $e->getMessage()
             ], 500);
         }
     }
@@ -374,23 +375,31 @@ class BulkOperationController extends Controller
                 'queued_at' => now()->toISOString()
             ]);
 
-            // Dispatch job to DATABASE queue (explicit connection)
-            // Production uses redis as default, but this job needs database queue
-            \App\Jobs\RefreshAllTmdbJob::dispatch(
-                $request->type,
-                $ids,
-                $progressKey,
-                $request->status,
-                $request->limit
-            )->onConnection('database')->onQueue('default');
-
-            Log::info("✅ Job dispatched to DATABASE queue", [
-                'type' => $request->type,
-                'progress_key' => $progressKey,
-                'total_items' => count($ids),
-                'connection' => 'database',
-                'queue' => 'default'
-            ]);
+            // Dispatch to TYPE-SPECIFIC job (Movies or Series)
+            // Each type has dedicated job for independent operation
+            if ($request->type === 'movie') {
+                \App\Jobs\RefreshAllTmdb_Movies_Job::dispatch(
+                    $ids,
+                    $progressKey
+                )->onConnection('database')->onQueue('default');
+                
+                Log::info("✅ Movies job dispatched to DATABASE queue", [
+                    'progress_key' => $progressKey,
+                    'total_movies' => count($ids),
+                    'job' => 'RefreshAllTmdb_Movies_Job'
+                ]);
+            } else {
+                \App\Jobs\RefreshAllTmdb_Series_Job::dispatch(
+                    $ids,
+                    $progressKey
+                )->onConnection('database')->onQueue('default');
+                
+                Log::info("✅ Series job dispatched to DATABASE queue", [
+                    'progress_key' => $progressKey,
+                    'total_series' => count($ids),
+                    'job' => 'RefreshAllTmdb_Series_Job'
+                ]);
+            }
 
             return response()->json([
                 'success' => true,

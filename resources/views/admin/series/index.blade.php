@@ -184,5 +184,5 @@
 @section('scripts')
 <script src="{{ asset('js/admin/bulk-operations.js') }}?v={{ filemtime(public_path('js/admin/bulk-operations.js')) }}" defer></script>
 <script src="{{ asset('js/admin/bulk-progress-tracker.js') }}?v={{ filemtime(public_path('js/admin/bulk-progress-tracker.js')) }}" defer></script>
-<script src="{{ asset('js/admin/refresh-all-tmdb.js') }}?v={{ filemtime(public_path('js/admin/refresh-all-tmdb.js')) }}" defer></script>
+<script src="{{ asset('js/admin/refresh_all_tmdb_series_admin_panel.js') }}?v={{ filemtime(public_path('js/admin/refresh_all_tmdb_series_admin_panel.js')) }}" defer></script>
 @endsection

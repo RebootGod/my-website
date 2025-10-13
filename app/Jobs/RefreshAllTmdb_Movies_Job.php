@@ -3,8 +3,6 @@
 namespace App\Jobs;
 
 use App\Services\ContentBulkOperationService;
-use App\Models\Movie;
-use App\Models\Series;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -14,51 +12,44 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Cache;
 
 /**
- * Queue Job: Refresh All TMDB Data in Background
+ * Queue Job: Refresh TMDB Data for Movies Only
  * 
- * Processes large TMDB refresh operations without blocking HTTP request
- * Updates progress in cache for real-time tracking
+ * Dedicated job for refreshing movie data from TMDB
+ * Independent from series and bulk action operations
  * 
- * Security: Transaction-based, validated inputs
+ * File naming: RefreshAllTmdb_Movies_Job.php (per workinginstruction.md)
+ * Max lines: 350 (per workinginstruction.md)
+ * 
+ * Security: Database queue only, validated inputs, transaction-based
  * 
  * @package App\Jobs
  */
-class RefreshAllTmdbJob implements ShouldQueue
+class RefreshAllTmdb_Movies_Job implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public $timeout = 3600; // 1 hour for large datasets
     public $tries = 1; // No retry - manual re-trigger if needed
     public $backoff = 0;
+    public $queue = 'default'; // Database queue only
 
-    protected string $type;
-    protected ?string $status;
-    protected ?int $limit;
+    protected array $movieIds;
     protected string $progressKey;
-    protected array $ids;
-    protected int $batchSize = 5; // Process 5 items at a time
+    protected int $batchSize = 5; // Process 5 movies at a time
 
     /**
      * Create a new job instance.
      *
-     * @param string $type Content type (movie/series)
-     * @param array $ids Array of content IDs to refresh
+     * @param array $movieIds Array of movie IDs to refresh
      * @param string $progressKey Cache key for progress tracking
-     * @param string|null $status Filter by status (published/unpublished)
-     * @param int|null $limit Limit number of items
      */
     public function __construct(
-        string $type,
-        array $ids,
-        string $progressKey,
-        ?string $status = null,
-        ?int $limit = null
+        array $movieIds,
+        string $progressKey
     ) {
-        $this->type = $type;
-        $this->ids = $ids;
+        $this->movieIds = $movieIds;
         $this->progressKey = $progressKey;
-        $this->status = $status;
-        $this->limit = $limit;
+        $this->onConnection('database'); // Force database queue
     }
 
     /**
@@ -66,37 +57,33 @@ class RefreshAllTmdbJob implements ShouldQueue
      */
     public function handle(ContentBulkOperationService $bulkService): void
     {
-        Log::info("🚀 RefreshAllTmdbJob STARTED", [
-            'type' => $this->type,
-            'total_ids' => count($this->ids),
+        Log::info("🎬 RefreshAllTmdb_Movies_Job STARTED", [
+            'total_movies' => count($this->movieIds),
             'batch_size' => $this->batchSize,
-            'status_filter' => $this->status,
-            'limit' => $this->limit,
             'progress_key' => $this->progressKey
         ]);
 
         try {
-            $totalItems = count($this->ids);
+            $totalMovies = count($this->movieIds);
             $successCount = 0;
             $failedCount = 0;
             $processedCount = 0;
             $errors = [];
 
-            // Split IDs into batches
-            $batches = array_chunk($this->ids, $this->batchSize);
+            // Split movie IDs into batches
+            $batches = array_chunk($this->movieIds, $this->batchSize);
             $totalBatches = count($batches);
 
-            Log::info("📦 Processing in batches", [
-                'total_batches' => $totalBatches,
+            Log::info("📦 Processing movies in {$totalBatches} batches", [
                 'batch_size' => $this->batchSize
             ]);
 
             // Initialize progress
-            $this->updateBatchProgress(
+            $this->updateProgress(
                 $processedCount,
                 $successCount,
                 $failedCount,
-                $totalItems,
+                $totalMovies,
                 0,
                 $totalBatches,
                 [],
@@ -104,54 +91,54 @@ class RefreshAllTmdbJob implements ShouldQueue
             );
 
             // Process each batch
-            foreach ($batches as $batchIndex => $batchIds) {
+            foreach ($batches as $batchIndex => $batchMovieIds) {
                 $currentBatch = $batchIndex + 1;
                 
-                Log::info("📦 Processing batch {$currentBatch}/{$totalBatches}", [
-                    'batch_ids' => $batchIds,
-                    'batch_size' => count($batchIds)
+                Log::info("🎬 Processing movie batch {$currentBatch}/{$totalBatches}", [
+                    'movie_ids' => $batchMovieIds,
+                    'batch_size' => count($batchMovieIds)
                 ]);
 
                 // Update progress: Currently processing this batch
-                $this->updateBatchProgress(
+                $this->updateProgress(
                     $processedCount,
                     $successCount,
                     $failedCount,
-                    $totalItems,
+                    $totalMovies,
                     $currentBatch,
                     $totalBatches,
                     $errors,
                     false,
-                    $batchIds // Current batch being processed
+                    $batchMovieIds
                 );
 
-                // Process batch items
-                $result = $bulkService->bulkRefreshFromTMDB($this->type, $batchIds);
+                // Process batch movies
+                $result = $bulkService->bulkRefreshFromTMDB('movie', $batchMovieIds);
 
                 // Update counters
                 $successCount += $result['success'];
                 $failedCount += $result['failed'];
-                $processedCount += count($batchIds);
+                $processedCount += count($batchMovieIds);
 
                 // Collect errors
                 if (!empty($result['errors'])) {
                     $errors = array_merge($errors, $result['errors']);
                 }
 
-                Log::info("✅ Batch {$currentBatch}/{$totalBatches} completed", [
+                Log::info("✅ Movie batch {$currentBatch}/{$totalBatches} completed", [
                     'batch_success' => $result['success'],
                     'batch_failed' => $result['failed'],
                     'total_success' => $successCount,
                     'total_failed' => $failedCount,
-                    'progress' => round(($processedCount / $totalItems) * 100, 1) . '%'
+                    'progress' => round(($processedCount / $totalMovies) * 100, 1) . '%'
                 ]);
 
                 // Update progress after batch
-                $this->updateBatchProgress(
+                $this->updateProgress(
                     $processedCount,
                     $successCount,
                     $failedCount,
-                    $totalItems,
+                    $totalMovies,
                     $currentBatch,
                     $totalBatches,
                     $errors,
@@ -164,19 +151,18 @@ class RefreshAllTmdbJob implements ShouldQueue
                 }
             }
 
-            Log::info("✅ RefreshAllTmdbJob COMPLETED", [
-                'type' => $this->type,
+            Log::info("✅ RefreshAllTmdb_Movies_Job COMPLETED", [
                 'total_processed' => $processedCount,
                 'success' => $successCount,
                 'failed' => $failedCount
             ]);
 
             // Mark as completed
-            $this->updateBatchProgress(
+            $this->updateProgress(
                 $processedCount,
                 $successCount,
                 $failedCount,
-                $totalItems,
+                $totalMovies,
                 $totalBatches,
                 $totalBatches,
                 $errors,
@@ -184,18 +170,17 @@ class RefreshAllTmdbJob implements ShouldQueue
             );
 
         } catch (\Exception $e) {
-            Log::error("❌ RefreshAllTmdbJob FAILED", [
-                'type' => $this->type,
+            Log::error("❌ RefreshAllTmdb_Movies_Job FAILED", [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
 
             // Update progress with error
-            $this->updateBatchProgress(
+            $this->updateProgress(
                 0,
                 0,
-                count($this->ids),
-                count($this->ids),
+                count($this->movieIds),
+                count($this->movieIds),
                 0,
                 0,
                 [['error' => $e->getMessage()]],
@@ -213,18 +198,17 @@ class RefreshAllTmdbJob implements ShouldQueue
      */
     public function failed(\Throwable $exception): void
     {
-        Log::error("💀 RefreshAllTmdbJob PERMANENTLY FAILED", [
-            'type' => $this->type,
+        Log::error("💀 RefreshAllTmdb_Movies_Job PERMANENTLY FAILED", [
             'progress_key' => $this->progressKey,
             'error' => $exception->getMessage()
         ]);
 
         // Mark progress as failed
-        $this->updateBatchProgress(
+        $this->updateProgress(
             0,
             0,
-            count($this->ids),
-            count($this->ids),
+            count($this->movieIds),
+            count($this->movieIds),
             0,
             0,
             [['error' => 'Job permanently failed: ' . $exception->getMessage()]],
@@ -235,13 +219,13 @@ class RefreshAllTmdbJob implements ShouldQueue
     }
 
     /**
-     * Update batch progress in cache with detailed tracking
+     * Update progress in cache with detailed tracking
      */
-    protected function updateBatchProgress(
+    protected function updateProgress(
         int $processed,
         int $success,
         int $failed,
-        int $totalItems,
+        int $totalMovies,
         int $currentBatch,
         int $totalBatches,
         array $errors,
@@ -249,11 +233,11 @@ class RefreshAllTmdbJob implements ShouldQueue
         array $currentProcessing = [],
         ?string $errorMessage = null
     ): void {
-        $waiting = $totalItems - $processed;
+        $waiting = $totalMovies - $processed;
         
         $progress = [
             // Overall progress
-            'total' => $totalItems,
+            'total' => $totalMovies,
             'processed' => $processed,
             'success' => $success,
             'failed' => $failed,
@@ -269,7 +253,10 @@ class RefreshAllTmdbJob implements ShouldQueue
             // Status
             'completed' => $completed,
             'status' => $completed ? 'completed' : 'processing',
-            'percentage' => $totalItems > 0 ? round(($processed / $totalItems) * 100, 1) : 0,
+            'percentage' => $totalMovies > 0 ? round(($processed / $totalMovies) * 100, 1) : 0,
+            
+            // Type indicator
+            'type' => 'movie',
             
             // Errors
             'error' => $errorMessage,
@@ -282,13 +269,10 @@ class RefreshAllTmdbJob implements ShouldQueue
 
         Cache::put($this->progressKey, $progress, now()->addHours(2));
 
-        Log::debug("📊 Batch progress updated", [
+        Log::debug("📊 Movies progress updated", [
             'key' => $this->progressKey,
             'batch' => "{$currentBatch}/{$totalBatches}",
-            'processed' => "{$processed}/{$totalItems}",
-            'success' => $success,
-            'failed' => $failed,
-            'waiting' => $waiting,
+            'processed' => "{$processed}/{$totalMovies}",
             'percentage' => $progress['percentage'] . '%'
         ]);
     }
