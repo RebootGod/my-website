@@ -305,29 +305,14 @@ class BulkProgressTracker {
             if (errorsContainer) errorsContainer.classList.add('hidden');
         }
 
-        // Update status message
-        const statusElement = document.getElementById('progress-status');
-        if (statusElement) {
-            if (status === 'completed') {
-                statusElement.textContent = 'Operation completed!';
-                statusElement.className = 'text-sm text-green-500';
-            } else if (status === 'processing') {
-                statusElement.textContent = `Processing ${processed} of ${total} items...`;
-                statusElement.className = 'text-sm text-blue-400';
-            } else {
-                statusElement.textContent = status;
-                statusElement.className = 'text-sm text-gray-400';
-            }
-        }
-
-        // Show errors if any
+        // Show errors if any (old error handling - kept for compatibility)
         if (errors && errors.length > 0) {
-            const errorsContainer = document.getElementById('progress-errors');
-            const errorsList = document.getElementById('progress-errors-list');
+            const oldErrorsContainer = document.getElementById('progress-errors');
+            const oldErrorsList = document.getElementById('progress-errors-list');
             
-            if (errorsContainer) errorsContainer.classList.remove('hidden');
-            if (errorsList) {
-                errorsList.innerHTML = errors.map(err => 
+            if (oldErrorsContainer) oldErrorsContainer.classList.remove('hidden');
+            if (oldErrorsList) {
+                oldErrorsList.innerHTML = errors.map(err => 
                     `<div class="mb-1">ID ${this.escapeHtml(err.id)}: ${this.escapeHtml(err.error)}</div>`
                 ).join('');
             }
