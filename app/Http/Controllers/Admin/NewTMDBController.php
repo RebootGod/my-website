@@ -286,7 +286,7 @@ class NewTMDBController extends Controller
                     $movie->id,
                     'poster',
                     $data['poster_path']
-                )->onQueue('image-downloads');
+                )->onConnection('database')->onQueue('default');
                 
                 Log::info('Dispatched poster download job', [
                     'movie_id' => $movie->id,
@@ -300,7 +300,7 @@ class NewTMDBController extends Controller
                     $movie->id,
                     'backdrop',
                     $data['backdrop_path']
-                )->onQueue('image-downloads');
+                )->onConnection('database')->onQueue('default');
                 
                 Log::info('Dispatched backdrop download job', [
                     'movie_id' => $movie->id,

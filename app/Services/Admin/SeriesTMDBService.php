@@ -143,7 +143,7 @@ class SeriesTMDBService
                     $series->id,
                     'poster',
                     $tmdbData['poster_path']
-                )->onQueue('image-downloads');
+                )->onConnection('database')->onQueue('default');
                 
                 Log::info('Dispatched series poster download job', [
                     'series_id' => $series->id,
@@ -157,7 +157,7 @@ class SeriesTMDBService
                     $series->id,
                     'backdrop',
                     $tmdbData['backdrop_path']
-                )->onQueue('image-downloads');
+                )->onConnection('database')->onQueue('default');
                 
                 Log::info('Dispatched series backdrop download job', [
                     'series_id' => $series->id,
