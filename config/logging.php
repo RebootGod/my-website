@@ -154,6 +154,15 @@ return [
             'replace_placeholders' => true,
         ],
 
+        // Nightwatch logging channel
+        'nightwatch' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/nightwatch.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => env('LOG_DAILY_DAYS', 14),
+            'replace_placeholders' => true,
+        ],
+
     ],
 
 ];
