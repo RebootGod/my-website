@@ -747,11 +747,17 @@ class TMDBService
         $fieldsUsed = [];
         
         // Field-by-field merge with fallback
-        // Smart fallback: If Indonesian returns original title (not translated), prefer English
+        // Smart fallback: Use English if Indonesian returns non-Latin title (Korean, Chinese, Japanese, etc.)
         $useEnglishTitle = false;
-        if ($language === 'id-ID' && isset($primary['title'], $primary['original_title'])) {
-            // If title equals original_title, it means no Indonesian translation exists
-            $useEnglishTitle = ($primary['title'] === $primary['original_title']);
+        if ($language === 'id-ID' && isset($primary['title'])) {
+            // Check if title contains CJK characters (same logic as Python bot)
+            $useEnglishTitle = $this->containsNonLatinChars($primary['title']);
+            if ($useEnglishTitle) {
+                Log::info('Using English title, Indonesian returned non-Latin', [
+                    'indonesian_title' => $primary['title'],
+                    'english_title' => $fallback['title'] ?? 'N/A'
+                ]);
+            }
         }
 
         $merged = [
@@ -818,11 +824,17 @@ class TMDBService
             return array_merge($primary, ['_language_used' => $language]);
         }
 
-        // Smart fallback: If Indonesian returns original name (not translated), prefer English
+        // Smart fallback: Use English if Indonesian returns non-Latin name (Korean, Chinese, Japanese, etc.)
         $useEnglishName = false;
-        if ($language === 'id-ID' && isset($primary['name'], $primary['original_name'])) {
-            // If name equals original_name, it means no Indonesian translation exists
-            $useEnglishName = ($primary['name'] === $primary['original_name']);
+        if ($language === 'id-ID' && isset($primary['name'])) {
+            // Check if name contains CJK characters (same logic as Python bot)
+            $useEnglishName = $this->containsNonLatinChars($primary['name']);
+            if ($useEnglishName) {
+                Log::info('Using English series name, Indonesian returned non-Latin', [
+                    'indonesian_name' => $primary['name'],
+                    'english_name' => $fallback['name'] ?? 'N/A'
+                ]);
+            }
         }
 
         $merged = [
@@ -911,13 +923,16 @@ class TMDBService
         foreach ($primaryEpisodes as $index => $primaryEp) {
             $fallbackEp = $fallbackEpisodes[$index] ?? null;
             
-            // Smart fallback for episode name: prefer English if Indonesian not available
-            // Check if name is just "Episode X" (default/untranslated)
+            // Smart fallback for episode name: Use English if:
+            // 1. Name is empty
+            // 2. Name is generic "Episode X" format
+            // 3. Name contains CJK characters (Korean, Chinese, Japanese)
             $episodeName = $primaryEp['name'] ?? '';
             $isGenericName = preg_match('/^Episode\s+\d+$/i', $episodeName);
+            $hasNonLatinChars = $this->containsNonLatinChars($episodeName);
             
-            // Use English if: name is empty, generic "Episode X", or same as fallback's generic name
-            if (empty($episodeName) || $isGenericName) {
+            // Use English if any condition is true
+            if (empty($episodeName) || $isGenericName || $hasNonLatinChars) {
                 $episodeName = $fallbackEp['name'] ?? $episodeName;
             }
             
@@ -953,5 +968,25 @@ class TMDBService
         // v3 key via query param
         $params = array_merge(['api_key' => $this->apiKey], $params);
         return Http::get($url, $params);
+    }
+
+    /**
+     * Check if text contains non-Latin characters (Korean, Chinese, Japanese, etc.)
+     * Same logic as Python bot's _is_non_latin() function
+     * 
+     * @param string|null $text Text to check
+     * @return bool True if text contains CJK or other non-Latin characters
+     */
+    protected function containsNonLatinChars(?string $text): bool
+    {
+        if (empty($text)) {
+            return false;
+        }
+
+        // Unicode ranges for CJK characters (same as bot):
+        // Hangul (Korean): \x{AC00}-\x{D7AF}
+        // Hiragana/Katakana (Japanese): \x{3040}-\x{309F}, \x{30A0}-\x{30FF}
+        // CJK Unified Ideographs (Chinese/Japanese/Korean): \x{4E00}-\x{9FFF}
+        return preg_match('/[\x{AC00}-\x{D7AF}\x{3040}-\x{309F}\x{30A0}-\x{30FF}\x{4E00}-\x{9FFF}]/u', $text) === 1;
     }
 }
