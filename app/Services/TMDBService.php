@@ -633,6 +633,50 @@ class TMDBService
     }
 
     /**
+     * Get TV season details with episodes
+     */
+    public function getSeasonDetails($tvId, $seasonNumber)
+    {
+        $cacheKey = "tmdb:tv:{$tvId}:season:{$seasonNumber}";
+
+        return Cache::remember($cacheKey, $this->cacheMovieDetails, function () use ($tvId, $seasonNumber) {
+            try {
+                $response = $this->makeRequest("{$this->baseUrl}/tv/{$tvId}/season/{$seasonNumber}");
+
+                if ($response->successful()) {
+                    $season = $response->json();
+
+                    return [
+                        'success' => true,
+                        'data' => [
+                            'id' => $season['id'],
+                            'name' => $season['name'],
+                            'overview' => $season['overview'],
+                            'season_number' => $season['season_number'],
+                            'air_date' => $season['air_date'] ?? null,
+                            'poster_path' => $season['poster_path'],
+                            'episodes' => $season['episodes'] ?? []
+                        ]
+                    ];
+                }
+
+                return [
+                    'success' => false,
+                    'error' => 'Season not found'
+                ];
+
+            } catch (\Exception $e) {
+                Log::error('TMDB Season Details Error: ' . $e->getMessage());
+
+                return [
+                    'success' => false,
+                    'error' => 'Error fetching season details: ' . $e->getMessage()
+                ];
+            }
+        });
+    }
+
+    /**
      * Make TMDB request supporting both v3 (api_key param) and v4 (Bearer token)
      */
     protected function makeRequest(string $url, array $params = [])

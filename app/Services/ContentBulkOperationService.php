@@ -338,33 +338,200 @@ class ContentBulkOperationService
      */
     protected function updateFromTMDBData($item, array $tmdbData, string $type): void
     {
-        // Movies use 'title', Series use 'name'
-        $titleField = $type === 'movie' ? 'title' : 'name';
-        // Movies use 'release_date', Series use 'first_air_date'
-        $dateField = $type === 'movie' ? 'release_date' : 'first_air_date';
+        if ($type === 'movie') {
+            $this->updateMovieFromTMDB($item, $tmdbData);
+        } else {
+            $this->updateSeriesFromTMDB($item, $tmdbData);
+        }
+    }
 
+    /**
+     * Update movie from TMDB data
+     */
+    protected function updateMovieFromTMDB($movie, array $tmdbData): void
+    {
         $updateData = [
-            'title' => $tmdbData[$titleField] ?? $item->title,
-            'description' => $tmdbData['overview'] ?? $item->description,
-            'release_date' => $tmdbData[$dateField] ?? $item->release_date,
+            'title' => $tmdbData['title'] ?? $movie->title,
+            'original_title' => $tmdbData['original_title'] ?? $movie->original_title,
+            'description' => $tmdbData['overview'] ?? $movie->description,
+            'overview' => $tmdbData['overview'] ?? $movie->overview,
+            'release_date' => $tmdbData['release_date'] ?? $movie->release_date,
             'poster_url' => isset($tmdbData['poster_path']) && $tmdbData['poster_path']
                 ? 'https://image.tmdb.org/t/p/w500' . $tmdbData['poster_path'] 
-                : $item->poster_url,
+                : $movie->poster_url,
             'backdrop_url' => isset($tmdbData['backdrop_path']) && $tmdbData['backdrop_path']
                 ? 'https://image.tmdb.org/t/p/original' . $tmdbData['backdrop_path']
-                : $item->backdrop_url,
-            'rating' => $tmdbData['vote_average'] ?? $item->rating,
-            'updated_at' => now() // Explicitly update timestamp
+                : $movie->backdrop_url,
+            'poster_path' => $tmdbData['poster_path'] ?? $movie->poster_path,
+            'backdrop_path' => $tmdbData['backdrop_path'] ?? $movie->backdrop_path,
+            'rating' => $tmdbData['vote_average'] ?? $movie->rating,
+            'vote_count' => $tmdbData['vote_count'] ?? $movie->vote_count,
+            'popularity' => $tmdbData['popularity'] ?? $movie->popularity,
+            'updated_at' => now()
         ];
 
-        // Log the update for debugging
-        Log::info("Updating {$type} from TMDB", [
-            'id' => $item->id,
+        // Add year from release_date if available
+        if (isset($tmdbData['release_date']) && $tmdbData['release_date']) {
+            $updateData['year'] = (int) date('Y', strtotime($tmdbData['release_date']));
+        }
+
+        Log::info("Updating movie from TMDB", [
+            'id' => $movie->id,
             'title' => $updateData['title'],
             'rating' => $updateData['rating']
         ]);
 
-        $item->update($updateData);
+        $movie->update($updateData);
+    }
+
+    /**
+     * Update series from TMDB data
+     */
+    protected function updateSeriesFromTMDB($series, array $tmdbData): void
+    {
+        $updateData = [
+            'title' => $tmdbData['name'] ?? $series->title,
+            'original_title' => $tmdbData['original_name'] ?? $series->original_title,
+            'description' => $tmdbData['overview'] ?? $series->description,
+            'overview' => $tmdbData['overview'] ?? $series->overview,
+            'first_air_date' => $tmdbData['first_air_date'] ?? $series->first_air_date,
+            'last_air_date' => $tmdbData['last_air_date'] ?? $series->last_air_date,
+            'poster_url' => isset($tmdbData['poster_path']) && $tmdbData['poster_path']
+                ? 'https://image.tmdb.org/t/p/w500' . $tmdbData['poster_path'] 
+                : $series->poster_url,
+            'backdrop_url' => isset($tmdbData['backdrop_path']) && $tmdbData['backdrop_path']
+                ? 'https://image.tmdb.org/t/p/original' . $tmdbData['backdrop_path']
+                : $series->backdrop_url,
+            'poster_path' => $tmdbData['poster_path'] ?? $series->poster_path,
+            'backdrop_path' => $tmdbData['backdrop_path'] ?? $series->backdrop_path,
+            'rating' => $tmdbData['vote_average'] ?? $series->rating,
+            'vote_count' => $tmdbData['vote_count'] ?? $series->vote_count,
+            'popularity' => $tmdbData['popularity'] ?? $series->popularity,
+            'number_of_seasons' => $tmdbData['number_of_seasons'] ?? $series->number_of_seasons,
+            'number_of_episodes' => $tmdbData['number_of_episodes'] ?? $series->number_of_episodes,
+            'updated_at' => now()
+        ];
+
+        // Add year from first_air_date if available
+        if (isset($tmdbData['first_air_date']) && $tmdbData['first_air_date']) {
+            $updateData['year'] = (int) date('Y', strtotime($tmdbData['first_air_date']));
+        }
+
+        Log::info("Updating series from TMDB", [
+            'id' => $series->id,
+            'title' => $updateData['title'],
+            'rating' => $updateData['rating'],
+            'seasons' => $updateData['number_of_seasons'],
+            'episodes' => $updateData['number_of_episodes']
+        ]);
+
+        $series->update($updateData);
+
+        // Refresh episodes data from TMDB
+        $episodeResults = $this->refreshSeriesEpisodes($series);
+        
+        Log::info("Series episodes refresh completed", [
+            'series_id' => $series->id,
+            'episodes_updated' => $episodeResults['episodes_updated'],
+            'episodes_created' => $episodeResults['episodes_created'],
+            'episodes_failed' => $episodeResults['episodes_failed']
+        ]);
+    }
+
+    /**
+     * Refresh episodes for a series from TMDB
+     */
+    protected function refreshSeriesEpisodes($series): array
+    {
+        $results = [
+            'episodes_updated' => 0,
+            'episodes_created' => 0,
+            'episodes_failed' => 0
+        ];
+
+        if (!$series->tmdb_id || !$series->number_of_seasons) {
+            Log::warning("Cannot refresh episodes - missing TMDB ID or seasons", [
+                'series_id' => $series->id,
+                'tmdb_id' => $series->tmdb_id
+            ]);
+            return $results;
+        }
+
+        try {
+            // Get all seasons for this series
+            $seasons = $series->seasons()->get();
+            
+            foreach ($seasons as $season) {
+                if (!$season->season_number) continue;
+
+                // Fetch season details with episodes from TMDB
+                $seasonData = $this->tmdbService->getSeasonDetails(
+                    $series->tmdb_id, 
+                    $season->season_number
+                );
+
+                if (!$seasonData || !$seasonData['success']) {
+                    Log::warning("Failed to fetch season data from TMDB", [
+                        'series_id' => $series->id,
+                        'season_number' => $season->season_number
+                    ]);
+                    continue;
+                }
+
+                $episodes = $seasonData['data']['episodes'] ?? [];
+
+                // Update or create episodes
+                foreach ($episodes as $episodeData) {
+                    try {
+                        $episode = \App\Models\SeriesEpisode::updateOrCreate(
+                            [
+                                'series_id' => $series->id,
+                                'season_id' => $season->id,
+                                'episode_number' => $episodeData['episode_number']
+                            ],
+                            [
+                                'tmdb_id' => $episodeData['id'] ?? null,
+                                'name' => $episodeData['name'] ?? 'Episode ' . $episodeData['episode_number'],
+                                'overview' => $episodeData['overview'] ?? null,
+                                'still_path' => $episodeData['still_path'] ?? null,
+                                'air_date' => $episodeData['air_date'] ?? null,
+                                'runtime' => $episodeData['runtime'] ?? null,
+                                'vote_average' => $episodeData['vote_average'] ?? 0,
+                                'vote_count' => $episodeData['vote_count'] ?? 0,
+                            ]
+                        );
+
+                        if ($episode->wasRecentlyCreated) {
+                            $results['episodes_created']++;
+                        } else {
+                            $results['episodes_updated']++;
+                        }
+
+                    } catch (\Exception $e) {
+                        $results['episodes_failed']++;
+                        Log::error("Failed to update episode", [
+                            'series_id' => $series->id,
+                            'season_number' => $season->season_number,
+                            'episode_number' => $episodeData['episode_number'] ?? 'unknown',
+                            'error' => $e->getMessage()
+                        ]);
+                    }
+                }
+            }
+
+            Log::info("Series episodes refresh completed", [
+                'series_id' => $series->id,
+                'results' => $results
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error("Series episodes refresh failed", [
+                'series_id' => $series->id,
+                'error' => $e->getMessage()
+            ]);
+        }
+
+        return $results;
     }
 
     /**
