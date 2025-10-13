@@ -531,8 +531,6 @@ class ContentBulkOperationService
             'episodes_created' => $episodeResults['episodes_created'],
             'episodes_failed' => $episodeResults['episodes_failed']
         ]);
-    }            'episodes_failed' => $episodeResults['episodes_failed']
-        ]);
     }
 
     /**

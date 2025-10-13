@@ -113,7 +113,9 @@ class BulkOperationController extends Controller
             \App\Jobs\RefreshAllTmdbJob::dispatch(
                 $request->type,
                 $request->ids,
-                $progressKey
+                $progressKey,
+                null, // status filter (not used in bulk action)
+                null  // limit (not used in bulk action)
             )->onConnection('database')->onQueue('default');
 
             Log::info('Bulk TMDB refresh job dispatched', [
