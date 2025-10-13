@@ -32,7 +32,6 @@ class RefreshAllTmdb_BulkAction_Job implements ShouldQueue
     public $timeout = 3600; // 1 hour for large datasets
     public $tries = 1; // No retry - manual re-trigger if needed
     public $backoff = 0;
-    public $queue = 'default'; // Database queue only
 
     protected string $type; // 'movie' or 'series'
     protected array $ids;

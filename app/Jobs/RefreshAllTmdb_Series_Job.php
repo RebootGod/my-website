@@ -31,7 +31,6 @@ class RefreshAllTmdb_Series_Job implements ShouldQueue
     public $timeout = 3600; // 1 hour for large datasets
     public $tries = 1; // No retry - manual re-trigger if needed
     public $backoff = 0;
-    public $queue = 'default'; // Database queue only
 
     protected array $seriesIds;
     protected string $progressKey;
