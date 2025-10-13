@@ -132,13 +132,13 @@ class ContentBulkOperationService
                     continue;
                 }
 
-                // Refresh from TMDB
+                // Refresh from TMDB with Indonesian language priority
                 $tmdbResult = null;
                 if ($type === 'movie') {
-                    $tmdbResult = $this->tmdbService->getMovieDetails($item->tmdb_id);
+                    $tmdbResult = $this->tmdbService->getMovieDetails($item->tmdb_id, 'id-ID');
                 } else {
-                    // For series, use getTvDetails instead of getSeriesDetails
-                    $tmdbResult = $this->tmdbService->getTvDetails($item->tmdb_id);
+                    // For series, use getTvDetails with Indonesian language
+                    $tmdbResult = $this->tmdbService->getTvDetails($item->tmdb_id, 'id-ID');
                 }
 
                 // Validate TMDB response
@@ -464,10 +464,11 @@ class ContentBulkOperationService
             foreach ($seasons as $season) {
                 if (!$season->season_number) continue;
 
-                // Fetch season details with episodes from TMDB
+                // Fetch season details with episodes from TMDB (Indonesian priority)
                 $seasonData = $this->tmdbService->getSeasonDetails(
                     $series->tmdb_id, 
-                    $season->season_number
+                    $season->season_number,
+                    'id-ID'  // Indonesian language priority
                 );
 
                 if (!$seasonData || !$seasonData['success']) {

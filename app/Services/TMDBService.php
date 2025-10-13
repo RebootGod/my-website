@@ -142,15 +142,15 @@ class TMDBService
     /**
      * Get movie details by TMDB ID with caching
      */
-    public function getMovieDetails($tmdbId)
+    public function getMovieDetails($tmdbId, $language = 'id-ID')
     {
-        $cacheKey = "tmdb:movie:details:{$tmdbId}";
+        $cacheKey = "tmdb:movie:details:{$tmdbId}:{$language}";
 
-        return Cache::remember($cacheKey, $this->cacheMovieDetails, function () use ($tmdbId) {
+        return Cache::remember($cacheKey, $this->cacheMovieDetails, function () use ($tmdbId, $language) {
             try {
-                // Main movie details
+                // Fetch with requested language first (default: id-ID)
                 $response = $this->makeRequest("{$this->baseUrl}/movie/{$tmdbId}", [
-                    'language' => 'en-US',
+                    'language' => $language,
                     'append_to_response' => 'credits,videos,images,external_ids'
                 ]);
 
@@ -170,7 +170,23 @@ class TMDBService
                     ];
                 }
 
-                $movie = $response->json();
+                $moviePrimary = $response->json();
+                
+                // Fetch English fallback if primary language is not English
+                $movieFallback = null;
+                if ($language !== 'en-US') {
+                    $responseFallback = $this->makeRequest("{$this->baseUrl}/movie/{$tmdbId}", [
+                        'language' => 'en-US',
+                        'append_to_response' => 'credits,videos,images,external_ids'
+                    ]);
+                    
+                    if ($responseFallback->successful()) {
+                        $movieFallback = $responseFallback->json();
+                    }
+                }
+
+                // Merge data with field-level fallback
+                $movie = $this->mergeMovieData($moviePrimary, $movieFallback, $language);
 
                 // Get additional details
                 $credits = $movie['credits'] ?? [];
@@ -207,6 +223,7 @@ class TMDBService
                         'cast' => $this->getMainCast($credits, 10),
                         'trailer' => $this->getTrailer($videos),
                         'homepage' => $movie['homepage'] ?? null,
+                        'language_used' => $movie['_language_used'] ?? $language,
                     ]
                 ];
 
@@ -462,41 +479,64 @@ class TMDBService
     /**
      * Get TV series details with caching
      */
-    public function getTvDetails($tvId)
+    public function getTvDetails($tvId, $language = 'id-ID')
     {
-        $cacheKey = "tmdb:tv:details:{$tvId}";
+        $cacheKey = "tmdb:tv:details:{$tvId}:{$language}";
 
-        return Cache::remember($cacheKey, $this->cacheMovieDetails, function () use ($tvId) {
+        return Cache::remember($cacheKey, $this->cacheMovieDetails, function () use ($tvId, $language) {
             try {
                 $response = $this->makeRequest("{$this->baseUrl}/tv/{$tvId}", [
+                    'language' => $language,
                     'append_to_response' => 'credits,videos,genres'
                 ]);
 
-                if ($response->successful()) {
-                    $series = $response->json();
-
+                if (!$response->successful()) {
                     return [
-                        'success' => true,
-                        'data' => [
-                            'id' => $series['id'],
-                            'name' => $series['name'],
-                            'original_name' => $series['original_name'],
-                            'overview' => $series['overview'],
-                            'poster_path' => $series['poster_path'],
-                            'backdrop_path' => $series['backdrop_path'],
-                            'first_air_date' => $series['first_air_date'],
-                            'last_air_date' => $series['last_air_date'],
-                            'vote_average' => $series['vote_average'],
-                            'vote_count' => $series['vote_count'],
-                            'popularity' => $series['popularity'],
-                            'number_of_seasons' => $series['number_of_seasons'],
-                            'number_of_episodes' => $series['number_of_episodes'],
-                            'genres' => $series['genres'] ?? [],
-                            'credits' => $series['credits'] ?? [],
-                            'videos' => $series['videos']['results'] ?? []
-                        ]
+                        'success' => false,
+                        'error' => 'TV series not found with ID: ' . $tvId
                     ];
                 }
+
+                $seriesPrimary = $response->json();
+                
+                // Fetch English fallback if primary language is not English
+                $seriesFallback = null;
+                if ($language !== 'en-US') {
+                    $responseFallback = $this->makeRequest("{$this->baseUrl}/tv/{$tvId}", [
+                        'language' => 'en-US',
+                        'append_to_response' => 'credits,videos,genres'
+                    ]);
+                    
+                    if ($responseFallback->successful()) {
+                        $seriesFallback = $responseFallback->json();
+                    }
+                }
+
+                // Merge data with field-level fallback
+                $series = $this->mergeTvData($seriesPrimary, $seriesFallback, $language);
+
+                return [
+                    'success' => true,
+                    'data' => [
+                        'id' => $series['id'],
+                        'name' => $series['name'],
+                        'original_name' => $series['original_name'],
+                        'overview' => $series['overview'],
+                        'poster_path' => $series['poster_path'],
+                        'backdrop_path' => $series['backdrop_path'],
+                        'first_air_date' => $series['first_air_date'],
+                        'last_air_date' => $series['last_air_date'] ?? null,
+                        'vote_average' => $series['vote_average'],
+                        'vote_count' => $series['vote_count'],
+                        'popularity' => $series['popularity'],
+                        'number_of_seasons' => $series['number_of_seasons'],
+                        'number_of_episodes' => $series['number_of_episodes'],
+                        'genres' => $series['genres'] ?? [],
+                        'credits' => $series['credits'] ?? [],
+                        'videos' => $series['videos']['results'] ?? [],
+                        'language_used' => $series['_language_used'] ?? $language,
+                    ]
+                ];
 
                 return [
                     'success' => false,
@@ -635,34 +675,52 @@ class TMDBService
     /**
      * Get TV season details with episodes
      */
-    public function getSeasonDetails($tvId, $seasonNumber)
+    public function getSeasonDetails($tvId, $seasonNumber, $language = 'id-ID')
     {
-        $cacheKey = "tmdb:tv:{$tvId}:season:{$seasonNumber}";
+        $cacheKey = "tmdb:tv:{$tvId}:season:{$seasonNumber}:{$language}";
 
-        return Cache::remember($cacheKey, $this->cacheMovieDetails, function () use ($tvId, $seasonNumber) {
+        return Cache::remember($cacheKey, $this->cacheMovieDetails, function () use ($tvId, $seasonNumber, $language) {
             try {
-                $response = $this->makeRequest("{$this->baseUrl}/tv/{$tvId}/season/{$seasonNumber}");
+                $response = $this->makeRequest("{$this->baseUrl}/tv/{$tvId}/season/{$seasonNumber}", [
+                    'language' => $language
+                ]);
 
-                if ($response->successful()) {
-                    $season = $response->json();
-
+                if (!$response->successful()) {
                     return [
-                        'success' => true,
-                        'data' => [
-                            'id' => $season['id'],
-                            'name' => $season['name'],
-                            'overview' => $season['overview'],
-                            'season_number' => $season['season_number'],
-                            'air_date' => $season['air_date'] ?? null,
-                            'poster_path' => $season['poster_path'],
-                            'episodes' => $season['episodes'] ?? []
-                        ]
+                        'success' => false,
+                        'error' => 'Season not found'
                     ];
                 }
 
+                $seasonPrimary = $response->json();
+                
+                // Fetch English fallback if primary language is not English
+                $seasonFallback = null;
+                if ($language !== 'en-US') {
+                    $responseFallback = $this->makeRequest("{$this->baseUrl}/tv/{$tvId}/season/{$seasonNumber}", [
+                        'language' => 'en-US'
+                    ]);
+                    
+                    if ($responseFallback->successful()) {
+                        $seasonFallback = $responseFallback->json();
+                    }
+                }
+
+                // Merge season data
+                $season = $this->mergeSeasonData($seasonPrimary, $seasonFallback, $language);
+
                 return [
-                    'success' => false,
-                    'error' => 'Season not found'
+                    'success' => true,
+                    'data' => [
+                        'id' => $season['id'],
+                        'name' => $season['name'],
+                        'overview' => $season['overview'],
+                        'season_number' => $season['season_number'],
+                        'air_date' => $season['air_date'] ?? null,
+                        'poster_path' => $season['poster_path'],
+                        'episodes' => $season['episodes'] ?? [],
+                        'language_used' => $season['_language_used'] ?? $language,
+                    ]
                 ];
 
             } catch (\Exception $e) {
@@ -674,6 +732,179 @@ class TMDBService
                 ];
             }
         });
+    }
+
+    /**
+     * Merge movie data with field-level fallback (ID → EN)
+     */
+    protected function mergeMovieData($primary, $fallback, $language)
+    {
+        if (!$fallback) {
+            // No fallback available, use primary as-is
+            return array_merge($primary, ['_language_used' => $language]);
+        }
+
+        $fieldsUsed = [];
+        
+        // Field-by-field merge with fallback
+        $merged = [
+            'id' => $primary['id'],
+            'title' => !empty($primary['title']) ? $primary['title'] : ($fallback['title'] ?? ''),
+            'original_title' => !empty($primary['original_title']) ? $primary['original_title'] : ($fallback['original_title'] ?? ''),
+            'overview' => !empty($primary['overview']) ? $primary['overview'] : ($fallback['overview'] ?? ''),
+            'tagline' => !empty($primary['tagline']) ? $primary['tagline'] : ($fallback['tagline'] ?? ''),
+            'poster_path' => $primary['poster_path'] ?? $fallback['poster_path'] ?? null,
+            'backdrop_path' => $primary['backdrop_path'] ?? $fallback['backdrop_path'] ?? null,
+            'release_date' => $primary['release_date'] ?? $fallback['release_date'] ?? null,
+            'runtime' => $primary['runtime'] ?? $fallback['runtime'] ?? null,
+            'vote_average' => $primary['vote_average'] ?? $fallback['vote_average'] ?? 0,
+            'vote_count' => $primary['vote_count'] ?? $fallback['vote_count'] ?? 0,
+            'popularity' => $primary['popularity'] ?? $fallback['popularity'] ?? 0,
+            'original_language' => $primary['original_language'] ?? $fallback['original_language'] ?? 'en',
+            'status' => $primary['status'] ?? $fallback['status'] ?? null,
+            'budget' => $primary['budget'] ?? $fallback['budget'] ?? 0,
+            'revenue' => $primary['revenue'] ?? $fallback['revenue'] ?? 0,
+            'homepage' => $primary['homepage'] ?? $fallback['homepage'] ?? null,
+            'imdb_id' => $primary['imdb_id'] ?? $fallback['imdb_id'] ?? null,
+            
+            // Complex fields (genres translated, so prefer primary if available)
+            'genres' => !empty($primary['genres']) ? $primary['genres'] : ($fallback['genres'] ?? []),
+            'production_companies' => !empty($primary['production_companies']) ? $primary['production_companies'] : ($fallback['production_companies'] ?? []),
+            'production_countries' => !empty($primary['production_countries']) ? $primary['production_countries'] : ($fallback['production_countries'] ?? []),
+            'spoken_languages' => !empty($primary['spoken_languages']) ? $primary['spoken_languages'] : ($fallback['spoken_languages'] ?? []),
+            
+            // Credits/videos are language-independent
+            'credits' => $primary['credits'] ?? $fallback['credits'] ?? [],
+            'videos' => $primary['videos'] ?? $fallback['videos'] ?? [],
+            'external_ids' => $primary['external_ids'] ?? $fallback['external_ids'] ?? [],
+            'images' => $primary['images'] ?? $fallback['images'] ?? [],
+        ];
+
+        // Track which language was used per field for logging
+        $languageUsage = [];
+        foreach (['title', 'overview', 'tagline'] as $field) {
+            if (!empty($primary[$field])) {
+                $languageUsage[$field] = $language;
+            } elseif (!empty($fallback[$field])) {
+                $languageUsage[$field] = 'en-US (fallback)';
+            }
+        }
+
+        $merged['_language_used'] = $language;
+        $merged['_language_usage_per_field'] = $languageUsage;
+
+        Log::info("Movie data merged", [
+            'tmdb_id' => $merged['id'],
+            'language_usage' => $languageUsage
+        ]);
+
+        return $merged;
+    }
+
+    /**
+     * Merge TV series data with field-level fallback (ID → EN)
+     */
+    protected function mergeTvData($primary, $fallback, $language)
+    {
+        if (!$fallback) {
+            return array_merge($primary, ['_language_used' => $language]);
+        }
+
+        $merged = [
+            'id' => $primary['id'],
+            'name' => !empty($primary['name']) ? $primary['name'] : ($fallback['name'] ?? ''),
+            'original_name' => !empty($primary['original_name']) ? $primary['original_name'] : ($fallback['original_name'] ?? ''),
+            'overview' => !empty($primary['overview']) ? $primary['overview'] : ($fallback['overview'] ?? ''),
+            'tagline' => !empty($primary['tagline']) ? $primary['tagline'] : ($fallback['tagline'] ?? ''),
+            'poster_path' => $primary['poster_path'] ?? $fallback['poster_path'] ?? null,
+            'backdrop_path' => $primary['backdrop_path'] ?? $fallback['backdrop_path'] ?? null,
+            'first_air_date' => $primary['first_air_date'] ?? $fallback['first_air_date'] ?? null,
+            'last_air_date' => $primary['last_air_date'] ?? $fallback['last_air_date'] ?? null,
+            'number_of_seasons' => $primary['number_of_seasons'] ?? $fallback['number_of_seasons'] ?? 0,
+            'number_of_episodes' => $primary['number_of_episodes'] ?? $fallback['number_of_episodes'] ?? 0,
+            'vote_average' => $primary['vote_average'] ?? $fallback['vote_average'] ?? 0,
+            'vote_count' => $primary['vote_count'] ?? $fallback['vote_count'] ?? 0,
+            'popularity' => $primary['popularity'] ?? $fallback['popularity'] ?? 0,
+            'status' => $primary['status'] ?? $fallback['status'] ?? null,
+            'type' => $primary['type'] ?? $fallback['type'] ?? null,
+            'genres' => !empty($primary['genres']) ? $primary['genres'] : ($fallback['genres'] ?? []),
+            'credits' => $primary['credits'] ?? $fallback['credits'] ?? [],
+            'videos' => $primary['videos'] ?? $fallback['videos'] ?? [],
+        ];
+
+        $languageUsage = [];
+        foreach (['name', 'overview', 'tagline'] as $field) {
+            if (!empty($primary[$field])) {
+                $languageUsage[$field] = $language;
+            } elseif (!empty($fallback[$field])) {
+                $languageUsage[$field] = 'en-US (fallback)';
+            }
+        }
+
+        $merged['_language_used'] = $language;
+        $merged['_language_usage_per_field'] = $languageUsage;
+
+        Log::info("TV series data merged", [
+            'tmdb_id' => $merged['id'],
+            'language_usage' => $languageUsage
+        ]);
+
+        return $merged;
+    }
+
+    /**
+     * Merge season data with field-level fallback (ID → EN)
+     */
+    protected function mergeSeasonData($primary, $fallback, $language)
+    {
+        if (!$fallback) {
+            return array_merge($primary, ['_language_used' => $language]);
+        }
+
+        $merged = [
+            'id' => $primary['id'],
+            'name' => !empty($primary['name']) ? $primary['name'] : ($fallback['name'] ?? ''),
+            'overview' => !empty($primary['overview']) ? $primary['overview'] : ($fallback['overview'] ?? ''),
+            'season_number' => $primary['season_number'],
+            'air_date' => $primary['air_date'] ?? $fallback['air_date'] ?? null,
+            'poster_path' => $primary['poster_path'] ?? $fallback['poster_path'] ?? null,
+            'episodes' => $this->mergeEpisodesData(
+                $primary['episodes'] ?? [], 
+                $fallback['episodes'] ?? [], 
+                $language
+            ),
+        ];
+
+        $merged['_language_used'] = $language;
+
+        return $merged;
+    }
+
+    /**
+     * Merge episodes data with field-level fallback (ID → EN)
+     */
+    protected function mergeEpisodesData($primaryEpisodes, $fallbackEpisodes, $language)
+    {
+        $merged = [];
+        
+        foreach ($primaryEpisodes as $index => $primaryEp) {
+            $fallbackEp = $fallbackEpisodes[$index] ?? null;
+            
+            $merged[] = [
+                'id' => $primaryEp['id'],
+                'name' => !empty($primaryEp['name']) ? $primaryEp['name'] : ($fallbackEp['name'] ?? ''),
+                'overview' => !empty($primaryEp['overview']) ? $primaryEp['overview'] : ($fallbackEp['overview'] ?? ''),
+                'episode_number' => $primaryEp['episode_number'],
+                'season_number' => $primaryEp['season_number'],
+                'still_path' => $primaryEp['still_path'] ?? $fallbackEp['still_path'] ?? null,
+                'air_date' => $primaryEp['air_date'] ?? $fallbackEp['air_date'] ?? null,
+                'runtime' => $primaryEp['runtime'] ?? $fallbackEp['runtime'] ?? null,
+                'vote_average' => $primaryEp['vote_average'] ?? $fallbackEp['vote_average'] ?? 0,
+                'vote_count' => $primaryEp['vote_count'] ?? $fallbackEp['vote_count'] ?? 0,
+            ];
+        }
+
+        return $merged;
     }
 
     /**
