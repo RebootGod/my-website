@@ -43,7 +43,7 @@ class BulkProgressTracker {
         modal.id = 'bulk-progress-modal';
         modal.className = 'fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50';
         modal.innerHTML = `
-            <div class="bg-gray-800 rounded-lg p-6 max-w-md w-full mx-4">
+            <div class="bg-gray-800 rounded-lg p-6 max-w-2xl w-full mx-4">
                 <h3 class="text-xl font-bold text-white mb-4">Processing Bulk Operation</h3>
                 
                 <!-- Progress Bar -->
@@ -57,11 +57,17 @@ class BulkProgressTracker {
                     </div>
                 </div>
 
-                <!-- Stats -->
-                <div class="grid grid-cols-3 gap-4 mb-4 text-center">
+                <!-- Batch Info -->
+                <div class="mb-4 text-sm text-gray-400">
+                    <span id="batch-info">Batch 0 / 0</span>
+                    <span id="current-processing" class="ml-4"></span>
+                </div>
+
+                <!-- Stats Grid -->
+                <div class="grid grid-cols-4 gap-4 mb-4 text-center">
                     <div>
-                        <div class="text-2xl font-bold text-white" id="progress-total">0</div>
-                        <div class="text-xs text-gray-400">Total</div>
+                        <div class="text-2xl font-bold text-blue-400" id="progress-processed">0</div>
+                        <div class="text-xs text-gray-400">Processed</div>
                     </div>
                     <div>
                         <div class="text-2xl font-bold text-green-500" id="progress-success">0</div>
@@ -71,6 +77,16 @@ class BulkProgressTracker {
                         <div class="text-2xl font-bold text-red-500" id="progress-failed">0</div>
                         <div class="text-xs text-gray-400">Failed</div>
                     </div>
+                    <div>
+                        <div class="text-2xl font-bold text-gray-400" id="progress-waiting">0</div>
+                        <div class="text-xs text-gray-400">Waiting</div>
+                    </div>
+                </div>
+
+                <!-- Total -->
+                <div class="text-center mb-4">
+                    <span class="text-sm text-gray-400">Total: </span>
+                    <span class="text-lg font-bold text-white" id="progress-total">0</span>
                 </div>
 
                 <!-- Status Message -->
@@ -78,6 +94,16 @@ class BulkProgressTracker {
                     <span id="progress-status">Initializing...</span>
                 </div>
 
+                <!-- Errors Section -->
+                <div id="errors-container" class="hidden">
+                    <div class="bg-red-900 bg-opacity-30 border border-red-700 rounded p-3 mb-4">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-sm font-semibold text-red-400">Recent Errors</span>
+                            <span class="text-xs text-red-400" id="error-count">0 errors</span>
+                        </div>
+                        <div id="error-list" class="text-xs text-red-300 max-h-32 overflow-y-auto space-y-1"></div>
+                    </div>
+                </div>
                 <!-- Errors (hidden by default) -->
                 <div id="progress-errors" class="hidden">
                     <div class="text-sm font-semibold text-red-500 mb-2">Errors:</div>
@@ -191,33 +217,93 @@ class BulkProgressTracker {
             processed,
             success,
             failed,
+            waiting,
+            current_batch,
+            total_batches,
+            current_processing,
+            current_processing_count,
             status,
-            errors
+            errors,
+            total_errors,
+            percentage
         } = progress;
-
-        // Calculate percentage
-        const percentage = total > 0 ? Math.round((processed / total) * 100) : 0;
 
         // Update progress bar
         const progressBar = document.getElementById('progress-bar');
         const progressPercentage = document.getElementById('progress-percentage');
         
         if (progressBar) {
-            progressBar.style.width = `${percentage}%`;
+            progressBar.style.width = `${percentage || 0}%`;
         }
         
         if (progressPercentage) {
-            progressPercentage.textContent = `${percentage}%`;
+            progressPercentage.textContent = `${percentage || 0}%`;
+        }
+
+        // Update batch info
+        const batchInfo = document.getElementById('batch-info');
+        const currentProcessingEl = document.getElementById('current-processing');
+        
+        if (batchInfo) {
+            batchInfo.textContent = `Batch ${current_batch || 0} / ${total_batches || 0}`;
+        }
+        
+        if (currentProcessingEl && current_processing && current_processing.length > 0) {
+            currentProcessingEl.textContent = `(Processing ${current_processing_count || 0} items...)`;
+            currentProcessingEl.className = 'ml-4 text-yellow-400 animate-pulse';
+        } else if (currentProcessingEl) {
+            currentProcessingEl.textContent = '';
         }
 
         // Update stats
         const totalElement = document.getElementById('progress-total');
+        const processedElement = document.getElementById('progress-processed');
         const successElement = document.getElementById('progress-success');
         const failedElement = document.getElementById('progress-failed');
+        const waitingElement = document.getElementById('progress-waiting');
 
-        if (totalElement) totalElement.textContent = total;
-        if (successElement) successElement.textContent = success;
-        if (failedElement) failedElement.textContent = failed;
+        if (totalElement) totalElement.textContent = total || 0;
+        if (processedElement) processedElement.textContent = processed || 0;
+        if (successElement) successElement.textContent = success || 0;
+        if (failedElement) failedElement.textContent = failed || 0;
+        if (waitingElement) waitingElement.textContent = waiting || 0;
+
+        // Update status
+        const statusElement = document.getElementById('progress-status');
+        if (statusElement) {
+            if (status === 'completed') {
+                statusElement.textContent = 'Operation completed!';
+                statusElement.className = 'text-sm text-green-400 font-semibold';
+            } else {
+                statusElement.textContent = `Processing batch ${current_batch || 0} of ${total_batches || 0}...`;
+                statusElement.className = 'text-sm text-gray-400';
+            }
+        }
+
+        // Update errors
+        const errorsContainer = document.getElementById('errors-container');
+        const errorList = document.getElementById('error-list');
+        const errorCount = document.getElementById('error-count');
+
+        if (errors && errors.length > 0) {
+            if (errorsContainer) errorsContainer.classList.remove('hidden');
+            
+            if (errorCount) {
+                errorCount.textContent = `${total_errors || errors.length} error(s)`;
+            }
+            
+            if (errorList) {
+                errorList.innerHTML = errors.map(err => {
+                    const title = err.title || `ID ${err.id || 'unknown'}`;
+                    const error = err.error || 'Unknown error';
+                    return `<div class="py-1 border-b border-red-800 last:border-0">
+                        <span class="font-semibold">${title}:</span> ${error}
+                    </div>`;
+                }).join('');
+            }
+        } else {
+            if (errorsContainer) errorsContainer.classList.add('hidden');
+        }
 
         // Update status message
         const statusElement = document.getElementById('progress-status');

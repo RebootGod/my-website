@@ -36,6 +36,7 @@ class RefreshAllTmdbJob implements ShouldQueue
     protected ?int $limit;
     protected string $progressKey;
     protected array $ids;
+    protected int $batchSize = 5; // Process 5 items at a time
 
     /**
      * Create a new job instance.
@@ -68,31 +69,117 @@ class RefreshAllTmdbJob implements ShouldQueue
         Log::info("🚀 RefreshAllTmdbJob STARTED", [
             'type' => $this->type,
             'total_ids' => count($this->ids),
+            'batch_size' => $this->batchSize,
             'status_filter' => $this->status,
             'limit' => $this->limit,
             'progress_key' => $this->progressKey
         ]);
 
         try {
-            // Initialize progress in cache
-            $this->updateProgress(0, 0, 0, count($this->ids));
+            $totalItems = count($this->ids);
+            $successCount = 0;
+            $failedCount = 0;
+            $processedCount = 0;
+            $errors = [];
 
-            // Execute bulk refresh operation
-            // NOTE: bulkRefreshFromTMDB only takes 2 params (type, ids)
-            // Progress tracking is handled by THIS job, not the service
-            $result = $bulkService->bulkRefreshFromTMDB($this->type, $this->ids);
+            // Split IDs into batches
+            $batches = array_chunk($this->ids, $this->batchSize);
+            $totalBatches = count($batches);
+
+            Log::info("📦 Processing in batches", [
+                'total_batches' => $totalBatches,
+                'batch_size' => $this->batchSize
+            ]);
+
+            // Initialize progress
+            $this->updateBatchProgress(
+                $processedCount,
+                $successCount,
+                $failedCount,
+                $totalItems,
+                0,
+                $totalBatches,
+                [],
+                false
+            );
+
+            // Process each batch
+            foreach ($batches as $batchIndex => $batchIds) {
+                $currentBatch = $batchIndex + 1;
+                
+                Log::info("📦 Processing batch {$currentBatch}/{$totalBatches}", [
+                    'batch_ids' => $batchIds,
+                    'batch_size' => count($batchIds)
+                ]);
+
+                // Update progress: Currently processing this batch
+                $this->updateBatchProgress(
+                    $processedCount,
+                    $successCount,
+                    $failedCount,
+                    $totalItems,
+                    $currentBatch,
+                    $totalBatches,
+                    $errors,
+                    false,
+                    $batchIds // Current batch being processed
+                );
+
+                // Process batch items
+                $result = $bulkService->bulkRefreshFromTMDB($this->type, $batchIds);
+
+                // Update counters
+                $successCount += $result['success'];
+                $failedCount += $result['failed'];
+                $processedCount += count($batchIds);
+
+                // Collect errors
+                if (!empty($result['errors'])) {
+                    $errors = array_merge($errors, $result['errors']);
+                }
+
+                Log::info("✅ Batch {$currentBatch}/{$totalBatches} completed", [
+                    'batch_success' => $result['success'],
+                    'batch_failed' => $result['failed'],
+                    'total_success' => $successCount,
+                    'total_failed' => $failedCount,
+                    'progress' => round(($processedCount / $totalItems) * 100, 1) . '%'
+                ]);
+
+                // Update progress after batch
+                $this->updateBatchProgress(
+                    $processedCount,
+                    $successCount,
+                    $failedCount,
+                    $totalItems,
+                    $currentBatch,
+                    $totalBatches,
+                    $errors,
+                    false
+                );
+
+                // Small delay between batches to prevent overwhelming TMDB API
+                if ($currentBatch < $totalBatches) {
+                    usleep(100000); // 0.1 second delay
+                }
+            }
 
             Log::info("✅ RefreshAllTmdbJob COMPLETED", [
                 'type' => $this->type,
-                'result' => $result
+                'total_processed' => $processedCount,
+                'success' => $successCount,
+                'failed' => $failedCount
             ]);
 
             // Mark as completed
-            $this->updateProgress(
-                $result['total'] ?? count($this->ids),
-                $result['success'] ?? 0,
-                $result['failed'] ?? 0,
-                count($this->ids),
+            $this->updateBatchProgress(
+                $processedCount,
+                $successCount,
+                $failedCount,
+                $totalItems,
+                $totalBatches,
+                $totalBatches,
+                $errors,
                 true
             );
 
@@ -104,12 +191,16 @@ class RefreshAllTmdbJob implements ShouldQueue
             ]);
 
             // Update progress with error
-            $this->updateProgress(
+            $this->updateBatchProgress(
                 0,
                 0,
                 count($this->ids),
                 count($this->ids),
+                0,
+                0,
+                [['error' => $e->getMessage()]],
                 true,
+                [],
                 'Job failed: ' . $e->getMessage()
             );
 
@@ -129,44 +220,76 @@ class RefreshAllTmdbJob implements ShouldQueue
         ]);
 
         // Mark progress as failed
-        $this->updateProgress(
+        $this->updateBatchProgress(
             0,
             0,
             count($this->ids),
             count($this->ids),
+            0,
+            0,
+            [['error' => 'Job permanently failed: ' . $exception->getMessage()]],
             true,
+            [],
             'Job permanently failed: ' . $exception->getMessage()
         );
     }
 
     /**
-     * Update progress in cache
+     * Update batch progress in cache with detailed tracking
      */
-    protected function updateProgress(
+    protected function updateBatchProgress(
         int $processed,
         int $success,
         int $failed,
         int $totalItems,
+        int $currentBatch,
+        int $totalBatches,
+        array $errors,
         bool $completed = false,
-        ?string $error = null
+        array $currentProcessing = [],
+        ?string $errorMessage = null
     ): void {
+        $waiting = $totalItems - $processed;
+        
         $progress = [
-            'total' => $totalItems,      // Total items to process
-            'processed' => $processed,    // Items processed so far
+            // Overall progress
+            'total' => $totalItems,
+            'processed' => $processed,
             'success' => $success,
             'failed' => $failed,
+            'waiting' => $waiting,
+            
+            // Batch progress
+            'current_batch' => $currentBatch,
+            'total_batches' => $totalBatches,
+            'batch_size' => $this->batchSize,
+            'current_processing' => $currentProcessing,
+            'current_processing_count' => count($currentProcessing),
+            
+            // Status
             'completed' => $completed,
             'status' => $completed ? 'completed' : 'processing',
-            'error' => $error,
             'percentage' => $totalItems > 0 ? round(($processed / $totalItems) * 100, 1) : 0,
+            
+            // Errors
+            'error' => $errorMessage,
+            'errors' => array_slice($errors, -10), // Last 10 errors only
+            'total_errors' => count($errors),
+            
+            // Timestamps
             'updated_at' => now()->toISOString()
         ];
 
         Cache::put($this->progressKey, $progress, now()->addHours(2));
 
-        Log::debug("📊 Progress updated", [
+        Log::debug("📊 Batch progress updated", [
             'key' => $this->progressKey,
-            'progress' => $progress
+            'batch' => "{$currentBatch}/{$totalBatches}",
+            'processed' => "{$processed}/{$totalItems}",
+            'success' => $success,
+            'failed' => $failed,
+            'waiting' => $waiting,
+            'percentage' => $progress['percentage'] . '%'
         ]);
     }
 }
