@@ -548,17 +548,38 @@ class ContentBulkOperationService
         if (!$series->tmdb_id || !$series->number_of_seasons) {
             Log::warning("Cannot refresh episodes - missing TMDB ID or seasons", [
                 'series_id' => $series->id,
-                'tmdb_id' => $series->tmdb_id
+                'tmdb_id' => $series->tmdb_id,
+                'number_of_seasons' => $series->number_of_seasons
             ]);
             return $results;
         }
+
+        Log::info("🔄 Starting episode refresh for series", [
+            'series_id' => $series->id,
+            'series_title' => $series->title,
+            'tmdb_id' => $series->tmdb_id,
+            'number_of_seasons' => $series->number_of_seasons,
+            'existing_seasons_count' => $series->seasons()->count()
+        ]);
 
         try {
             // Get all seasons for this series
             $seasons = $series->seasons()->get();
             
+            Log::info("📋 Found seasons in database", [
+                'series_id' => $series->id,
+                'seasons_count' => $seasons->count(),
+                'season_numbers' => $seasons->pluck('season_number')->toArray()
+            ]);
+            
             foreach ($seasons as $season) {
                 if (!$season->season_number) continue;
+
+                Log::info("🔍 Fetching season {$season->season_number} from TMDB", [
+                    'series_id' => $series->id,
+                    'season_id' => $season->id,
+                    'season_number' => $season->season_number
+                ]);
 
                 // Fetch season details with episodes from TMDB (Indonesian priority)
                 $seasonData = $this->tmdbService->getSeasonDetails(
@@ -570,10 +591,17 @@ class ContentBulkOperationService
                 if (!$seasonData || !$seasonData['success']) {
                     Log::warning("Failed to fetch season data from TMDB", [
                         'series_id' => $series->id,
-                        'season_number' => $season->season_number
+                        'season_number' => $season->season_number,
+                        'response' => $seasonData
                     ]);
                     continue;
                 }
+
+                Log::info("✅ Season data fetched from TMDB", [
+                    'series_id' => $series->id,
+                    'season_number' => $season->season_number,
+                    'episodes_count' => count($seasonData['data']['episodes'] ?? [])
+                ]);
 
                 // Update season metadata from TMDB
                 $seasonInfo = $seasonData['data'];
@@ -606,6 +634,12 @@ class ContentBulkOperationService
 
                 $episodes = $seasonData['data']['episodes'] ?? [];
 
+                Log::info("📺 Processing episodes for season {$season->season_number}", [
+                    'series_id' => $series->id,
+                    'season_id' => $season->id,
+                    'episodes_count' => count($episodes)
+                ]);
+
                 // Update or create episodes
                 foreach ($episodes as $episodeData) {
                     try {
@@ -630,6 +664,14 @@ class ContentBulkOperationService
                         if ($episode->wasRecentlyCreated) {
                             $results['episodes_created']++;
                             
+                            Log::info("✨ Created new episode", [
+                                'episode_id' => $episode->id,
+                                'season_number' => $season->season_number,
+                                'episode_number' => $episode->episode_number,
+                                'name' => $episode->name,
+                                'still_path' => $episodeData['still_path'] ?? 'none'
+                            ]);
+                            
                             // Download still image for new episode
                             if (!empty($episodeData['still_path'])) {
                                 \App\Jobs\DownloadTmdbImageJob::dispatch(
@@ -643,6 +685,16 @@ class ContentBulkOperationService
                             }
                         } else {
                             $results['episodes_updated']++;
+                            
+                            Log::info("📝 Updated existing episode", [
+                                'episode_id' => $episode->id,
+                                'season_number' => $season->season_number,
+                                'episode_number' => $episode->episode_number,
+                                'name' => $episode->name,
+                                'still_path_old' => $episode->getOriginal('still_path'),
+                                'still_path_new' => $episodeData['still_path'] ?? 'none',
+                                'changed' => ($episodeData['still_path'] ?? null) !== $episode->getOriginal('still_path')
+                            ]);
                             
                             // Download still image if changed
                             if (!empty($episodeData['still_path']) && $episodeData['still_path'] !== $episode->getOriginal('still_path')) {
