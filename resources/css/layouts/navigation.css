@@ -26,7 +26,7 @@
     border-bottom: 1px solid rgba(99, 102, 241, 0.2);
     position: sticky;
     top: 0;
-    z-index: 1000;
+    z-index: 9998;
     box-shadow: 0 2px 16px rgba(0, 0, 0, 0.3);
 }
 
@@ -329,21 +329,45 @@
         height: 36px;
         padding: 0 0.75rem;
         font-size: 0.85rem;
+        z-index: 1001 !important;
+        position: relative !important;
     }
     
     .navbar-logo img {
         height: 32px !important;
     }
     
-    /* Dropdown mobile positioning */
+    /* Dropdown mobile positioning - CRITICAL FIX */
+    .dropdown {
+        position: relative !important;
+        z-index: 99998 !important;
+    }
+    
     .dropdown-menu {
         position: fixed !important;
-        top: auto !important;
+        top: 60px !important;
         right: 0.75rem !important;
-        left: auto !important;
+        left: 0.75rem !important;
         transform: none !important;
-        width: calc(100vw - 1.5rem);
-        max-width: 300px;
+        width: calc(100vw - 1.5rem) !important;
+        max-width: none !important;
+        z-index: 99999 !important;
+        pointer-events: auto !important;
+    }
+    
+    /* Ensure dropdown items are clickable */
+    .dropdown-menu .dropdown-item,
+    .dropdown-menu a,
+    .dropdown-menu button,
+    .dropdown-menu form {
+        pointer-events: auto !important;
+        cursor: pointer !important;
+        z-index: 99999 !important;
+    }
+    
+    /* User dropdown specific */
+    .user-dropdown-menu {
+        z-index: 99999 !important;
     }
 }
 

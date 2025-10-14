@@ -14,17 +14,71 @@
         min-width: unset !important;
         max-width: unset !important;
         transform: none !important;
-        z-index: 9999 !important;
+        z-index: 99999 !important;
         margin: 0 !important;
+        pointer-events: auto !important;
     }
 
-    /* Ensure dropdown is on top */
+    /* Ensure dropdown is on top and clickable */
     .dropdown.show {
         position: static !important;
+        z-index: 99999 !important;
     }
 
     .dropdown-menu.show {
         display: block !important;
+        pointer-events: auto !important;
+    }
+    
+    /* CRITICAL: Ensure all dropdown items are clickable */
+    .dropdown-menu .dropdown-item,
+    .dropdown-menu .dropdown-item *,
+    .dropdown-menu a,
+    .dropdown-menu button,
+    .dropdown-menu form {
+        pointer-events: auto !important;
+        cursor: pointer !important;
+        z-index: 99999 !important;
+        position: relative !important;
+    }
+    
+    /* CRITICAL: Ensure user dropdown menu is above everything */
+    .user-dropdown-menu {
+        z-index: 99999 !important;
+        pointer-events: auto !important;
+    }
+    
+    /* Ensure dropdown header is clickable */
+    .dropdown-header,
+    .dropdown-header * {
+        pointer-events: auto !important;
+        z-index: 99999 !important;
+    }
+    
+    /* CRITICAL: Prevent Bootstrap backdrop from blocking clicks */
+    .dropdown-backdrop,
+    .modal-backdrop {
+        display: none !important;
+        pointer-events: none !important;
+    }
+    
+    /* Add semi-transparent overlay when dropdown is open */
+    .dropdown.show::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 99998;
+        pointer-events: auto;
+    }
+    
+    /* Ensure navbar stays on top of overlay */
+    .modern-navbar {
+        z-index: 99999 !important;
+        position: sticky !important;
     }
 
     /* Fix notification text overflow */
@@ -81,7 +135,7 @@
         display: none !important;
     }
 
-    /* CRITICAL: Ensure cards are clickable */
+    /* CRITICAL: Ensure cards are clickable but don't block dropdown */
     .movie-card-modern,
     .series-card,
     .movie-grid > *,
@@ -89,6 +143,21 @@
         position: relative !important;
         z-index: 1 !important;
         pointer-events: auto !important;
+    }
+    
+    /* CRITICAL: Lower z-index of main content when dropdown is open */
+    .dropdown.show ~ * {
+        z-index: 0 !important;
+    }
+    
+    /* Ensure main content doesn't block dropdown */
+    main,
+    .container,
+    .content-section,
+    .movie-grid,
+    .series-grid {
+        z-index: 0 !important;
+        position: relative !important;
     }
 
     /* CRITICAL FIX: movie-overlay blocking clicks! */

@@ -278,6 +278,9 @@
     <!-- Alpine.js - Latest version -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.1/dist/cdn.min.js"></script>
 
+    <!-- Mobile Dropdown Fix -->
+    @vite('resources/js/mobile-dropdown-fix.js')
+    
     @vite('resources/js/layouts/app.js')
     @stack('scripts')
 

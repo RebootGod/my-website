@@ -16,6 +16,7 @@ export default defineConfig({
                 'resources/css/layouts/navigation.css',
                 'resources/css/layouts/app.css',
                 'resources/js/layouts/app.js',
+                'resources/js/mobile-dropdown-fix.js',
 
                 // Admin styles and scripts
                 'resources/css/admin/admin-core.css',
