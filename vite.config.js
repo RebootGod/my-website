@@ -30,14 +30,10 @@ export default defineConfig({
 
                 // Page-specific styles and scripts
                 'resources/css/pages/home.css',
-                'resources/css/pages/movie-detail.css',
-                'resources/css/pages/movie-detail-v2.css',
                 'resources/css/pages/movie-detail-v3.css',
-                'resources/css/pages/series-detail.css',
                 'resources/css/pages/series-detail-v2.css',
                 'resources/css/pages/series-player.css',
                 'resources/css/pages/watchlist.css',
-                'resources/css/pages/player.css',
                 'resources/css/pages/player-v3.css',
                 'resources/js/pages/home.js',
                 'resources/js/pages/movie-detail.js',
