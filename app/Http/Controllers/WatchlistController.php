@@ -20,7 +20,7 @@ class WatchlistController extends Controller
             ->orderBy('created_at', 'desc')
             ->paginate(12);
 
-        return view('user.watchlist.index', compact('watchlist'));
+        return view('profile.watchlist', compact('watchlist'));
     }
 
     /**
