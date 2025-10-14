@@ -68,6 +68,7 @@
     transition: transform 0.4s ease, filter 0.3s ease;
     display: block;
     background: var(--bg-tertiary, #1e2849);
+        min-height: 200px !important;
 }
 
 /* Active state for poster */
