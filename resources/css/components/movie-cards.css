@@ -137,12 +137,11 @@
 
 .movie-info {
     padding: 12px;
-    display: none; /* Hide all info - poster only mode */
+    display: flex; /* Show info section */
     flex-direction: column;
-    flex: 1 1 auto;
+    flex: 0 0 auto; /* Fixed size, don't grow */
     background: linear-gradient(180deg, rgba(20, 27, 52, 0.95) 0%, rgba(10, 14, 39, 0.98) 100%);
     gap: 8px;
-    min-height: 110px;
 }
 
 .movie-title {
