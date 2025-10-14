@@ -178,7 +178,8 @@
                     </div>
                 </div>
 
-                {{-- Download Section (if available) --}}
+                {{-- Download Section (if available) - Only for authenticated users --}}
+                @auth
                 @if($movie->download_url)
                 <div class="glass-info-card download-section-card">
                     <div class="glass-card-header">
@@ -199,6 +200,7 @@
                     </div>
                 </div>
                 @endif
+                @endauth
             </div>
         </div>
 

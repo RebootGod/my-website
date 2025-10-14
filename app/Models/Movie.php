@@ -343,6 +343,26 @@ class Movie extends Model
     }
 
     /**
+     * Get download URL - Only accessible to authenticated users
+     * Security: Prevent unauthorized access to download links
+     */
+    public function getDownloadUrlAttribute($value): ?string
+    {
+        // Allow admin to always see download URL
+        if (auth()->check() && auth()->user()->isAdmin()) {
+            return $value;
+        }
+
+        // Only return download URL if user is authenticated
+        if (auth()->check()) {
+            return $value;
+        }
+
+        // Return null for guest users (OWASP - Access Control)
+        return null;
+    }
+
+    /**
      * Get the route key for the model.
      * Use 'slug' for public routes, 'id' for admin routes.
      */
