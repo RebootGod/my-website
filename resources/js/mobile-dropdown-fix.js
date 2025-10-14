@@ -26,9 +26,10 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function initMobileDropdownFix() {
-    const dropdowns = document.querySelectorAll('.dropdown');
+    // Only target navbar dropdowns, not all dropdowns
+    const navbarDropdowns = document.querySelectorAll('.modern-navbar .dropdown, .navbar-actions .dropdown');
     
-    dropdowns.forEach(dropdown => {
+    navbarDropdowns.forEach(dropdown => {
         const dropdownToggle = dropdown.querySelector('[data-bs-toggle="dropdown"]');
         const dropdownMenu = dropdown.querySelector('.dropdown-menu');
         
@@ -49,15 +50,17 @@ function initMobileDropdownFix() {
                 item.style.zIndex = '99999';
             });
             
-            // Lower z-index of content behind
+            // Lower z-index of content behind ONLY for navbar dropdowns
             const mainContent = document.querySelector('main');
             const containers = document.querySelectorAll('.container, .content-section, .movie-grid, .series-grid');
             
             if (mainContent) {
+                mainContent.setAttribute('data-dropdown-open', 'true');
                 mainContent.style.zIndex = '0';
             }
             
             containers.forEach(container => {
+                container.setAttribute('data-dropdown-open', 'true');
                 container.style.zIndex = '0';
             });
             
@@ -70,15 +73,17 @@ function initMobileDropdownFix() {
             // Re-enable scroll
             document.body.style.overflow = '';
             
-            // Reset z-index
-            const mainContent = document.querySelector('main');
-            const containers = document.querySelectorAll('.container, .content-section, .movie-grid, .series-grid');
+            // Reset z-index ONLY for elements we modified
+            const mainContent = document.querySelector('main[data-dropdown-open="true"]');
+            const containers = document.querySelectorAll('[data-dropdown-open="true"]');
             
             if (mainContent) {
+                mainContent.removeAttribute('data-dropdown-open');
                 mainContent.style.zIndex = '';
             }
             
             containers.forEach(container => {
+                container.removeAttribute('data-dropdown-open');
                 container.style.zIndex = '';
             });
         });
@@ -108,11 +113,12 @@ function initMobileDropdownFix() {
         });
     });
     
-    // Close dropdown when clicking outside
+    // Close navbar dropdown when clicking outside
     document.addEventListener('click', function(e) {
-        if (!e.target.closest('.dropdown')) {
-            const openDropdowns = document.querySelectorAll('.dropdown-menu.show');
-            openDropdowns.forEach(menu => {
+        // Only handle clicks outside navbar dropdowns
+        if (!e.target.closest('.modern-navbar') && !e.target.closest('.navbar-actions')) {
+            const openNavbarDropdowns = document.querySelectorAll('.modern-navbar .dropdown-menu.show, .navbar-actions .dropdown-menu.show');
+            openNavbarDropdowns.forEach(menu => {
                 const dropdown = menu.closest('.dropdown');
                 if (dropdown) {
                     const toggle = dropdown.querySelector('[data-bs-toggle="dropdown"]');

@@ -62,8 +62,9 @@
         pointer-events: none !important;
     }
     
-    /* Add semi-transparent overlay when dropdown is open */
-    .dropdown.show::before {
+    /* Add semi-transparent overlay ONLY for navbar dropdown when open */
+    .navbar-actions .dropdown.show::before,
+    .modern-navbar .dropdown.show::before {
         content: '';
         position: fixed;
         top: 0;
@@ -143,21 +144,6 @@
         position: relative !important;
         z-index: 1 !important;
         pointer-events: auto !important;
-    }
-    
-    /* CRITICAL: Lower z-index of main content when dropdown is open */
-    .dropdown.show ~ * {
-        z-index: 0 !important;
-    }
-    
-    /* Ensure main content doesn't block dropdown */
-    main,
-    .container,
-    .content-section,
-    .movie-grid,
-    .series-grid {
-        z-index: 0 !important;
-        position: relative !important;
     }
 
     /* CRITICAL FIX: movie-overlay blocking clicks! */
