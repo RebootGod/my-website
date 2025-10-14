@@ -223,6 +223,33 @@ npm run build
 - Issue: Mobile dropdown menu tidak bisa diklik
 - Solution: Z-index and pointer-events management
 
+## Changelog
+
+### Version 1.1 - Hotfix (October 14, 2025)
+**Problem:**
+- Dark overlay muncul di semua halaman setelah initial fix
+- Movie/Series detail pages jadi gelap (tidak bisa dilihat)
+- Z-index content di-set terlalu rendah secara global
+
+**Fix:**
+- Update CSS overlay rule jadi lebih spesifik (hanya untuk navbar dropdown)
+- Hapus global z-index rule untuk main/container
+- Update JavaScript untuk hanya target navbar dropdowns (.modern-navbar .dropdown, .navbar-actions .dropdown)
+- Tambah data attribute untuk track dropdown state yang dimodifikasi
+- Close handler hanya untuk navbar dropdown
+
+**Changed:**
+- `resources/css/components/mobile.css` - Specific overlay selector
+- `resources/js/mobile-dropdown-fix.js` - Target only navbar dropdowns
+
+### Version 1.0 - Initial Release (October 14, 2025)
+**Features:**
+- Mobile dropdown menu clickable fix
+- Z-index hierarchy management
+- Pointer-events handling
+- Semi-transparent overlay when dropdown opens
+- Prevent body scroll when dropdown open
+
 ## References
 - OWASP Security Guidelines followed
 - Bootstrap 5.3 dropdown documentation
