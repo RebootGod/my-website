@@ -137,9 +137,9 @@
 
 .movie-info {
     padding: 12px;
-    display: flex; /* Show info section */
+    display: none; /* Hide info - poster only mode */
     flex-direction: column;
-    flex: 0 0 auto; /* Fixed size, don't grow */
+    flex: 0 0 auto;
     background: linear-gradient(180deg, rgba(20, 27, 52, 0.95) 0%, rgba(10, 14, 39, 0.98) 100%);
     gap: 8px;
 }
