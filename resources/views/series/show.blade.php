@@ -21,8 +21,22 @@
     <div class="row">
         <div class="col-12">
             {{-- Series Hero Section --}}
-            <div class="series-hero" style="background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.8)), url('{{ $series->backdrop_url }}')">
-                <div class="container">
+            <div class="series-hero" style="position: relative;">
+                {{-- Backdrop Image --}}
+                @if($series->backdrop_url)
+                    <img src="{{ $series->backdrop_url }}" 
+                         alt="{{ $series->title }} backdrop" 
+                         style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: -1;"
+                         onerror="this.src='{{ $series->poster_url }}'; this.style.filter='blur(40px) brightness(0.4)';">
+                @else
+                    <img src="{{ $series->poster_url }}" 
+                         alt="{{ $series->title }}" 
+                         style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: -1; filter: blur(40px) brightness(0.4);">
+                @endif
+                {{-- Gradient Overlay --}}
+                <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.8)); z-index: 0;"></div>
+                
+                <div class="container" style="position: relative; z-index: 1;">
                     <div class="row align-items-center">
                         <div class="col-lg-4">
                             <img src="{{ $series->poster_url }}"

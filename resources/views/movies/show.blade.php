@@ -17,7 +17,8 @@
         @if($movie->backdrop_url)
             <img src="{{ $movie->backdrop_url }}" 
                  alt="{{ $movie->title }} backdrop" 
-                 class="hero-backdrop-image">
+                 class="hero-backdrop-image"
+                 onerror="this.src='{{ $movie->poster_url }}'; this.style.filter='blur(40px) brightness(0.4)';">
         @else
             <img src="{{ $movie->poster_url }}" 
                  alt="{{ $movie->title }}" 
