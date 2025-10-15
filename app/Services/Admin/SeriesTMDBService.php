@@ -5,6 +5,7 @@ namespace App\Services\Admin;
 use App\Models\Series;
 use App\Models\Genre;
 use App\Services\TMDBService;
+use App\Services\ContentUploadService;
 use App\Jobs\DownloadTmdbImageJob;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -13,10 +14,12 @@ use Carbon\Carbon;
 class SeriesTMDBService
 {
     protected $tmdbService;
+    protected $contentUploadService;
 
-    public function __construct()
+    public function __construct(ContentUploadService $contentUploadService)
     {
         $this->tmdbService = new TMDBService();
+        $this->contentUploadService = $contentUploadService;
     }
 
     /**
@@ -192,19 +195,26 @@ class SeriesTMDBService
      */
     protected function prepareTMDBSeriesData(array $tmdbData): array
     {
+        // Generate safe slug with validation
+        $title = $tmdbData['name'] ?? $tmdbData['title'] ?? '';
+        $year = null;
+        if (!empty($tmdbData['first_air_date'])) {
+            $year = Carbon::parse($tmdbData['first_air_date'])->year;
+        }
+        $slug = $this->contentUploadService->generateSlug($title, $year, Series::class);
+
         return [
             'tmdb_id' => $tmdbData['id'],
-            'title' => $tmdbData['name'] ?? $tmdbData['title'],
-            'slug' => Str::slug($tmdbData['name'] ?? $tmdbData['title']),
-            'original_title' => $tmdbData['original_name'] ?? ($tmdbData['name'] ?? $tmdbData['title']),
+            'title' => $title,
+            'slug' => $slug,
+            'original_title' => $tmdbData['original_name'] ?? $title,
             'description' => $tmdbData['overview'] ?? '',
             'overview' => $tmdbData['overview'] ?? '',
             'poster_path' => $tmdbData['poster_path'], // Store TMDB path only
             'backdrop_path' => $tmdbData['backdrop_path'], // Store TMDB path only
             'first_air_date' => $tmdbData['first_air_date'] ?? null,
             'last_air_date' => $tmdbData['last_air_date'] ?? null,
-            'year' => $tmdbData['first_air_date'] ?
-                Carbon::parse($tmdbData['first_air_date'])->year : null,
+            'year' => $year,
             'rating' => $tmdbData['vote_average'] ?? 0,
             'vote_count' => $tmdbData['vote_count'] ?? 0,
             'popularity' => $tmdbData['popularity'] ?? 0,

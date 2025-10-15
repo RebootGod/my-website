@@ -156,10 +156,20 @@ class ContentUploadService
      */
     public function generateSlug(string $title, ?int $year, string $model): string
     {
-        $baseSlug = Str::slug($title);
-        
-        if ($year) {
-            $baseSlug .= '-' . $year;
+        // Validate title is not empty
+        $title = trim($title);
+        if (empty($title)) {
+            // Fallback: use model name + year + random string
+            $baseSlug = strtolower(class_basename($model)) . '-' . ($year ?? 'unknown') . '-' . Str::random(6);
+        } else {
+            $baseSlug = Str::slug($title);
+            
+            // Additional check: if slug is still empty after Str::slug (edge case)
+            if (empty($baseSlug)) {
+                $baseSlug = strtolower(class_basename($model)) . '-' . ($year ?? 'unknown') . '-' . Str::random(6);
+            } else if ($year) {
+                $baseSlug .= '-' . $year;
+            }
         }
 
         $slug = $baseSlug;

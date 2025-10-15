@@ -4,6 +4,7 @@ namespace App\Services\Admin;
 
 use App\Models\Movie;
 use App\Models\Genre;
+use App\Services\ContentUploadService;
 use Illuminate\Support\Str;
 
 /**
@@ -14,20 +15,32 @@ use Illuminate\Support\Str;
  */
 class MovieTMDBDataService
 {
+    protected $contentUploadService;
+
+    public function __construct(ContentUploadService $contentUploadService)
+    {
+        $this->contentUploadService = $contentUploadService;
+    }
+
     /**
      * Prepare TMDB movie data for database insertion
      */
     public function prepareTMDBMovieData(array $tmdbData): array
     {
+        // Generate safe slug with validation
+        $title = $tmdbData['title'] ?? '';
+        $year = $tmdbData['year'] ?? null;
+        $slug = $this->contentUploadService->generateSlug($title, $year, Movie::class);
+
         return [
             'tmdb_id' => $tmdbData['tmdb_id'],
-            'title' => $tmdbData['title'],
-            'slug' => Str::slug($tmdbData['title']),
+            'title' => $title,
+            'slug' => $slug,
             'overview' => $tmdbData['description'] ?? '',
             'description' => $tmdbData['description'] ?? '',
             'release_date' => $tmdbData['release_date'] ?
                 \Carbon\Carbon::parse($tmdbData['release_date']) : null,
-            'year' => $tmdbData['year'] ?? null,
+            'year' => $year,
             'runtime' => $tmdbData['duration'] ?? null,
             'poster_path' => $tmdbData['poster_path'] ?? null,
             'backdrop_path' => $tmdbData['backdrop_path'] ?? null,
@@ -35,7 +48,7 @@ class MovieTMDBDataService
             'vote_count' => $tmdbData['vote_count'] ?? 0,
             'popularity' => $tmdbData['popularity'] ?? 0,
             'language' => $tmdbData['original_language'] ?? 'en',
-            'original_title' => $tmdbData['original_title'] ?? $tmdbData['title'],
+            'original_title' => $tmdbData['original_title'] ?? $title,
             'status' => 'published',
             'is_featured' => false,
             'added_by' => auth()->id(),
