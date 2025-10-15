@@ -5,16 +5,19 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\TMDBImportRequest;
 use App\Services\NewTMDBService;
+use App\Services\ContentUploadService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
 class NewTMDBSeriesController extends Controller
 {
     protected $tmdbService;
+    protected $contentUploadService;
 
-    public function __construct(NewTMDBService $tmdbService)
+    public function __construct(NewTMDBService $tmdbService, ContentUploadService $contentUploadService)
     {
         $this->tmdbService = $tmdbService;
+        $this->contentUploadService = $contentUploadService;
     }
 
     public function index()
@@ -166,7 +169,7 @@ class NewTMDBSeriesController extends Controller
 
         try {
             // Use SeriesTMDBService for import logic
-            $seriesTMDBService = new \App\Services\Admin\SeriesTMDBService();
+            $seriesTMDBService = new \App\Services\Admin\SeriesTMDBService($this->contentUploadService);
             $result = $seriesTMDBService->importSeries($request->tmdb_id);
 
             if ($result['success']) {

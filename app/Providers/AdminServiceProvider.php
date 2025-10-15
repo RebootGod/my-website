@@ -7,6 +7,7 @@ use App\Services\Admin\MovieTMDBService;
 use App\Services\Admin\MovieSourceService;
 use App\Services\Admin\MovieFileService;
 use App\Services\Admin\MovieReportService;
+use App\Services\ContentUploadService;
 
 class AdminServiceProvider extends ServiceProvider
 {
@@ -16,7 +17,7 @@ class AdminServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->singleton(MovieTMDBService::class, function ($app) {
-            return new MovieTMDBService();
+            return new MovieTMDBService($app->make(ContentUploadService::class));
         });
 
         $this->app->singleton(MovieSourceService::class, function ($app) {

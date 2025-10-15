@@ -5,6 +5,7 @@ namespace App\Services\Admin;
 use App\Models\Movie;
 use App\Models\Genre;
 use App\Services\TMDBService;
+use App\Services\ContentUploadService;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
@@ -13,11 +14,13 @@ class MovieTMDBService
 {
     protected $tmdbService;
     protected $dataService;
+    protected $contentUploadService;
 
-    public function __construct()
+    public function __construct(ContentUploadService $contentUploadService)
     {
         $this->tmdbService = new TMDBService();
-        $this->dataService = new MovieTMDBDataService();
+        $this->contentUploadService = $contentUploadService;
+        $this->dataService = new MovieTMDBDataService($contentUploadService);
     }
 
     /**
