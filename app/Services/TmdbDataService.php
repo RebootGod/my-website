@@ -242,6 +242,17 @@ class TmdbDataService
                 $idData = $idResponse->json();
                 $enData = $enResponse && $enResponse->successful() ? $enResponse->json() : [];
 
+                // DEBUG: Log the overview data for episodes
+                Log::debug('TMDB Episode Overview Debug', [
+                    'tmdb_id' => $tmdbId,
+                    'season' => $seasonNumber,
+                    'episode' => $episodeNumber,
+                    'id_overview' => $idData['overview'] ?? 'EMPTY/NULL',
+                    'id_overview_length' => isset($idData['overview']) ? strlen($idData['overview']) : 0,
+                    'en_overview' => $enData['overview'] ?? 'EMPTY/NULL',
+                    'en_overview_length' => isset($enData['overview']) ? strlen($enData['overview']) : 0,
+                ]);
+
                 // Merge data: Use Indonesian if available, fallback to English
                 return $this->mergeLanguageData($idData, $enData);
 
