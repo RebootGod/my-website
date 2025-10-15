@@ -155,42 +155,8 @@
                         Media Sources
                     </div>
                     
-                    <!-- Embed URL -->
-                    <div class="form-group">
-                        <label for="embed_url" class="form-label required">Embed URL</label>
-                        <div class="input-group">
-                            <input type="url" name="embed_url" id="embed_url" 
-                                   class="form-input" value="{{ old('embed_url', $episode->embed_url) }}" 
-                                   placeholder="https://example.com/embed/video123 or https://player.vimeo.com/video/123456" 
-                                   required>
-                            <button type="button" class="btn btn-secondary" onclick="previewUrl(document.getElementById('embed_url').value, 'embed')">
-                                <i class="fas fa-play"></i> Preview
-                            </button>
-                        </div>
-                        <div class="field-help">Direct link to the video player embed (YouTube, Vimeo, or custom player)</div>
-                    </div>
-
-                    <!-- Download URL -->
-                    <div class="form-group">
-                        <label for="download_url" class="form-label">Download URL</label>
-                        <input type="url" name="download_url" id="download_url"
-                               class="form-input" value="{{ old('download_url', $episode->download_url) }}"
-                               placeholder="https://example.com/download/episode.mp4">
-                        <div class="field-help">Optional: Direct download link for this episode</div>
-                    </div>
-
-                    <!-- Still Path -->
-                    <div class="form-group">
-                        <label for="still_path" class="form-label">Episode Thumbnail URL</label>
-                        <div class="input-group">
-                            <input type="url" name="still_path" id="still_path"
-                                   class="form-input" value="{{ old('still_path', $episode->still_path) }}"
-                                   placeholder="https://example.com/images/episode-thumbnail.jpg">
-                            <button type="button" class="btn btn-secondary" onclick="previewUrl(document.getElementById('still_path').value, 'image')">
-                                <i class="fas fa-eye"></i> Preview
-                            </button>
-                        </div>
-                        <div class="field-help">Optional: Eye-catching thumbnail image for this episode (JPG, PNG, WebP)</div>
+                    <div class="field-help" style="margin-bottom: 15px; padding: 10px; background: rgba(59, 130, 246, 0.1); border-left: 3px solid #3b82f6; border-radius: 4px;">
+                        <i class="fas fa-info-circle" style="color: #3b82f6;"></i> <strong>Note:</strong> Episode media sources are now managed through the <strong>"Manage Sources"</strong> button after saving the episode. This allows multiple video sources per episode with better quality control.
                     </div>
                 </div>
 

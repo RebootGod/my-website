@@ -48,22 +48,6 @@
                 @enderror
             </div>
 
-            {{-- Embed URL --}}
-            <div class="md:col-span-2">
-                <label class="block text-sm font-medium text-gray-400 mb-2">Embed URL *</label>
-                <input 
-                    type="url" 
-                    name="embed_url" 
-                    value="{{ old('embed_url') }}"
-                    placeholder="https://short.icu/example"
-                    class="w-full px-4 py-2 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400"
-                    required
-                >
-                @error('embed_url')
-                    <p class="text-red-400 text-sm mt-1">{{ $message }}</p>
-                @enderror
-            </div>
-
             {{-- Poster Upload --}}
             <div>
                 <label class="block text-sm font-medium text-gray-400 mb-2">

@@ -164,47 +164,15 @@
                 </div>
             </div>
 
-            {{-- Embed URL --}}
-            <div class="md:col-span-2">
-                <label class="block text-sm font-medium text-gray-400 mb-2">Video Embed URL *</label>
-                <input type="url"
-                       name="embed_url"
-                       id="embed_url"
-                       class="w-full px-4 py-2 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400"
-                       value="{{ old('embed_url', $episode->embed_url) }}"
-                       placeholder="https://example.com/embed/video123 or https://player.vimeo.com/video/123456"
-                       required>
-                @error('embed_url')
-                    <p class="text-red-400 text-sm mt-1">{{ $message }}</p>
-                @enderror
-            </div>
-
-            {{-- Download URL --}}
-            <div class="md:col-span-2">
-                <label class="block text-sm font-medium text-gray-400 mb-2">Download URL</label>
-                <input type="url"
-                       name="download_url"
-                       id="download_url"
-                       class="w-full px-4 py-2 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400"
-                       value="{{ old('download_url', $episode->download_url) }}"
-                       placeholder="https://example.com/download/episode.mp4">
-                @error('download_url')
-                    <p class="text-red-400 text-sm mt-1">{{ $message }}</p>
-                @enderror
-            </div>
-
-            {{-- Thumbnail URL --}}
-            <div class="md:col-span-2">
-                <label class="block text-sm font-medium text-gray-400 mb-2">Episode Thumbnail URL</label>
-                <input type="url" 
-                       name="still_path" 
-                       id="still_path" 
-                       class="w-full px-4 py-2 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400" 
-                       value="{{ old('still_path', $episode->still_path) }}" 
-                       placeholder="https://example.com/images/episode-thumbnail.jpg">
-                @error('still_path')
-                    <p class="text-red-400 text-sm mt-1">{{ $message }}</p>
-                @enderror
+            {{-- Media Sources Info --}}
+            <div class="md:col-span-2 p-4 bg-blue-900 bg-opacity-30 border border-blue-500 rounded-lg">
+                <div class="flex items-start">
+                    <i class="fas fa-info-circle text-blue-400 mt-1 mr-3"></i>
+                    <div>
+                        <p class="text-sm font-medium text-blue-300 mb-1">Media Sources Management</p>
+                        <p class="text-sm text-gray-300">Episode media sources (embed URLs, download links, thumbnails) are now managed through the <strong>"Manage Sources"</strong> button after saving the episode. This allows multiple video sources per episode with better quality control and flexibility.</p>
+                    </div>
+                </div>
             </div>
         </div>
 

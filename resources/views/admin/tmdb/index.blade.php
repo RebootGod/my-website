@@ -95,14 +95,14 @@
             <form id="importForm">
                 <input type="hidden" id="tmdbId" name="tmdb_id">
                 
-                <div class="mb-4">
-                    <label class="block text-sm font-medium mb-2">Embed URL *</label>
-                    <input type="url" 
-                           id="embedUrl" 
-                           name="embed_url" 
-                           required
-                           placeholder="https://example.com/player/movie123"
-                           class="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 text-white">
+                <div class="mb-4 p-4 bg-blue-900 bg-opacity-30 border border-blue-500 rounded-lg">
+                    <div class="flex items-start">
+                        <i class="fas fa-info-circle text-blue-400 mt-1 mr-3"></i>
+                        <div>
+                            <p class="text-sm font-medium text-blue-300 mb-1">Media Sources</p>
+                            <p class="text-sm text-gray-300">After importing, you can add video sources (embed URLs, download links) through "Manage Sources" button in the movie edit page. This allows multiple video sources with better quality control.</p>
+                        </div>
+                    </div>
                 </div>
                 
                 <div class="mb-4">
