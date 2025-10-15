@@ -4,9 +4,14 @@
 October 15, 2025
 
 ## Problem Description
-Found 2 movies in production database with invalid slugs:
+Found 3 content items in production database with invalid slugs:
+
+**Movies:**
 - Movie ID 499: "Parasyte: Part 1" → Slug: `-2014` (should be `parasyte-part-1-2014`)
 - Movie ID 500: "Parasyte: Part 2" → Slug: `-2015` (should be `parasyte-part-2-2015`)
+
+**Series:**
+- Series ID 21: "Would You Marry Me?" → Slug: `-2025` (should be `would-you-marry-me-2025`)
 
 ## Root Cause Analysis
 
@@ -34,11 +39,12 @@ public function generateSlug(string $title, ?int $year, string $model): string
 ## Solution Implemented
 
 ### 1. Fixed Production Data
-**Script**: `fix_movie_slugs.php`
+**Script**: `fix_movie_slugs.php` & `fix_series_slug.php`
 
 Updated slugs in production database:
-- ID 499: `-2014` → `parasyte-part-1-2014` ✅
-- ID 500: `-2015` → `parasyte-part-2-2015` ✅
+- Movie ID 499: `-2014` → `parasyte-part-1-2014` ✅
+- Movie ID 500: `-2015` → `parasyte-part-2-2015` ✅
+- Series ID 21: `-2025` → `would-you-marry-me-2025` ✅
 
 ### 2. Fixed Code to Prevent Future Issues
 
@@ -150,6 +156,12 @@ php artisan tinker
 ```
 
 Should return `0` for both.
+
+**✅ VERIFIED ON PRODUCTION:**
+- Movies with bad slugs: **0**
+- Series with bad slugs: **0**
+- Parasyte movies: **parasyte-part-1-2014** & **parasyte-part-2-2015**
+- Would You Marry Me?: **would-you-marry-me-2025**
 
 ## Related Files to Review
 
