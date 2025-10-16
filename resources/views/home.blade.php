@@ -33,6 +33,24 @@
                 </h3>
 
                 <form method="GET" action="{{ route('home') }}" id="filterForm">
+                    {{-- Content Type Filter (Movies/Series/All) --}}
+                    <div class="filter-group">
+                        <label class="filter-label">
+                            <i class="fas fa-film me-2"></i>Content Type
+                        </label>
+                        <select name="content_type" class="modern-select" id="contentTypeFilter">
+                            <option value="all" {{ ($contentType ?? 'all') == 'all' ? 'selected' : '' }}>
+                                🎬 All Content
+                            </option>
+                            <option value="movies" {{ ($contentType ?? 'all') == 'movies' ? 'selected' : '' }}>
+                                🎥 Movies Only
+                            </option>
+                            <option value="series" {{ ($contentType ?? 'all') == 'series' ? 'selected' : '' }}>
+                                📺 Series Only
+                            </option>
+                        </select>
+                    </div>
+
                     {{-- Search Field --}}
                     <div class="filter-group">
                         <label class="filter-label">Search</label>
@@ -122,6 +140,24 @@
             </div>
 
             <form method="GET" action="{{ route('home') }}" id="mobileFilterForm">
+                {{-- Content Type Filter (Movies/Series/All) --}}
+                <div class="filter-group">
+                    <label class="filter-label">
+                        <i class="fas fa-film me-2"></i>Content Type
+                    </label>
+                    <select name="content_type" class="modern-select" id="mobileContentTypeFilter">
+                        <option value="all" {{ ($contentType ?? 'all') == 'all' ? 'selected' : '' }}>
+                            🎬 All Content
+                        </option>
+                        <option value="movies" {{ ($contentType ?? 'all') == 'movies' ? 'selected' : '' }}>
+                            🎥 Movies Only
+                        </option>
+                        <option value="series" {{ ($contentType ?? 'all') == 'series' ? 'selected' : '' }}>
+                            📺 Series Only
+                        </option>
+                    </select>
+                </div>
+
                 {{-- Search Field --}}
                 <div class="filter-group">
                     <label class="filter-label">Search</label>
