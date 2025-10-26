@@ -94,11 +94,12 @@ class ProcessMovieUploadJob implements ShouldQueue
                 throw new \Exception("Failed to fetch movie data from TMDB for ID: {$this->tmdbId}");
             }
 
-            // Prepare movie data
+            // Prepare movie data with published status
             $movieData = $uploadService->prepareMovieData(
                 $tmdbData,
                 $this->embedUrl,
-                $this->downloadUrl
+                $this->downloadUrl,
+                'published'  // Auto-publish bot uploads
             );
 
             // Create movie

@@ -241,7 +241,7 @@ class ContentUploadService
      * @param string|null $downloadUrl
      * @return array
      */
-    public function prepareMovieData(array $tmdbData, string $embedUrl, ?string $downloadUrl): array
+    public function prepareMovieData(array $tmdbData, string $embedUrl, ?string $downloadUrl, string $status = 'published'): array
     {
         $year = null;
         if (!empty($tmdbData['release_date'])) {
@@ -262,7 +262,7 @@ class ContentUploadService
             'duration' => $tmdbData['runtime'] ?? null,
             'rating' => $tmdbData['vote_average'] ?? 0,
             'quality' => 'HD',
-            'status' => 'draft',
+            'status' => $status,  // Use parameter instead of hardcoded 'draft'
             'view_count' => 0,
         ];
     }
@@ -273,7 +273,7 @@ class ContentUploadService
      * @param array $tmdbData
      * @return array
      */
-    public function prepareSeriesData(array $tmdbData): array
+    public function prepareSeriesData(array $tmdbData, string $status = 'published'): array
     {
         $year = null;
         if (!empty($tmdbData['first_air_date'])) {
@@ -293,7 +293,7 @@ class ContentUploadService
                 : null,
             'year' => $year,
             'rating' => $tmdbData['vote_average'] ?? 0,
-            'status' => 'draft',
+            'status' => $status,  // Use parameter instead of hardcoded 'draft'
         ];
     }
 
