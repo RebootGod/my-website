@@ -54,7 +54,7 @@
                     {{-- Movie Card --}}
                     <div class="watchlist-movie-card">
                         {{-- Poster with Watch Overlay --}}
-                        <a href="{{ route('movies.show', $item->movie->id) }}" class="watchlist-poster-container">
+                        <a href="{{ route('movies.show', $item->movie->slug) }}" class="watchlist-poster-container">
                             <img src="{{ $item->movie->poster_url }}" 
                                  class="watchlist-poster-img" 
                                  alt="{{ $item->movie->title }}"
@@ -92,7 +92,7 @@
                     {{-- Series Card --}}
                     <div class="watchlist-movie-card">
                         {{-- Poster with Watch Overlay --}}
-                        <a href="{{ route('series.show', $item->series->id) }}" class="watchlist-poster-container">
+                        <a href="{{ route('series.show', $item->series->slug) }}" class="watchlist-poster-container">
                             <img src="{{ $item->series->poster_url }}" 
                                  class="watchlist-poster-img" 
                                  alt="{{ $item->series->title }}"

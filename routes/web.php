@@ -39,7 +39,7 @@ Route::post('/clear-filters', [HomeController::class, 'clearFilters'])->name('fi
 Route::get('/movie/{movie:slug}', [MovieController::class, 'show'])->name('movies.show');
 
 // Series routes (public access)
-Route::get('/series/{series}', [\App\Http\Controllers\SeriesController::class, 'show'])->name('series.show');
+Route::get('/series/{series:slug}', [\App\Http\Controllers\SeriesController::class, 'show'])->name('series.show');
 Route::get('/series', [\App\Http\Controllers\SeriesController::class, 'index'])->name('series.index');
 
 // Genre browsing
