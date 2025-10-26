@@ -7,6 +7,8 @@ use App\Http\Controllers\Api\Bot\BotMovieController;
 use App\Http\Controllers\Api\Bot\BotSeriesController;
 use App\Http\Controllers\Api\Bot\BotSeasonController;
 use App\Http\Controllers\Api\Bot\BotEpisodeController;
+use App\Http\Controllers\Api\Bot\BotEpisodeStatusController;
+use App\Http\Controllers\Api\Bot\BotEpisodeUpdateController;
 
 Route::middleware(['auth:sanctum', 'check.permission:access_admin_panel'])->prefix('admin')->group(function () {
     Route::get('/roles', [RoleApiController::class, 'index']);
@@ -37,4 +39,10 @@ Route::middleware(['auth.bot', 'throttle:100,1'])->prefix('bot')->group(function
     
     // Episode upload (creates individual episode with URLs)
     Route::post('/series/{tmdbId}/episodes', [BotEpisodeController::class, 'store']);
+    
+    // Get episode status for a season (check which episodes exist and need URLs)
+    Route::get('/series/{tmdbId}/episodes-status', [BotEpisodeStatusController::class, 'getStatus']);
+    
+    // Update episode URLs (for episodes that exist but have no URLs)
+    Route::put('/episodes/{episodeId}', [BotEpisodeUpdateController::class, 'update']);
 });

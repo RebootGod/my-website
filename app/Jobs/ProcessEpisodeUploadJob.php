@@ -99,10 +99,11 @@ class ProcessEpisodeUploadJob implements ShouldQueue
             }
 
             // Check if episode already exists
-            $existingCheck = $uploadService->checkEpisodeExists($season->id, $this->episodeNumber);
+            $existingCheck = $uploadService->checkEpisodeExists($season->id, $this->episodeNumber, true);
             
-            if ($existingCheck['exists']) {
-                Log::info('Episode already exists, skipping', [
+            if ($existingCheck['exists'] && !$existingCheck['needs_update']) {
+                // Episode complete with URLs, skip
+                Log::info('Episode already complete, skipping', [
                     'series_id' => $series->id,
                     'season_id' => $season->id,
                     'episode_number' => $this->episodeNumber,
@@ -110,6 +111,38 @@ class ProcessEpisodeUploadJob implements ShouldQueue
                 ]);
                 
                 DB::rollBack();
+                return;
+            }
+
+            if ($existingCheck['needs_update']) {
+                // Episode exists but no URLs, update it
+                Log::info('Episode exists without URLs, updating', [
+                    'series_id' => $series->id,
+                    'season_id' => $season->id,
+                    'episode_number' => $this->episodeNumber,
+                    'episode_id' => $existingCheck['episode']->id
+                ]);
+                
+                $episode = $existingCheck['episode'];
+                
+                $episode->update([
+                    'embed_url' => $this->embedUrl,
+                    'download_url' => $this->downloadUrl,
+                    'status' => 'published',
+                    'is_active' => true
+                ]);
+                
+                DB::commit();
+                
+                Log::info('Episode URLs updated successfully via bot', [
+                    'episode_id' => $episode->id,
+                    'series_id' => $series->id,
+                    'season_id' => $season->id,
+                    'episode_number' => $this->episodeNumber,
+                    'telegram_user_id' => $this->telegramUserId,
+                    'telegram_username' => $this->telegramUsername
+                ]);
+                
                 return;
             }
 

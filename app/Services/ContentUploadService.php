@@ -118,23 +118,43 @@ class ContentUploadService
      *
      * @param int $seasonId
      * @param int $episodeNumber
+     * @param bool $requireUrls Check if episode has embed_url (default: false)
      * @return array
      */
-    public function checkEpisodeExists(int $seasonId, int $episodeNumber): array
+    public function checkEpisodeExists(int $seasonId, int $episodeNumber, bool $requireUrls = false): array
     {
         $episode = SeriesEpisode::where('season_id', $seasonId)
             ->where('episode_number', $episodeNumber)
             ->first();
 
         if ($episode) {
+            $hasUrls = !empty($episode->embed_url);
+            
+            // If URLs required and episode has no URLs, treat as needs update
+            if ($requireUrls && !$hasUrls) {
+                return [
+                    'exists' => false,
+                    'episode' => $episode,
+                    'needs_update' => true,
+                    'details' => [
+                        'id' => $episode->id,
+                        'episode_number' => $episode->episode_number,
+                        'name' => $episode->name,
+                        'has_embed' => false,
+                        'has_download' => !empty($episode->download_url)
+                    ]
+                ];
+            }
+            
             return [
                 'exists' => true,
                 'episode' => $episode,
+                'needs_update' => false,
                 'details' => [
                     'id' => $episode->id,
                     'episode_number' => $episode->episode_number,
                     'name' => $episode->name,
-                    'has_embed' => !empty($episode->embed_url),
+                    'has_embed' => $hasUrls,
                     'has_download' => !empty($episode->download_url)
                 ]
             ];
@@ -142,7 +162,36 @@ class ContentUploadService
 
         return [
             'exists' => false,
-            'episode' => null
+            'episode' => null,
+            'needs_update' => false
+        ];
+    }
+
+    /**
+     * Update episode URLs (for existing episodes without URLs)
+     *
+     * @param int $episodeId
+     * @param string $embedUrl
+     * @param string|null $downloadUrl
+     * @return array
+     */
+    public function updateEpisodeUrls(
+        int $episodeId,
+        string $embedUrl,
+        ?string $downloadUrl = null
+    ): array {
+        $episode = SeriesEpisode::findOrFail($episodeId);
+        
+        $episode->update([
+            'embed_url' => $embedUrl,
+            'download_url' => $downloadUrl,
+            'status' => 'published',
+            'is_active' => true
+        ]);
+        
+        return [
+            'success' => true,
+            'episode' => $episode
         ];
     }
 
