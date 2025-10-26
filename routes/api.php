@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\Bot\BotSeasonController;
 use App\Http\Controllers\Api\Bot\BotEpisodeController;
 use App\Http\Controllers\Api\Bot\BotEpisodeStatusController;
 use App\Http\Controllers\Api\Bot\BotEpisodeUpdateController;
+use App\Http\Controllers\Api\Bot\BotTmdbController;
 
 Route::middleware(['auth:sanctum', 'check.permission:access_admin_panel'])->prefix('admin')->group(function () {
     Route::get('/roles', [RoleApiController::class, 'index']);
@@ -45,4 +46,11 @@ Route::middleware(['auth.bot', 'throttle:100,1'])->prefix('bot')->group(function
     
     // Update episode URLs (for episodes that exist but have no URLs)
     Route::put('/episodes/{episodeId}', [BotEpisodeUpdateController::class, 'update']);
+
+    // TMDB Data endpoints (reuse existing TmdbDataService)
+    Route::prefix('tmdb')->group(function () {
+        Route::get('/movie/{tmdbId}', [BotTmdbController::class, 'getMovie']);
+        Route::get('/series/{tmdbId}', [BotTmdbController::class, 'getSeries']);
+        Route::get('/series/{tmdbId}/season/{seasonNumber}', [BotTmdbController::class, 'getSeason']);
+    });
 });
