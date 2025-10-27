@@ -72,35 +72,60 @@ class BotMovieController extends Controller
                 ], 200);
             }
 
-            // Generate unique job ID for tracking
-            $jobId = Str::uuid()->toString();
+            // Process movie upload synchronously (no queue)
+            // Bot needs immediate feedback, queue worker may not be running
+            try {
+                ProcessMovieUploadJob::dispatchSync(
+                    $tmdbId,
+                    $embedUrl,
+                    $downloadUrl,
+                    null, // telegramUserId (not provided by bot)
+                    $telegramUsername
+                );
 
-            // Dispatch job to queue
-            ProcessMovieUploadJob::dispatch(
-                $tmdbId,
-                $embedUrl,
-                $downloadUrl,
-                null, // telegramUserId (not provided by bot)
-                $telegramUsername
-            )->onQueue('bot-uploads');
+                // After sync processing, get the created movie
+                $createdMovie = $this->contentService->checkMovieExists($tmdbId);
 
-            Log::info('Movie upload job dispatched', [
-                'job_id' => $jobId,
-                'tmdb_id' => $tmdbId,
-                'telegram_user' => $telegramUsername,
-            ]);
+                if ($createdMovie['exists']) {
+                    Log::info('Movie created successfully via bot', [
+                        'tmdb_id' => $tmdbId,
+                        'movie_id' => $createdMovie['movie']->id,
+                        'title' => $createdMovie['movie']->title,
+                        'telegram_user' => $telegramUsername,
+                    ]);
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Movie upload queued successfully',
-                'skipped' => false,
-                'data' => [
-                    'job_id' => $jobId,
+                    return response()->json([
+                        'success' => true,
+                        'message' => 'Movie uploaded successfully',
+                        'skipped' => false,
+                        'data' => [
+                            'movie_id' => $createdMovie['movie']->id,
+                            'title' => $createdMovie['movie']->title,
+                            'year' => $createdMovie['movie']->year,
+                            'slug' => $createdMovie['movie']->slug,
+                            'status' => $createdMovie['movie']->status,
+                            'tmdb_id' => $createdMovie['movie']->tmdb_id,
+                            'url' => route('movies.show', $createdMovie['movie']->slug),
+                        ],
+                    ], 201); // 201 Created
+                } else {
+                    throw new \Exception('Movie creation succeeded but movie not found in database');
+                }
+
+            } catch (\Exception $jobException) {
+                Log::error('Movie upload processing failed', [
                     'tmdb_id' => $tmdbId,
-                    'status' => 'queued',
-                    'queue' => 'bot-uploads',
-                ],
-            ], 202); // 202 Accepted - request accepted for processing
+                    'error' => $jobException->getMessage(),
+                    'telegram_user' => $telegramUsername,
+                    'trace' => $jobException->getTraceAsString(),
+                ]);
+
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Failed to upload movie',
+                    'error' => $jobException->getMessage(),
+                ], 500);
+            }
 
         } catch (\Exception $e) {
             Log::error('Movie upload failed', [
@@ -112,7 +137,7 @@ class BotMovieController extends Controller
 
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to queue movie upload',
+                'message' => 'Failed to upload movie',
                 'error' => $e->getMessage(),
             ], 500);
         }

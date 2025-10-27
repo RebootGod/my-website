@@ -69,30 +69,59 @@ class BotSeriesController extends Controller
                 ], 200);
             }
 
-            // Dispatch job to queue
-            ProcessSeriesUploadJob::dispatch(
-                $tmdbId,
-                null, // telegramUserId (not provided by bot)
-                $telegramUsername
-            )->onQueue('bot-uploads');
+            // Process series upload synchronously (no queue)
+            // Bot needs immediate feedback, queue worker may not be running
+            try {
+                ProcessSeriesUploadJob::dispatchSync(
+                    $tmdbId,
+                    null, // telegramUserId (not provided by bot)
+                    $telegramUsername
+                );
 
-            Log::info('Series upload job dispatched', [
-                'tmdb_id' => $tmdbId,
-                'telegram_user' => $telegramUsername,
-            ]);
+                // After sync processing, get the created series
+                $createdSeries = $this->contentService->checkSeriesExists($tmdbId);
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Series upload queued successfully. Note: Seasons and episodes NOT created - use /uploadseason and /uploadepisode',
-                'skipped' => false,
-                'data' => [
-                    'job_id' => $jobId,
+                if ($createdSeries['exists']) {
+                    Log::info('Series created successfully via bot', [
+                        'tmdb_id' => $tmdbId,
+                        'series_id' => $createdSeries['series']->id,
+                        'title' => $createdSeries['series']->title,
+                        'telegram_user' => $telegramUsername,
+                    ]);
+
+                    return response()->json([
+                        'success' => true,
+                        'message' => 'Series uploaded successfully. Note: Seasons and episodes NOT created - use season/episode upload endpoints',
+                        'skipped' => false,
+                        'data' => [
+                            'series_id' => $createdSeries['series']->id,
+                            'title' => $createdSeries['series']->title,
+                            'year' => $createdSeries['series']->year,
+                            'slug' => $createdSeries['series']->slug,
+                            'status' => $createdSeries['series']->status,
+                            'tmdb_id' => $createdSeries['series']->tmdb_id,
+                            'url' => route('series.show', $createdSeries['series']->slug),
+                            'note' => 'Seasons and episodes must be uploaded separately',
+                        ],
+                    ], 201); // 201 Created
+                } else {
+                    throw new \Exception('Series creation succeeded but series not found in database');
+                }
+
+            } catch (\Exception $jobException) {
+                Log::error('Series upload processing failed', [
                     'tmdb_id' => $tmdbId,
-                    'status' => 'queued',
-                    'queue' => 'bot-uploads',
-                    'note' => 'Seasons and episodes must be uploaded separately',
-                ],
-            ], 202); // 202 Accepted - request accepted for processing
+                    'error' => $jobException->getMessage(),
+                    'telegram_user' => $telegramUsername,
+                    'trace' => $jobException->getTraceAsString(),
+                ]);
+
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Failed to upload series',
+                    'error' => $jobException->getMessage(),
+                ], 500);
+            }
 
         } catch (\Exception $e) {
             Log::error('Series upload failed', [
@@ -104,7 +133,7 @@ class BotSeriesController extends Controller
 
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to queue series upload',
+                'message' => 'Failed to upload series',
                 'error' => $e->getMessage(),
             ], 500);
         }

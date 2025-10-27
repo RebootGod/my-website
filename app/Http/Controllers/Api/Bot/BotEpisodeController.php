@@ -117,48 +117,75 @@ class BotEpisodeController extends Controller
                         'season_id' => $season->id,
                         'season_number' => $seasonNumber,
                         'episode_number' => $existingCheck['episode']->episode_number,
-                        'title' => $existingCheck['episode']->title,
-                        'tmdb_id' => $existingCheck['episode']->tmdb_id,
+                        'name' => $existingCheck['episode']->name,
                     ],
                 ], 200);
             }
 
-            // Dispatch job to queue
-            ProcessEpisodeUploadJob::dispatch(
-                $tmdbId,
-                $seasonNumber,
-                $episodeNumber,
-                $embedUrl,
-                $downloadUrl,
-                null, // telegramUserId (not provided by bot)
-                $telegramUsername
-            )->onQueue('bot-uploads');
+            // Process episode upload synchronously (no queue)
+            try {
+                ProcessEpisodeUploadJob::dispatchSync(
+                    $tmdbId,
+                    $seasonNumber,
+                    $episodeNumber,
+                    $embedUrl,
+                    $downloadUrl,
+                    null, // telegramUserId (not provided by bot)
+                    $telegramUsername
+                );
 
-            Log::info('Episode upload job dispatched', [
-                'series_tmdb_id' => $tmdbId,
-                'series_id' => $series->id,
-                'season_id' => $season->id,
-                'season_number' => $seasonNumber,
-                'episode_number' => $episodeNumber,
-                'telegram_user' => $telegramUsername,
-            ]);
+                // After sync processing, get the created episode
+                $createdEpisode = $this->contentService->checkEpisodeExists(
+                    $season->id,
+                    $episodeNumber
+                );
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Episode upload queued successfully',
-                'skipped' => false,
-                'data' => [
-                    'job_id' => $jobId,
+                if ($createdEpisode['exists']) {
+                    Log::info('Episode created successfully via bot', [
+                        'series_tmdb_id' => $tmdbId,
+                        'series_id' => $series->id,
+                        'season_id' => $season->id,
+                        'season_number' => $seasonNumber,
+                        'episode_number' => $episodeNumber,
+                        'episode_id' => $createdEpisode['episode']->id,
+                        'telegram_user' => $telegramUsername,
+                    ]);
+
+                    return response()->json([
+                        'success' => true,
+                        'message' => 'Episode uploaded successfully',
+                        'skipped' => false,
+                        'data' => [
+                            'episode_id' => $createdEpisode['episode']->id,
+                            'series_id' => $series->id,
+                            'series_title' => $series->title,
+                            'season_id' => $season->id,
+                            'season_number' => $seasonNumber,
+                            'episode_number' => $createdEpisode['episode']->episode_number,
+                            'name' => $createdEpisode['episode']->name,
+                            'status' => $createdEpisode['episode']->status,
+                        ],
+                    ], 201); // 201 Created
+                } else {
+                    throw new \Exception('Episode creation succeeded but episode not found in database');
+                }
+
+            } catch (\Exception $jobException) {
+                Log::error('Episode upload processing failed', [
                     'series_tmdb_id' => $tmdbId,
-                    'series_id' => $series->id,
-                    'series_title' => $series->title,
-                    'season_id' => $season->id,
                     'season_number' => $seasonNumber,
                     'episode_number' => $episodeNumber,
-                    'status' => 'queued',
-                    'queue' => 'bot-uploads',
-                ],
-            ], 202); // 202 Accepted - request accepted for processing
+                    'error' => $jobException->getMessage(),
+                    'telegram_user' => $telegramUsername,
+                    'trace' => $jobException->getTraceAsString(),
+                ]);
+
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Failed to upload episode',
+                    'error' => $jobException->getMessage(),
+                ], 500);
+            }
 
         } catch (\Exception $e) {
             Log::error('Episode upload failed', [
@@ -172,7 +199,7 @@ class BotEpisodeController extends Controller
 
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to queue episode upload',
+                'message' => 'Failed to upload episode',
                 'error' => $e->getMessage(),
             ], 500);
         }

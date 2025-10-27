@@ -83,42 +83,65 @@ class BotSeasonController extends Controller
                         'series_id' => $series->id,
                         'series_title' => $series->title,
                         'season_number' => $existingCheck['season']->season_number,
-                        'title' => $existingCheck['season']->title,
-                        'tmdb_id' => $existingCheck['season']->tmdb_id,
+                        'name' => $existingCheck['season']->name,
                     ],
                 ], 200);
             }
 
-            // Dispatch job to queue
-            ProcessSeasonUploadJob::dispatch(
-                $tmdbId,
-                $seasonNumber,
-                null, // telegramUserId (not provided by bot)
-                $telegramUsername
-            )->onQueue('bot-uploads');
+            // Process season upload synchronously (no queue)
+            try {
+                ProcessSeasonUploadJob::dispatchSync(
+                    $tmdbId,
+                    $seasonNumber,
+                    null, // telegramUserId (not provided by bot)
+                    $telegramUsername
+                );
 
-            Log::info('Season upload job dispatched', [
-                'series_tmdb_id' => $tmdbId,
-                'series_id' => $series->id,
-                'season_number' => $seasonNumber,
-                'telegram_user' => $telegramUsername,
-            ]);
+                // After sync processing, get the created season
+                $createdSeason = $this->contentService->checkSeasonExists($series->id, $seasonNumber);
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Season upload queued successfully. Note: Episodes NOT created - use /uploadepisode',
-                'skipped' => false,
-                'data' => [
-                    'job_id' => $jobId,
+                if ($createdSeason['exists']) {
+                    Log::info('Season created successfully via bot', [
+                        'series_tmdb_id' => $tmdbId,
+                        'series_id' => $series->id,
+                        'season_number' => $seasonNumber,
+                        'season_id' => $createdSeason['season']->id,
+                        'telegram_user' => $telegramUsername,
+                    ]);
+
+                    return response()->json([
+                        'success' => true,
+                        'message' => 'Season uploaded successfully. Note: Episodes NOT created - use episode upload endpoint',
+                        'skipped' => false,
+                        'data' => [
+                            'season_id' => $createdSeason['season']->id,
+                            'series_id' => $series->id,
+                            'series_title' => $series->title,
+                            'season_number' => $createdSeason['season']->season_number,
+                            'name' => $createdSeason['season']->name,
+                            'episode_count' => $createdSeason['season']->episode_count ?? 0,
+                            'note' => 'Episodes must be uploaded separately',
+                        ],
+                    ], 201); // 201 Created
+                } else {
+                    throw new \Exception('Season creation succeeded but season not found in database');
+                }
+
+            } catch (\Exception $jobException) {
+                Log::error('Season upload processing failed', [
                     'series_tmdb_id' => $tmdbId,
-                    'series_id' => $series->id,
-                    'series_title' => $series->title,
                     'season_number' => $seasonNumber,
-                    'status' => 'queued',
-                    'queue' => 'bot-uploads',
-                    'note' => 'Episodes must be uploaded separately',
-                ],
-            ], 202); // 202 Accepted - request accepted for processing
+                    'error' => $jobException->getMessage(),
+                    'telegram_user' => $telegramUsername,
+                    'trace' => $jobException->getTraceAsString(),
+                ]);
+
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Failed to upload season',
+                    'error' => $jobException->getMessage(),
+                ], 500);
+            }
 
         } catch (\Exception $e) {
             Log::error('Season upload failed', [
@@ -131,7 +154,7 @@ class BotSeasonController extends Controller
 
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to queue season upload',
+                'message' => 'Failed to upload season',
                 'error' => $e->getMessage(),
             ], 500);
         }
