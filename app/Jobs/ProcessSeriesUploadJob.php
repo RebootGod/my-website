@@ -92,6 +92,9 @@ class ProcessSeriesUploadJob implements ShouldQueue
             // Create series (NO seasons, NO episodes)
             $series = Series::create($seriesData);
 
+            // Sync genres from TMDB data
+            $uploadService->syncSeriesGenres($series, $tmdbData);
+
             DB::commit();
 
             // Dispatch image download jobs (after commit)
@@ -117,6 +120,7 @@ class ProcessSeriesUploadJob implements ShouldQueue
                 'series_id' => $series->id,
                 'tmdb_id' => $this->tmdbId,
                 'title' => $series->title,
+                'genres_synced' => $series->genres()->count(),
                 'telegram_user_id' => $this->telegramUserId,
                 'telegram_username' => $this->telegramUsername,
                 'note' => 'Seasons and episodes NOT created - manual upload required'

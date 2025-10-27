@@ -353,4 +353,88 @@ class ContentUploadService
             'is_active' => true,
         ];
     }
+
+    /**
+     * Sync genres from TMDB data to movie
+     * 
+     * Creates genres if they don't exist and attaches them to the movie
+     * 
+     * @param Movie $movie Movie model instance
+     * @param array $tmdbData TMDB data containing genres array
+     * @return void
+     */
+    public function syncMovieGenres(Movie $movie, array $tmdbData): void
+    {
+        // Check if genres exist in TMDB data
+        if (empty($tmdbData['genres']) || !is_array($tmdbData['genres'])) {
+            return;
+        }
+
+        $genreIds = [];
+
+        foreach ($tmdbData['genres'] as $genreData) {
+            // Validate genre data
+            if (!isset($genreData['id']) || !isset($genreData['name'])) {
+                continue;
+            }
+
+            // FirstOrCreate genre in database
+            $genre = \App\Models\Genre::firstOrCreate(
+                ['tmdb_id' => $genreData['id']],
+                [
+                    'name' => $genreData['name'],
+                    'slug' => Str::slug($genreData['name'])
+                ]
+            );
+
+            $genreIds[] = $genre->id;
+        }
+
+        // Sync genres to movie (attach without detaching existing)
+        if (!empty($genreIds)) {
+            $movie->genres()->sync($genreIds);
+        }
+    }
+
+    /**
+     * Sync genres from TMDB data to series
+     * 
+     * Creates genres if they don't exist and attaches them to the series
+     * 
+     * @param Series $series Series model instance
+     * @param array $tmdbData TMDB data containing genres array
+     * @return void
+     */
+    public function syncSeriesGenres(Series $series, array $tmdbData): void
+    {
+        // Check if genres exist in TMDB data
+        if (empty($tmdbData['genres']) || !is_array($tmdbData['genres'])) {
+            return;
+        }
+
+        $genreIds = [];
+
+        foreach ($tmdbData['genres'] as $genreData) {
+            // Validate genre data
+            if (!isset($genreData['id']) || !isset($genreData['name'])) {
+                continue;
+            }
+
+            // FirstOrCreate genre in database
+            $genre = \App\Models\Genre::firstOrCreate(
+                ['tmdb_id' => $genreData['id']],
+                [
+                    'name' => $genreData['name'],
+                    'slug' => Str::slug($genreData['name'])
+                ]
+            );
+
+            $genreIds[] = $genre->id;
+        }
+
+        // Sync genres to series (attach without detaching existing)
+        if (!empty($genreIds)) {
+            $series->genres()->sync($genreIds);
+        }
+    }
 }

@@ -105,6 +105,9 @@ class ProcessMovieUploadJob implements ShouldQueue
             // Create movie
             $movie = Movie::create($movieData);
 
+            // Sync genres from TMDB data
+            $uploadService->syncMovieGenres($movie, $tmdbData);
+
             DB::commit();
 
             // Dispatch image download jobs (after commit)
@@ -130,6 +133,7 @@ class ProcessMovieUploadJob implements ShouldQueue
                 'movie_id' => $movie->id,
                 'tmdb_id' => $this->tmdbId,
                 'title' => $movie->title,
+                'genres_synced' => $movie->genres()->count(),
                 'telegram_user_id' => $this->telegramUserId,
                 'telegram_username' => $this->telegramUsername
             ]);
