@@ -317,7 +317,7 @@ class TmdbDataService
 
     /**
      * Merge Indonesian and English data, prioritizing Indonesian
-     * Falls back to English if Indonesian fields are empty
+     * Falls back to English if Indonesian fields are empty OR same as original non-ID/EN language
      *
      * @param array $idData Indonesian data
      * @param array $enData English data
@@ -325,13 +325,36 @@ class TmdbDataService
      */
     private function mergeLanguageData(array $idData, array $enData): array
     {
+        // Get original language to detect untranslated content
+        $originalLang = $idData['original_language'] ?? null;
+        
         // Text fields that should use Indonesian if available
         $textFields = ['title', 'name', 'overview', 'tagline'];
         
         foreach ($textFields as $field) {
-            // If Indonesian field is empty or null, use English
-            if (empty($idData[$field]) && !empty($enData[$field])) {
-                $idData[$field] = $enData[$field];
+            $idValue = $idData[$field] ?? null;
+            $enValue = $enData[$field] ?? null;
+            $originalField = 'original_' . ($field === 'name' ? 'name' : 'title');
+            $originalValue = $idData[$originalField] ?? $enData[$originalField] ?? null;
+            
+            // Case 1: Indonesian field is empty or null → use English
+            if (empty($idValue) && !empty($enValue)) {
+                $idData[$field] = $enValue;
+                continue;
+            }
+            
+            // Case 2: Indonesian value is same as original AND original is not ID/EN
+            // This means TMDB returned original language text (Korean, Japanese, etc)
+            // when Indonesian translation doesn't exist → fallback to English
+            if (!empty($originalValue) && 
+                !empty($idValue) && 
+                !empty($enValue) &&
+                $originalLang &&
+                !in_array($originalLang, ['id', 'en']) &&
+                $idValue === $originalValue) {
+                
+                $idData[$field] = $enValue;
+                continue;
             }
         }
 
