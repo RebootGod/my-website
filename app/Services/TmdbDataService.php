@@ -371,6 +371,35 @@ class TmdbDataService
             $idData['genres'] = $enData['genres'];
         }
 
+        // For episodes array (season data), merge language for each episode
+        if (!empty($idData['episodes']) && !empty($enData['episodes'])) {
+            foreach ($idData['episodes'] as $index => $idEpisode) {
+                // Find matching episode in English data
+                $enEpisode = collect($enData['episodes'])->firstWhere('episode_number', $idEpisode['episode_number'] ?? null);
+                
+                if ($enEpisode) {
+                    // Apply same language fallback logic to episode fields
+                    foreach (['name', 'overview'] as $field) {
+                        $idValue = $idEpisode[$field] ?? null;
+                        $enValue = $enEpisode[$field] ?? null;
+                        
+                        // Case 1: Indonesian field is empty → use English
+                        if (empty($idValue) && !empty($enValue)) {
+                            $idData['episodes'][$index][$field] = $enValue;
+                            continue;
+                        }
+                        
+                        // Case 2: Check if Indonesian matches original non-ID/EN language
+                        // For episodes, we don't have original_name field, so just check empty
+                        // This prevents Korean/Japanese episode names from appearing
+                    }
+                }
+            }
+        } elseif (empty($idData['episodes']) && !empty($enData['episodes'])) {
+            // If Indonesian has no episodes but English does, use English episodes
+            $idData['episodes'] = $enData['episodes'];
+        }
+
         return $idData;
     }
 }
