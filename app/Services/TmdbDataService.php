@@ -182,8 +182,25 @@ class TmdbDataService
                 $idData = $idResponse->json();
                 $enData = $enResponse && $enResponse->successful() ? $enResponse->json() : [];
 
+                // Debug log before merge
+                Log::info('TMDB Season Data Before Merge', [
+                    'tmdb_id' => $tmdbId,
+                    'season_number' => $seasonNumber,
+                    'id_episodes_count' => count($idData['episodes'] ?? []),
+                    'en_episodes_count' => count($enData['episodes'] ?? []),
+                ]);
+
                 // Merge data: Use Indonesian if available, fallback to English
-                return $this->mergeLanguageData($idData, $enData);
+                $mergedData = $this->mergeLanguageData($idData, $enData);
+                
+                // Debug log after merge
+                Log::info('TMDB Season Data After Merge', [
+                    'tmdb_id' => $tmdbId,
+                    'season_number' => $seasonNumber,
+                    'merged_episodes_count' => count($mergedData['episodes'] ?? []),
+                ]);
+                
+                return $mergedData;
 
             } catch (\Exception $e) {
                 Log::error('TMDB API exception fetching season', [
